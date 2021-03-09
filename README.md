@@ -20,7 +20,7 @@ This is simple GUI for sqlmap based on old Chinese version of SQLmap Command Bui
 ## How to run on Windows:
 
 - [Install Python 3](https://www.python.org)
-Verify you python 3 instalation:
+- Verify you python 3 instalation:
 ```sh
 python3 --version
 ```
