@@ -34,7 +34,7 @@ git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev
 
 ## How to run on Kali:
 
-- Choose GNOME Desktop Environment during installation process instead of Xfce(Kali’s default desktop environment) to run and use SQLmap Command Builder out of box.
+- Choose GNOME Desktop Environment during installation process instead of Xfce(Kali’s default desktop environment) to run and use SQLmap Command Builder out of the box.
 ![Alt text](https://user-images.githubusercontent.com/79360483/110434494-2c422b00-80b2-11eb-8dba-15bee96a553a.png)
 - Check your python version
 ```sh
