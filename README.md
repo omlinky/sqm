@@ -92,7 +92,7 @@ sudo mv sqm /usr/bin/
 ```
 - Give necessary permissions
 ```sh
-chmod u+x /usr/bin/sqm
+sudo chmod u+x /usr/bin/sqm
 ```
 - in Terminal input command
 ```sh
