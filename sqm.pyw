@@ -1589,7 +1589,7 @@ class MainApplication(tkinter.Frame):
         self.e_auth_type = ttk.Combobox(data_lf, width=60)
         self.e_auth_type_value = tkinter.StringVar()
         self.e_auth_type.config(textvariable=self.e_auth_type_value, state='disabled')
-        self.e_auth_type['values'] = ('Basic', 'Digest', 'NTLM', 'PKI')
+        self.e_auth_type['values'] = ('Basic', 'Digest', 'Bearer', 'NTLM', 'PKI')
         self.e_auth_type.current(0)
         self.e_auth_type.bind('<<ComboboxSelected>>', self.f_auth_type)
         self.e_auth_type.grid(row=15, column=1, sticky='we', padx=3)
