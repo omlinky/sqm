@@ -109,11 +109,6 @@ Pay from my pocket: 11 863,41 euros
 Bitcoin: 3PVcJAbWgcE54tKTm4cmz2zZqQR65vQiyY
 ```
 
-## Invite me in Clubhouse please
-```sh
-@omlinky
-```
-
 All video instructions and updates announces you can find on my twitter 
 ```sh
 @omlinky
