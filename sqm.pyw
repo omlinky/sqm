@@ -394,12 +394,6 @@ class MainApplication(tkinter.Frame):
         self.chk_batch.config(text="batch", variable=self.chk_batch_var, onvalue="on",
                               offvalue="off", command=self.f_batch)
         self.chk_batch.grid(row=4, column=0, sticky='w', ipadx=3)
-        # --identify-waf      Make a thorough testing for a WAF/IPS protection
-        self.chk_identify_waf = ttk.Checkbutton(gen_opt_lf)
-        self.chk_identify_waf_var = tkinter.StringVar()
-        self.chk_identify_waf.config(text="identify-waf", variable=self.chk_identify_waf_var, onvalue="on",
-                                     offvalue="off", command=self.f_identify_waf)
-        self.chk_identify_waf.grid(row=4, column=1, sticky='w', ipadx=3)
         # --crawl=CRAWLDEPTH  Crawl the website starting from the target url
         self.chk_crawl = ttk.Checkbutton(gen_opt_lf)
         self.chkCrawl_var = tkinter.StringVar()
@@ -1589,7 +1583,7 @@ class MainApplication(tkinter.Frame):
         self.e_auth_type = ttk.Combobox(data_lf, width=60)
         self.e_auth_type_value = tkinter.StringVar()
         self.e_auth_type.config(textvariable=self.e_auth_type_value, state='disabled')
-        self.e_auth_type['values'] = ('Basic', 'Digest', 'Bearer', 'NTLM', 'PKI')
+        self.e_auth_type['values'] = ('Basic', 'Digest', 'NTLM', 'PKI')
         self.e_auth_type.current(0)
         self.e_auth_type.bind('<<ComboboxSelected>>', self.f_auth_type)
         self.e_auth_type.grid(row=15, column=1, sticky='we', padx=3)
@@ -3961,16 +3955,6 @@ class MainApplication(tkinter.Frame):
             batch_sql = ""
         return batch_sql
 
-    # --identify-waf      Make a thorough testing for a WAF/IPS protection
-    @property
-    def f_identify_waf(self):
-        sql_identify_waf = self.chk_identify_waf_var.get()
-        if sql_identify_waf == "on":
-            identify_waf_sql = " --identify-waf"
-        else:
-            identify_waf_sql = ""
-        return identify_waf_sql
-
     # --binary-fields=..  Result fields having binary values (e.g. "digest")
     def f_binary_fields(self, *args):
         sql_binary_fields = self.chk_binary_fields_var.get()
@@ -5115,7 +5099,7 @@ class MainApplication(tkinter.Frame):
                      self.f_header() + self.f_ignore() + self.f_safe_post + self.f_safe_req + \
                      self.f_safe_freq + self.f_csrf_token() + self.f_csrf_retries() + self.f_csrf_method() + \
                      self.f_csrf_url + self.f_os() + self.f_skip + self.f_invalid_bignum + self.f_invalid_logical + \
-                     self.f_no_cast + self.f_batch + self.f_identify_waf + self.f_no_escape + self.f_invalid_string + \
+                     self.f_no_cast + self.f_batch + self.f_no_escape + self.f_invalid_string + \
                      self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + self.f_users + \
                      self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + \
                      self.f_common_tables + self.f_common_columns + self.f_udf_inject + self.f_common_files + \
