@@ -394,6 +394,12 @@ class MainApplication(tkinter.Frame):
         self.chk_batch.config(text="batch", variable=self.chk_batch_var, onvalue="on",
                               offvalue="off", command=self.f_batch)
         self.chk_batch.grid(row=4, column=0, sticky='w', ipadx=3)
+        # --no-logging          Stop logging
+        self.chk_no_logging = ttk.Checkbutton(gen_opt_lf)
+        self.chk_no_logging_var = tkinter.StringVar()
+        self.chk_no_logging.config(text="no-logging", variable=self.chk_no_logging_var, onvalue="on",
+                                   offvalue="off", command=self.f_no_logging)
+        self.chk_no_logging.grid(row=4, column=1, sticky='w', ipadx=3)
         # --crawl=CRAWLDEPTH  Crawl the website starting from the target url
         self.chk_crawl = ttk.Checkbutton(gen_opt_lf)
         self.chkCrawl_var = tkinter.StringVar()
@@ -3954,6 +3960,16 @@ class MainApplication(tkinter.Frame):
         else:
             batch_sql = ""
         return batch_sql
+    
+    # --no-logging          Stop logging creating
+    @property
+    def f_no_logging(self):
+        sql_no_logging = self.chk_no_logging_var.get()
+        if sql_no_logging == "on":
+            no_logging_sql = " --no-logging"
+        else:
+            no_logging_sql = ""
+        return no_logging_sql
 
     # --binary-fields=..  Result fields having binary values (e.g. "digest")
     def f_binary_fields(self, *args):
@@ -5099,7 +5115,7 @@ class MainApplication(tkinter.Frame):
                      self.f_header() + self.f_ignore() + self.f_safe_post + self.f_safe_req + \
                      self.f_safe_freq + self.f_csrf_token() + self.f_csrf_retries() + self.f_csrf_method() + \
                      self.f_csrf_url + self.f_os() + self.f_skip + self.f_invalid_bignum + self.f_invalid_logical + \
-                     self.f_no_cast + self.f_batch + self.f_no_escape + self.f_invalid_string + \
+                     self.f_no_cast + self.f_batch + self.f_no_logging + self.f_no_escape + self.f_invalid_string + \
                      self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + self.f_users + \
                      self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + \
                      self.f_common_tables + self.f_common_columns + self.f_udf_inject + self.f_common_files + \
