@@ -99,13 +99,9 @@ sudo chmod u+x /usr/bin/sqm
 sqm
 ```
 
-## If you're stunning with my program and want to see support and updates from me, you can help me to buy a new wheelchair. The goal: 11 863,41 euros
+## If you're stunning with my program you can buy me a coffee or snack
 
 ```sh
-https://www.sofamed.com/fauteuil-roulant-electrique-x850-corpus-3g-p-7095.html
-Total price: 15 801,42
-Insurance refund: 3938,01 EUR.
-Pay from my pocket: 11 863,41 euros
 Bitcoin: 3PVcJAbWgcE54tKTm4cmz2zZqQR65vQiyY
 ```
 
