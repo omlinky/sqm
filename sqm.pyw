@@ -5226,9 +5226,9 @@ def main():
     root = tkinter.Tk()
     f = font.Font(family='Helvetica', size=8, weight='bold')
     font.families()
-    style = ttk.Style()
-    style.configure(".", font=f,
-                    background="black")
+    s = tkinter.ttk.Style()
+    s.theme_use('clam')
+    s.configure('.', font=f)
     root.title("SQLmap Command Builder")
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
