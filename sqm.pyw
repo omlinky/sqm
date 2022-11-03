@@ -1889,22 +1889,32 @@ class MainApplication(tkinter.Frame):
         self.e_csrf_method.current(0)
         self.e_csrf_method.bind('<<ComboboxSelected>>', self.f_csrf_method)
         self.e_csrf_method.grid(row=6, column=1, sticky='w', padx=3)
+        # --csrf-data=POST data to send during anti-CSRF token page visit
+        self.chk_csrf_data_method = ttk.Checkbutton(data_lf_3)
+        self.chk_csrf_data_method_var = tkinter.StringVar()
+        self.chk_csrf_data_method.config(text="csrf-data", variable=self.chk_csrf_data_method_var, onvalue="on",
+                                         offvalue="off", command=self.f_csrf_data)
+        self.chk_csrf_data_method.grid(row=7, column=0, sticky='w')
+        #
+        self.e_csrf_data = ttk.Entry(data_lf_3, width=60)
+        self.e_csrf_data.grid(row=7, column=1, sticky='we', padx=3)
+        self.e_csrf_data.columnconfigure(0, weight=1)
         # --csrf-url=CSRFURL  URL address to visit to extract anti-CSRF token
         self.chk_csrf_url = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_url_var = tkinter.StringVar()
         self.chk_csrf_url.config(text="csfr-url", variable=self.chk_csrf_url_var, onvalue="on",
                                  offvalue="off", command=self.f_csrf_url)
-        self.chk_csrf_url.grid(row=7, column=0, sticky='w')
+        self.chk_csrf_url.grid(row=8, column=0, sticky='w')
         #
         self.e_csrf_url = ttk.Entry(data_lf_3, width=60)
-        self.e_csrf_url.grid(row=7, column=1, sticky='we', padx=3)
+        self.e_csrf_url.grid(row=8, column=1, sticky='we', padx=3)
         self.e_csrf_url.columnconfigure(0, weight=1)
         # --csrf-retries    Retries for anti-CSRF token retrieval
         self.chk_csrf_retries = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_retries_var = tkinter.StringVar()
         self.chk_csrf_retries.config(text="csrf-retries", variable=self.chk_csrf_retries_var, onvalue="on",
                                      offvalue="off", command=self.f_csrf_retries)
-        self.chk_csrf_retries.grid(row=8, column=0, sticky='w')
+        self.chk_csrf_retries.grid(row=9, column=0, sticky='w')
         #
         self.e_csrf_retries = ttk.Combobox(data_lf_3)
         self.e_csrf_retries_value = tkinter.StringVar()
@@ -1912,25 +1922,25 @@ class MainApplication(tkinter.Frame):
         self.e_csrf_retries['values'] = ('4', '5', '6')
         self.e_csrf_retries.current(0)
         self.e_csrf_retries.bind('<<ComboboxSelected>>', self.f_csrf_retries)
-        self.e_csrf_retries.grid(row=8, column=1, sticky='w', padx=3)
+        self.e_csrf_retries.grid(row=9, column=1, sticky='w', padx=3)
         # --force-ssl         Force usage of SSL/HTTPS requests
         self.chk_force_ssl = ttk.Checkbutton(data_lf_3)
         self.chk_force_ssl_var = tkinter.StringVar()
         self.chk_force_ssl.config(text="force-ssl", variable=self.chk_force_ssl_var, onvalue="on",
                                   offvalue="off", command=self.f_force_ssl)
-        self.chk_force_ssl.grid(row=9, column=0, sticky='w')
+        self.chk_force_ssl.grid(row=10, column=0, sticky='w')
         # --hpp      Use HTTP parameter pollution
         self.chk_hpp = ttk.Checkbutton(data_lf_3)
         self.chk_hpp_var = tkinter.StringVar()
         self.chk_hpp.config(text="hpp", variable=self.chk_hpp_var, onvalue="on",
                             offvalue="off", command=self.f_hpp)
-        self.chk_hpp.grid(row=10, column=0, sticky='w')
+        self.chk_hpp.grid(row=11, column=0, sticky='w')
         # --eval=EVALCODE     Evaluate provided Python code before the request (e.g."import hashlib;id2=hashlib.md5(id)
         self.chk_eval_code = ttk.Checkbutton(data_lf_3)
         self.chk_eval_code_var = tkinter.StringVar()
         self.chk_eval_code.config(text="eval", variable=self.chk_eval_code_var, onvalue="on",
                                   offvalue="off", command=self.f_eval_code)
-        self.chk_eval_code.grid(row=11, column=0, sticky='w')
+        self.chk_eval_code.grid(row=12, column=0, sticky='w')
         #
         self.e_eval_code = ttk.Combobox(data_lf_3, width=60)
         self.e_eval_code_value = tkinter.StringVar()
@@ -1938,14 +1948,14 @@ class MainApplication(tkinter.Frame):
         self.e_eval_code['values'] = "import%20hashlib;id2=hashlib.md5(id).hexdigest()"
         self.e_eval_code.current(0)
         self.e_eval_code.bind('<<ComboboxSelected>>', self.f_eval_code)
-        self.e_eval_code.grid(row=11, column=1, sticky='we', padx=3)
+        self.e_eval_code.grid(row=12, column=1, sticky='we', padx=3)
         self.e_eval_code.columnconfigure(0, weight=1)
         # --chunked            Use HTTP chunked transfer encoded (POST) requests
         self.chk_chunked = ttk.Checkbutton(data_lf_3)
         self.chk_chunked_var = tkinter.StringVar()
         self.chk_chunked.config(text="chunked", variable=self.chk_chunked_var, onvalue="on",
                                 offvalue="off", command=self.f_chunked)
-        self.chk_chunked.grid(row=12, column=0, sticky='w')
+        self.chk_chunked.grid(row=13, column=0, sticky='w')
         # ENUMERATION_1
         enumerate_lf = ttk.Labelframe(enumeration_f, text='')
         enumerate_lf.grid(row=0, column=0, ipadx=3, padx=3, pady=3, sticky='nw')
@@ -3690,6 +3700,15 @@ class MainApplication(tkinter.Frame):
             self.e_csrf_method.config(state='disabled')
             csrf_method_sql = ""
         return csrf_method_sql
+    
+    # --csrf-data=POST data to send during anti-CSRF token page visit
+    def f_csrf_data(self, *args):
+        sql_csrf_data = self.chk_csrf_data_method_var.get()
+        if sql_csrf_data == "on":
+            csrf_data_sql = ' --csrf-data="%s"' % (self.e_csrf_data.get())
+        else:
+            csrf_data_sql = ""
+        return csrf_data_sql
 
     # --csrf-retries    Retries for anti-CSRF token retrieval
     def f_csrf_retries(self, *args):
@@ -5114,33 +5133,33 @@ class MainApplication(tkinter.Frame):
                      self.f_safe_url() + self.f_skip_urlencode + self.f_eval_code() + self.f_chunked + \
                      self.f_header() + self.f_ignore() + self.f_safe_post + self.f_safe_req + \
                      self.f_safe_freq + self.f_csrf_token() + self.f_csrf_retries() + self.f_csrf_method() + \
-                     self.f_csrf_url + self.f_os() + self.f_skip + self.f_invalid_bignum + self.f_invalid_logical + \
-                     self.f_no_cast + self.f_batch + self.f_no_logging + self.f_no_escape + self.f_invalid_string + \
-                     self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + self.f_users + \
-                     self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + \
-                     self.f_common_tables + self.f_common_columns + self.f_udf_inject + self.f_common_files + \
-                     self.f_tables + self.f_columns + self.f_schema + self.f_count + self.f_force_dns + \
-                     self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + \
-                     self.f_search + self.f_database_enumerate + self.f_table + self.f_column + self.f_user + \
-                     self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + \
-                     self.f_comments + self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + \
-                     self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + \
-                     self.f_sql_file_read + self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug + \
-                     self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test + \
-                     self.f_dump_format() + self.f_encoding() + self.f_vuln_test + self.f_stop_fail + \
-                     self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + self.f_alert + \
-                     self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + self.f_banner + \
-                     self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + self.f_pivot + self.f_eta + \
-                     self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + self.f_flush + \
-                     self.f_charset() + self.f_check_connect() + self.f_binary_fields() + self.f_crawl() + \
-                     self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + self.f_test_skip() + \
-                     self.f_crawl_exclude() + self.f_save_traffic_file + self.f_read_session_file + self.save_config + \
-                     self.f_scope + self.save_har_file + self.f_beep + self.pre_process_script + \
-                     self.post_process_script + self.f_skip_static + self.f_cleanup + self.f_murphy_rate + \
-                     self.f_skip_heuristics + self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + \
-                     self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + self.f_read_crack + \
-                     self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + self.f_test_parameter() + \
-                     self.f_param_exclude()
+                     self.f_csrf_data() + self.f_csrf_url + self.f_os() + self.f_skip + self.f_invalid_bignum + \
+                     self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging + self.f_no_escape + \
+                     self.f_invalid_string + self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + \
+                     self.f_users + self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + \
+                     self.f_dbs + self.f_common_tables + self.f_common_columns + self.f_udf_inject + \
+                     self.f_common_files + self.f_tables + self.f_columns + self.f_schema + self.f_count + \
+                     self.f_force_dns + self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all + \
+                     self.f_statements + self.f_search + self.f_database_enumerate + self.f_table + self.f_column + \
+                     self.f_user + self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + \
+                     self.f_host_name + self.f_comments + self.f_start_stop + self.f_first + self.f_last + \
+                     self.f_verbose() + self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + \
+                     self.f_disable_precon() + self.f_sql_file_read + self.f_shared_lib + self.f_wizard + \
+                     self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile + self.f_force_dbms + \
+                     self.f_live_test + self.f_dump_format() + self.f_encoding() + self.f_vuln_test + \
+                     self.f_stop_fail + self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + \
+                     self.f_alert + self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + \
+                     self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + \
+                     self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + \
+                     self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() + \
+                     self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + \
+                     self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file + \
+                     self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep + \
+                     self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup + \
+                     self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline + \
+                     self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + \
+                     self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + \
+                     self.f_test_parameter() + self.f_param_exclude()
 
         except:
             inject = "select the url checkbox parameter to build the command"
