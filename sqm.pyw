@@ -582,6 +582,17 @@ class MainApplication(tkinter.Frame):
         self.chk_disable_precon.config(text="disable-precon", variable=self.chk_disable_precon_var, onvalue="on",
                                        offvalue="off", command=self.f_disable_precon)
         self.chk_disable_precon.grid(row=3, column=2, sticky='w')
+        # --dump-file=DUMP.. Store dumped data to a custom file
+        self.chk_dump_file = ttk.Checkbutton(gen_opt_lf)
+        self.chk_dump_file_var = tkinter.StringVar()
+        self.chk_dump_file.config(text="dump-file", variable=self.chk_dump_file_var, onvalue="on",
+                                  offvalue="off", command=self.f_dump_file)
+        self.chk_dump_file.grid(row=4, column=2, sticky='w')
+        #
+        self.e_dump_file_var = tkinter.StringVar()
+        self.e_dump_file = ttk.Entry(gen_opt_lf, width=7)
+        self.e_dump_file.config(text="", textvariable=self.e_dump_file_var)
+        self.e_dump_file.grid(row=4, column=3, sticky='we')
         # -s SESSIONFILE      Save and resume all data retrieved on a session file
         self.chk_session_file = ttk.Checkbutton(gen_file_lf)
         self.chk_session_file_var = tkinter.StringVar()
@@ -2669,6 +2680,26 @@ class MainApplication(tkinter.Frame):
         else:
             disable_precon_sql = ""
         return disable_precon_sql
+    
+    # --dump-file=DUMP.. Store dumped data to a custom file
+    def f_dump_file(self):
+        sql_dump_file = self.chk_dump_file_var.get()
+        if sql_dump_file == "on":
+            dump_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+            if dump_file:
+                self.e_dump_file_var.set(dump_file.name)
+        elif sql_dump_file == "off":
+            self.e_dump_file_var.set("")
+
+    # --dump-file=DUMP.. Store dumped data to a custom file
+    @property
+    def f_save_dump_file(self):
+        sql_save_dump_file = self.e_dump_file_var.get()
+        if sql_save_dump_file != "":
+            save_dump_file_sql = ' --dump-file="%s"' % sql_save_dump_file
+        else:
+            save_dump_file_sql = ""
+        return save_dump_file_sql
 
     # --dependencies      Check for missing sqlmap dependencies
     @property
@@ -5134,26 +5165,26 @@ class MainApplication(tkinter.Frame):
                      self.f_header() + self.f_ignore() + self.f_safe_post + self.f_safe_req + \
                      self.f_safe_freq + self.f_csrf_token() + self.f_csrf_retries() + self.f_csrf_method() + \
                      self.f_csrf_data() + self.f_csrf_url + self.f_os() + self.f_skip + self.f_invalid_bignum + \
-                     self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging + self.f_no_escape + \
-                     self.f_invalid_string + self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + \
-                     self.f_users + self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + \
-                     self.f_dbs + self.f_common_tables + self.f_common_columns + self.f_udf_inject + \
-                     self.f_common_files + self.f_tables + self.f_columns + self.f_schema + self.f_count + \
-                     self.f_force_dns + self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all + \
-                     self.f_statements + self.f_search + self.f_database_enumerate + self.f_table + self.f_column + \
-                     self.f_user + self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + \
-                     self.f_host_name + self.f_comments + self.f_start_stop + self.f_first + self.f_last + \
-                     self.f_verbose() + self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + \
-                     self.f_disable_precon() + self.f_sql_file_read + self.f_shared_lib + self.f_wizard + \
-                     self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile + self.f_force_dbms + \
-                     self.f_live_test + self.f_dump_format() + self.f_encoding() + self.f_vuln_test + \
-                     self.f_stop_fail + self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + \
-                     self.f_alert + self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + \
-                     self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + \
-                     self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + \
-                     self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() + \
-                     self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + \
-                     self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file + \
+                     self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging + \
+                     self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_current_user + \
+                     self.f_current_db + self.f_all + self.f_is_dba + self.f_users + self.f_passwords + \
+                     self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + self.f_common_tables + \
+                     self.f_common_columns + self.f_udf_inject + self.f_common_files + self.f_tables + \
+                     self.f_columns + self.f_schema + self.f_count + self.f_force_dns + self.f_force_pivoting + \
+                     self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + self.f_search + \
+                     self.f_database_enumerate + self.f_table + self.f_column + self.f_user + self.f_exclude() + \
+                     self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + self.f_comments + \
+                     self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + self.f_sql_shell + \
+                     self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + self.f_sql_file_read + \
+                     self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug + self.f_disable_stats + \
+                     self.f_profile + self.f_force_dbms + self.f_live_test + self.f_dump_format() + \
+                     self.f_encoding() + self.f_vuln_test + self.f_stop_fail + self.f_run_case + self.f_unstable + \
+                     self.f_result_file + self.f_z + self.f_alert + self.f_disable_coloring + self.f_last + \
+                     self.f_answers() + self.f_finger_print + self.f_banner + self.f_tor + self.f_tor_use + \
+                     self.f_tor_port() + self.f_tor_type() + self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + \
+                     self.f_parse_errors + self.f_repair + self.f_flush + self.f_charset() + self.f_check_connect() + \
+                     self.f_binary_fields() + self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + \
+                     self.f_test_filter() + self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file + \
                      self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep + \
                      self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup + \
                      self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline + \
