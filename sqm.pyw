@@ -4141,7 +4141,7 @@ class MainApplication(tkinter.Frame):
         sql_test_parameter = self.chk_test_parameter_var.get()
         if sql_test_parameter == "on":
             self.e_test_parameter.config(state='normal')
-            test_parameter_sql = ' -p "%s"' % (self.e_test_parameter.get())
+            test_parameter_sql = ' -p %s' % (self.e_test_parameter.get())
         else:
             self.e_test_parameter.config(state='disabled')
             test_parameter_sql = ""
