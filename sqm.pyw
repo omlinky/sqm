@@ -593,6 +593,12 @@ class MainApplication(tkinter.Frame):
         self.e_dump_file = ttk.Entry(gen_opt_lf, width=7)
         self.e_dump_file.config(text="", textvariable=self.e_dump_file_var)
         self.e_dump_file.grid(row=4, column=3, sticky='we')
+        # --abort-on-empty Abort data retrieval on empty results
+        self.chk_abort_on_empty = ttk.Checkbutton(gen_opt_lf)
+        self.chk_abort_on_empty_var = tkinter.StringVar()
+        self.chk_abort_on_empty.config(text="abort-on-empty", variable=self.chk_abort_on_empty_var, onvalue="on",
+                                       offvalue="off", command=self.f_abort_on_empty)
+        self.chk_abort_on_empty.grid(row=4, column=4, sticky='w')
         # -s SESSIONFILE      Save and resume all data retrieved on a session file
         self.chk_session_file = ttk.Checkbutton(gen_file_lf)
         self.chk_session_file_var = tkinter.StringVar()
@@ -2700,6 +2706,15 @@ class MainApplication(tkinter.Frame):
         else:
             save_dump_file_sql = ""
         return save_dump_file_sql
+    
+    # --abort-on-empty Abort data retrieval on empty results
+    def f_abort_on_empty(self):
+        sql_abort_on_empty = self.chk_abort_on_empty_var.get()
+        if sql_abort_on_empty == "on":
+            abort_on_empty_sql = ' --abort-on-empty'
+        else:
+            abort_on_empty_sql = ""
+        return abort_on_empty_sql
 
     # --dependencies      Check for missing sqlmap dependencies
     @property
@@ -5176,21 +5191,22 @@ class MainApplication(tkinter.Frame):
                      self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + self.f_comments + \
                      self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + self.f_sql_shell + \
                      self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + self.f_sql_file_read + \
-                     self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug + self.f_disable_stats + \
-                     self.f_profile + self.f_force_dbms + self.f_live_test + self.f_dump_format() + \
-                     self.f_encoding() + self.f_vuln_test + self.f_stop_fail + self.f_run_case + self.f_unstable + \
-                     self.f_result_file + self.f_z + self.f_alert + self.f_disable_coloring + self.f_last + \
-                     self.f_answers() + self.f_finger_print + self.f_banner + self.f_tor + self.f_tor_use + \
-                     self.f_tor_port() + self.f_tor_type() + self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + \
-                     self.f_parse_errors + self.f_repair + self.f_flush + self.f_charset() + self.f_check_connect() + \
-                     self.f_binary_fields() + self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + \
-                     self.f_test_filter() + self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file + \
-                     self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep + \
-                     self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup + \
-                     self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline + \
-                     self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + \
-                     self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + \
-                     self.f_test_parameter() + self.f_param_exclude()
+                     self.f_abort_on_empty() +self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug + \
+                     self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test + \
+                     self.f_dump_format() + self.f_encoding() + self.f_vuln_test + self.f_stop_fail + \
+                     self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + self.f_alert + \
+                     self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + self.f_banner + \
+                     self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + self.f_pivot + self.f_eta + \
+                     self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + self.f_flush + \
+                     self.f_charset() + self.f_check_connect() + self.f_binary_fields() + self.f_crawl() + \
+                     self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + self.f_test_skip() + \
+                     self.f_crawl_exclude() + self.f_save_traffic_file + self.f_read_session_file + self.save_config + \
+                     self.f_scope + self.save_har_file + self.f_beep + self.pre_process_script + \
+                     self.post_process_script + self.f_skip_static + self.f_cleanup + self.f_murphy_rate + \
+                     self.f_skip_heuristics + self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + \
+                     self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + self.f_read_crack + \
+                     self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + self.f_test_parameter() + \
+                     self.f_param_exclude()
 
         except:
             inject = "select the url checkbox parameter to build the command"
