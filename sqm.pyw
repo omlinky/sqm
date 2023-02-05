@@ -1017,8 +1017,10 @@ class MainApplication(tkinter.Frame):
         self.box.config(textvariable=self.box_value, state='disabled', width=30)
         self.box['values'] = (
             'mysql', 'oracle', 'postgresql', 'mssqlserver', 'access', 'db2', 'sqlite', 'sqlite3', 'firebird', 'sybase',
-            'maxdb', 'hsqldb', 'informix', 'h2', 'monetdb', 'derby', 'vertica', 'mckoi', 'presto', 'frontbase', 'cache',
-            'cratedb', 'cubrid', 'altibase', 'mimersql', 'extremedb', 'virtuoso')
+            'maxdb', 'hsqldb', 'informix', 'mariadb', 'memsql', 'tidb', 'h2', 'monetdb', 'derby', 'vertica', 'mckoi',
+            'presto', 'frontbase', 'cache', 'cratedb', 'cubrid', 'altibase', 'mimersql', 'extremedb', 'virtuoso',
+            'yugabytedb', 'raima', 'iris', 'intersystems cache', 'apache ignite', 'drizzle', 'greenplum', 'mimersql',
+            'altibase', 'amazon redshift', 'clickhouse')
         self.box.current(0)
         self.box.bind('<<ComboboxSelected>>', self.f_dbms)
         self.box.grid(row=0, column=1, sticky='sw', padx=3)
