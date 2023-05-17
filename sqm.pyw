@@ -5112,7 +5112,8 @@ class MainApplication(tkinter.Frame):
                     idx = '1.0'
                     while 1:
                         idx = self.sesTXT.search(tagz, idx, nocase=1, stopindex=tkinter.END)
-                        if not idx: break
+                        if not idx: 
+                            break
                         last_idx = '"%s"+%dc' % (idx, len(tagz))
                         self.sesTXT.tag_add('found', idx, last_idx)
                         idx = last_idx
