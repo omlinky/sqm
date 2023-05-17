@@ -125,9 +125,11 @@ class MainApplication(tkinter.Frame):
 
         manual_sqlmap = 'python3 sqlmap.py -hh || cmd /k python sqlmap.py -hh || pythonw sqlmap.py -hh'
         process = subprocess.Popen(manual_sqlmap, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = process.communicate()
+        output_str = output.decode('utf-8')
         help_t_x_t = tkinter.Text(lfhelp, yscrollcommand=scrol_help.set, width=73,
                                   height=24, bg='#002B36', fg='#93A1A1')
-        help_t_x_t.insert('1.0', process.communicate()[0])
+        help_t_x_t.insert('1.0', output_str)
         scrol_help.config(command=help_t_x_t.yview)
         help_t_x_t.grid(row=0, column=0, ipadx=30, sticky='nswe')
         # Tampers List
@@ -141,9 +143,11 @@ class MainApplication(tkinter.Frame):
         manual_tampers_command = 'python3 sqlmap.py --list-tampers || cmd /k python sqlmap.py --list-tampers ' \
                                  '|| pythonw sqlmap.py --list-tampers'
         process = subprocess.Popen(manual_tampers_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = process.communicate()
+        output_str = output.decode('utf-8')
         tampers_txt = tkinter.Text(tmprs_lst, yscrollcommand=scrol_tampers.set, width=73,
                                    height=24, bg='#002B36', fg='#93A1A1')
-        tampers_txt.insert('1.0', process.communicate()[0])
+        tampers_txt.insert('1.0', output_str)
         scrol_tampers.config(command=tampers_txt.yview)
         tampers_txt.grid(row=0, column=0, ipadx=30, sticky='nswe')
         # Update Sqlmap
@@ -5064,7 +5068,6 @@ class MainApplication(tkinter.Frame):
     # log viewer
     def sqlmap(self, *args):
         load_host = self.read_host()
-        # print load_host
         text = open(r"./output/" + load_host + "/log", 'r').readlines()
         pattern = re.compile(
             r'(?m)(^sqlmap(.*)|^---$|^Place:(.*)|^Parameter:(.*)|\s{4,}Type:(.*)|\s{4,}Title:(.*)|\s{4,}Payload:(.*)|\s{4,}Vector:(.*))$',
@@ -5077,7 +5080,7 @@ class MainApplication(tkinter.Frame):
             if len(qq) > 4:
                 mode = os.O_WRONLY | os.O_APPEND
                 f = os.open(r"./output/" + load_host + "/gui_log", mode)
-                os.write(f, qq + '\n')
+                os.write(f, qq.encode() + '\n'.encode())
                 os.close(f)
 
     # load log without query
@@ -5099,7 +5102,7 @@ class MainApplication(tkinter.Frame):
              'password hash:', 'found databases', 'file saved to:',
              ]
         try:
-            log_size = os.path.getsize("./output/" + load_host + "/log")
+            log_size = os.path.getsize("./output/" + load_host + "/" + logfile)
             if log_size != 0:
                 self.sqlmap()
                 #
