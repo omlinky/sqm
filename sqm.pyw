@@ -1119,6 +1119,20 @@ class MainApplication(tkinter.Frame):
         self.chk_skip.config(text="skip", variable=self.chk_skip_var, onvalue="on",
                              offvalue="off", command=self.f_skip)
         self.chk_skip.grid(row=7, column=0, sticky='w')
+        # --tamper-parm=22  Use parameter for tamper script
+        self.chk_tamper_parm = ttk.Checkbutton(injection_lf)
+        self.chk_tamper_parm_var = tkinter.StringVar()
+        self.chk_tamper_parm.config(text="tamper-parm", variable=self.chk_tamper_parm_var, onvalue="on",
+                                  offvalue="off", command=self.f_tamper_parm)
+        self.chk_tamper_parm.grid(row=8, column=0, sticky=tkinter.W)
+        #
+        self.e_tamper_parm = ttk.Combobox(injection_lf)
+        self.e_tamper_parm_value = tkinter.StringVar()
+        self.e_tamper_parm.config(textvariable=self.e_tamper_parm_value, state='disabled', width=30)
+        self.e_tamper_parm['value'] = ('foo-1', 'parm-2=22')
+        self.e_tamper_parm.current(0)
+        self.e_tamper_parm.bind('<<ComboboxSelected>>', self.f_tamper_parm)
+        self.e_tamper_parm.grid(row=8, column=1, sticky='we', padx=3)
         #
         paned_inj = ttk.Panedwindow(injection_lf, orient=tkinter.HORIZONTAL)
         paned_inj.rowconfigure(0, weight=1)
@@ -3824,6 +3838,17 @@ class MainApplication(tkinter.Frame):
             skip_sql = ""
         return skip_sql
 
+    # --tamper-parm=22  Use parameter for tamper script
+    def f_tamper_parm(self, *args):
+        sql_tamper_parm = self.chk_tamper_parm_var.get()
+        if sql_tamper_parm == "on":
+            self.e_tamper_parm.config(state='normal')
+            tamper_parm_sql = ' --tamper-%s' % (self.e_tamper_parm.get())
+        else:
+            self.e_tamper_parm.config(state='disabled')
+            tamper_parm_sql = ""
+        return tamper_parm_sql
+
     # --invalid-logical   Use logical operations for invalidating values
     @property
     def f_invalid_logical(self):
@@ -5185,34 +5210,34 @@ class MainApplication(tkinter.Frame):
                      self.f_safe_url() + self.f_skip_urlencode + self.f_eval_code() + self.f_chunked + \
                      self.f_header() + self.f_ignore() + self.f_safe_post + self.f_safe_req + \
                      self.f_safe_freq + self.f_csrf_token() + self.f_csrf_retries() + self.f_csrf_method() + \
-                     self.f_csrf_data() + self.f_csrf_url + self.f_os() + self.f_skip + self.f_invalid_bignum + \
-                     self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging + \
-                     self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_current_user + \
-                     self.f_current_db + self.f_all + self.f_is_dba + self.f_users + self.f_passwords + \
-                     self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + self.f_common_tables + \
-                     self.f_common_columns + self.f_udf_inject + self.f_common_files + self.f_tables + \
-                     self.f_columns + self.f_schema + self.f_count + self.f_force_dns + self.f_force_pivoting + \
-                     self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + self.f_search + \
-                     self.f_database_enumerate + self.f_table + self.f_column + self.f_user + self.f_exclude() + \
-                     self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + self.f_comments + \
-                     self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + self.f_sql_shell + \
-                     self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + self.f_sql_file_read + \
-                     self.f_abort_on_empty() +self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug + \
-                     self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test + \
-                     self.f_dump_format() + self.f_encoding() + self.f_vuln_test + self.f_stop_fail + \
-                     self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + self.f_alert + \
-                     self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + self.f_banner + \
-                     self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + self.f_pivot + self.f_eta + \
-                     self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + self.f_flush + \
-                     self.f_charset() + self.f_check_connect() + self.f_binary_fields() + self.f_crawl() + \
-                     self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + self.f_test_skip() + \
-                     self.f_crawl_exclude() + self.f_save_traffic_file + self.f_read_session_file + self.save_config + \
-                     self.f_scope + self.save_har_file + self.f_beep + self.pre_process_script + \
-                     self.post_process_script + self.f_skip_static + self.f_cleanup + self.f_murphy_rate + \
-                     self.f_skip_heuristics + self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + \
-                     self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + self.f_read_crack + \
-                     self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + self.f_test_parameter() + \
-                     self.f_param_exclude()
+                     self.f_csrf_data() + self.f_csrf_url + self.f_os() + self.f_skip + self.f_tamper_parm() + \
+                     self.f_invalid_bignum + self.f_invalid_logical + self.f_no_cast + self.f_batch + \
+                     self.f_no_logging + self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + \
+                     self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + self.f_users + \
+                     self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + \
+                     self.f_common_tables + self.f_common_columns + self.f_udf_inject + self.f_common_files + \
+                     self.f_tables + self.f_columns + self.f_schema + self.f_count + self.f_force_dns + \
+                     self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + \
+                     self.f_search + self.f_database_enumerate + self.f_table + self.f_column + self.f_user + \
+                     self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + \
+                     self.f_comments + self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + \
+                     self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + \
+                     self.f_sql_file_read + self.f_abort_on_empty() + self.f_shared_lib + self.f_wizard + \
+                     self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile + self.f_force_dbms + \
+                     self.f_live_test + self.f_dump_format() + self.f_encoding() + self.f_vuln_test + \
+                     self.f_stop_fail + self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + \
+                     self.f_alert + self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + \
+                     self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + \
+                     self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + \
+                     self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() + \
+                     self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + \
+                     self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file + \
+                     self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep + \
+                     self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup + \
+                     self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline + \
+                     self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + \
+                     self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + \
+                     self.f_test_parameter() + self.f_param_exclude()
 
         except:
             inject = "select the url checkbox parameter to build the command"
