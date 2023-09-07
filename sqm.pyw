@@ -1363,12 +1363,26 @@ class MainApplication(tkinter.Frame):
         self.e_union_from.current(0)
         self.e_union_from.bind('<<ComboboxSelected>>', self.f_union_from)
         self.e_union_from.grid(row=3, column=1, sticky='nwe', padx=3)
+        # --union-values="'foobar',*,1."
+        self.chk_union_values = ttk.Checkbutton(technique_lf)
+        self.chk_union_values_var = tkinter.StringVar()
+        self.chk_union_values.config(text="union-value", variable=self.chk_union_values_var, onvalue="on",
+                                     offvalue="off", command=self.f_union_values)
+        self.chk_union_values.grid(row=4, column=0, sticky='nw')
+        #
+        self.e_union_values = ttk.Combobox(technique_lf)
+        self.e_union_values_value = tkinter.StringVar()
+        self.e_union_values.config(textvariable=self.e_union_values_value, state='disable', width=10)
+        self.e_union_values['values'] = ('foobar', '*', '1')
+        self.e_union_values.current(0)
+        self.e_union_values.bind('<<ComboboxSelected>>', self.f_union_values)
+        self.e_union_values.grid(row=4, column=1, sticky='nwe', padx=3)
         # --time-sec=TIMESEC  Seconds to delay the DBMS response (default 5)
         self.chk_time_sec = ttk.Checkbutton(technique_lf)
         self.chk_time_sec_var = tkinter.StringVar()
         self.chk_time_sec.config(text="time-sec", variable=self.chk_time_sec_var, onvalue="on",
                                  offvalue="off", command=self.f_time_sec)
-        self.chk_time_sec.grid(row=4, column=0, sticky='nw')
+        self.chk_time_sec.grid(row=5, column=0, sticky='nw')
         #
         self.e_time_sec = ttk.Combobox(technique_lf)
         self.e_time_sec_value = tkinter.StringVar()
@@ -1376,7 +1390,7 @@ class MainApplication(tkinter.Frame):
         self.e_time_sec['values'] = ['15']
         self.e_time_sec.current(0)
         self.e_time_sec.bind('<<ComboboxSelected>>', self.f_time_sec)
-        self.e_time_sec.grid(row=4, column=1, sticky='nwe', padx=3)
+        self.e_time_sec.grid(row=5, column=1, sticky='nwe', padx=3)
         # --dns-domain=DNS..  Domain name used for DNS exfiltration attack
         self.chk_dns_domain = ttk.Checkbutton(technique_lf)
         self.chk_dns_domain_var = tkinter.StringVar()
@@ -1390,7 +1404,7 @@ class MainApplication(tkinter.Frame):
         self.e_dns_domain['values'] = ('ns1.yourdomain.com')
         self.e_dns_domain.current(0)
         self.e_dns_domain.bind('<<ComboboxSelected>>', self.f_dns_domain)
-        self.e_dns_domain.grid(row=5, column=1, sticky='nwe', padx=3)
+        self.e_dns_domain.grid(row=6, column=1, sticky='nwe', padx=3)
         # --second-url=SEC..  Resulting page URL searched for second-order response
         self.chk_sec_url = ttk.Checkbutton(technique_lf)
         self.chk_second_url_var = tkinter.StringVar()
@@ -3976,6 +3990,17 @@ class MainApplication(tkinter.Frame):
             union_from_sql = ""
         return union_from_sql
 
+    # --union-values="'foobar',*,1."
+    def f_union_values(self, *args):
+        sql_union_values = self.chk_union_values_var.get()
+        if sql_union_values == "on":
+            self.e_union_values.config(state='normal')
+            union_values_sql = '--union-values="%s"' % (self.e_union_values_value.get())
+        else:
+            self.e_union_values.config(state='disabled')
+            union_values_sql = ""
+        return union_values_sql
+
     # --time-sec=TIMESEC  Seconds to delay the DBMS response (default 5)
     def f_time_sec(self, *args):
         sql_time_sec = self.chk_time_sec_var.get()
@@ -5189,55 +5214,56 @@ class MainApplication(tkinter.Frame):
             target = ' -x "%s"' % tag
         # Focused options
         try:
-            inject = target + self.f_tamper() + \
-                     self.f_data + self.f_method() + self.f_read_file_write + self.f_file_dest + \
-                     self.f_read_msf_path + self.f_os_cmd + self.f_os_shell + self.f_os_pwn + self.f_os_smbrelay + \
-                     self.f_os_bof + self.f_priv_esc + self.f_tmp_path + self.f_file_read + self.set_out_dir + \
-                     self.f_reg_read + self.f_reg_add + self.f_reg_del + self.f_reg_key + self.f_reg_value + \
-                     self.f_reg_data + self.f_reg_type + self.f_api + self.f_task_id + self.f_database + \
-                     self.f_sql_query() + self.f_param_del + self.f_random_agent + self.f_proxy() + \
-                     self.f_proxy_cred() + self.f_ignore_proxy + self.f_ignore_redirects + self.f_ignore_timeouts + \
-                     self.f_read_proxy_file + self.f_proxy_freq() + self.f_hpp + self.f_cookie_del + self.f_level() + \
-                     self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_regexp() + \
-                     self.f_string() + self.f_not_string() + self.f_time_sec() + self.f_technique() + \
-                     self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_optimization + \
-                     self.f_predict_output + self.f_keep_alive + self.f_null_connection + self.f_threads() + \
-                     self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() + self.f_cookie + \
-                     self.read_live_cookies + self.read_load_cookies + self.f_drop_set_cookie + self.f_prefix() + \
-                     self.f_suffix() + self.f_user_agent() + self.f_randomize() + self.f_force_ssl + self.f_host() + \
-                     self.f_referer() + self.f_headers() + self.read_load_headers + self.read_auth_file + \
-                     self.f_auth_cred() + self.f_auth_type() + self.f_delay() + self.f_time_out() + self.f_retries() + \
-                     self.f_safe_url() + self.f_skip_urlencode + self.f_eval_code() + self.f_chunked + \
-                     self.f_header() + self.f_ignore() + self.f_safe_post + self.f_safe_req + \
-                     self.f_safe_freq + self.f_csrf_token() + self.f_csrf_retries() + self.f_csrf_method() + \
-                     self.f_csrf_data() + self.f_csrf_url + self.f_os() + self.f_skip + self.f_tamper_parm() + \
-                     self.f_invalid_bignum + self.f_invalid_logical + self.f_no_cast + self.f_batch + \
-                     self.f_no_logging + self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + \
-                     self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + self.f_users + \
-                     self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + \
-                     self.f_common_tables + self.f_common_columns + self.f_udf_inject + self.f_common_files + \
-                     self.f_tables + self.f_columns + self.f_schema + self.f_count + self.f_force_dns + \
-                     self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + \
-                     self.f_search + self.f_database_enumerate + self.f_table + self.f_column + self.f_user + \
-                     self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + \
-                     self.f_comments + self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + \
-                     self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + \
-                     self.f_sql_file_read + self.f_abort_on_empty() + self.f_shared_lib + self.f_wizard + \
-                     self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile + self.f_force_dbms + \
-                     self.f_live_test + self.f_dump_format() + self.f_encoding() + self.f_vuln_test + \
-                     self.f_stop_fail + self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + \
-                     self.f_alert + self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print + \
-                     self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() + \
-                     self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair + \
-                     self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() + \
-                     self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() + \
-                     self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file + \
-                     self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep + \
-                     self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup + \
-                     self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline + \
-                     self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank + \
-                     self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart + \
-                     self.f_test_parameter() + self.f_param_exclude()
+            inject = (target + self.f_tamper() +
+                      self.f_data + self.f_method() + self.f_read_file_write + self.f_file_dest +
+                      self.f_read_msf_path + self.f_os_cmd + self.f_os_shell + self.f_os_pwn + self.f_os_smbrelay +
+                      self.f_os_bof + self.f_priv_esc + self.f_tmp_path + self.f_file_read + self.set_out_dir +
+                      self.f_reg_read + self.f_reg_add + self.f_reg_del + self.f_reg_key + self.f_reg_value +
+                      self.f_reg_data + self.f_reg_type + self.f_api + self.f_task_id + self.f_database +
+                      self.f_sql_query() + self.f_param_del + self.f_random_agent + self.f_proxy() +
+                      self.f_proxy_cred() + self.f_ignore_proxy + self.f_ignore_redirects + self.f_ignore_timeouts +
+                      self.f_read_proxy_file + self.f_proxy_freq() + self.f_hpp + self.f_cookie_del + self.f_level() +
+                      self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_regexp() +
+                      self.f_string() + self.f_not_string() + self.f_time_sec() + self.f_technique() +
+                      self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_optimization +
+                      self.f_predict_output + self.f_keep_alive + self.f_null_connection + self.f_threads() +
+                      self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
+                      self.f_union_values() + self.f_cookie + self.read_live_cookies + self.read_load_cookies +
+                      self.f_drop_set_cookie + self.f_prefix() + self.f_suffix() + self.f_user_agent() +
+                      self.f_randomize() + self.f_force_ssl + self.f_host() + self.f_referer() + self.f_headers() +
+                      self.read_load_headers + self.read_auth_file + self.f_auth_cred() + self.f_auth_type() +
+                      self.f_delay() + self.f_time_out() + self.f_retries() + self.f_safe_url() +
+                      self.f_skip_urlencode + self.f_eval_code() + self.f_chunked + self.f_header() +
+                      self.f_ignore() + self.f_safe_post + self.f_safe_req + self.f_safe_freq + self.f_csrf_token() +
+                      self.f_csrf_retries() + self.f_csrf_method() + self.f_csrf_data() + self.f_csrf_url +
+                      self.f_os() + self.f_skip + self.f_tamper_parm() + self.f_invalid_bignum +
+                      self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging +
+                      self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_current_user +
+                      self.f_current_db + self.f_all + self.f_is_dba + self.f_users + self.f_passwords +
+                      self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + self.f_common_tables +
+                      self.f_common_columns + self.f_udf_inject + self.f_common_files + self.f_tables +
+                      self.f_columns + self.f_schema + self.f_count + self.f_force_dns + self.f_force_pivoting +
+                      self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + self.f_search +
+                      self.f_database_enumerate + self.f_table + self.f_column + self.f_user + self.f_exclude() +
+                      self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + self.f_comments +
+                      self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + self.f_sql_shell +
+                      self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + self.f_sql_file_read +
+                      self.f_abort_on_empty() + self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug +
+                      self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test +
+                      self.f_dump_format() + self.f_encoding() + self.f_vuln_test + self.f_stop_fail +
+                      self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + self.f_alert +
+                      self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print +
+                      self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() +
+                      self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair +
+                      self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() +
+                      self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() +
+                      self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file +
+                      self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep +
+                      self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup +
+                      self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline +
+                      self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank +
+                      self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart +
+                      self.f_test_parameter() + self.f_param_exclude())
 
         except:
             inject = "select the url checkbox parameter to build the command"
