@@ -755,6 +755,26 @@ class MainApplication(tkinter.Frame):
         self.chk_purge.config(text="purge", variable=self.chk_purge_var, onvalue="on",
                               offvalue="off", command=self.f_purge)
         self.chk_purge.grid(row=6, column=1, sticky='w', ipadx=10)
+        # --time-limit  Run with a time limit in seconds (e.g. 3600)
+        self.chk_time_limit = ttk.Checkbutton(miscellaneous_lf)
+        self.chk_time_limit_var = tkinter.StringVar()
+        self.chk_time_limit.config(text="time-limit", variable=self.chk_time_limit_var, onvalue="on",
+                                   offvalue="off", command=self.f_time_limit)
+        self.chk_time_limit.grid(row=6, column=2, sticky='w')
+        #
+        self.e_time_limit = ttk.Combobox(miscellaneous_lf)
+        self.e_time_limit_value = tkinter.StringVar()
+        self.e_time_limit.config(textvariable=self.e_time_limit_value, state='disabled', width=5)
+        self.e_time_limit['values'] = ['3600', '4600', '5600']
+        self.e_time_limit.current(0)
+        self.e_time_limit.bind('<<ComboboxSelected>>', self.f_time_limit)
+        self.e_time_limit.grid(row=6, column=3, sticky='w', padx=5)
+        # --base64     Parameter(s) containing Base64 encoded values
+        self.chk_base64 = ttk.Checkbutton(miscellaneous_lf)
+        self.chk_base64_var = tkinter.StringVar()
+        self.chk_base64.config(text="base64", variable=self.chk_base64_var, onvalue="on",
+                               offvalue="off", command=self.f_base64)
+        self.chk_base64.grid(row=0, column=2, sticky='w')
         # --base64     Parameter(s) containing Base64 encoded values
         self.chk_base64 = ttk.Checkbutton(miscellaneous_lf)
         self.chk_base64_var = tkinter.StringVar()
@@ -2830,6 +2850,17 @@ class MainApplication(tkinter.Frame):
         else:
             purge_sql = ""
         return purge_sql
+
+    # --time-limit  Run with a time limit in seconds (e.g. 3600)
+    def f_time_limit(self, *args):
+        sql_time_limit = self.chk_time_limit_var.get()
+        if sql_time_limit == "on":
+            self.e_time_limit.config(state='normal')
+            time_limit_sql = ' --time-limit="%s"' % (self.e_time_limit.get())
+        else:
+            self.e_time_limit.config(state='disabled')
+            time_limit_sql = ""
+        return time_limit_sql
 
     # --smart             Conduct through tests only if positive heuristic(s)
     @property
@@ -5262,8 +5293,8 @@ class MainApplication(tkinter.Frame):
                       self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup +
                       self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline +
                       self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank +
-                      self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_smart +
-                      self.f_test_parameter() + self.f_param_exclude())
+                      self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_time_limit() +
+                      self.f_smart + self.f_test_parameter() + self.f_param_exclude())
 
         except:
             inject = "select the url checkbox parameter to build the command"
