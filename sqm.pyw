@@ -2716,7 +2716,7 @@ class MainApplication(tkinter.Frame):
     def f_tmp_dir(self, *args):
         sql_tmp_dir = self.chk_tmp_dir_var.get()
         if sql_tmp_dir == "on":
-            tmp_dir_sql = ' --tmp-dir=""%s""' % (self.e_tmp_dir.get())
+            tmp_dir_sql = ' --tmp-dir="%s"' % (self.e_tmp_dir.get())
         else:
             tmp_dir_sql = ""
         return tmp_dir_sql
@@ -2726,7 +2726,7 @@ class MainApplication(tkinter.Frame):
         sql_web_root = self.chk_web_root_var.get()
         if sql_web_root == "on":
             self.e_web_root.config(state='normal')
-            web_root_sql = ' --web-root=""%s""' % (self.e_web_root.get())
+            web_root_sql = ' --web-root="%s"' % (self.e_web_root.get())
         else:
             self.e_web_root.config(state='disabled')
             web_root_sql = ""
