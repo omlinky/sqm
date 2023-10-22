@@ -1416,7 +1416,7 @@ class MainApplication(tkinter.Frame):
         self.chk_dns_domain_var = tkinter.StringVar()
         self.chk_dns_domain.config(text="dns-domain", variable=self.chk_dns_domain_var, onvalue="on",
                                    offvalue="off", command=self.f_dns_domain)
-        self.chk_dns_domain.grid(row=5, column=0, sticky='nw')
+        self.chk_dns_domain.grid(row=6, column=0, sticky='nw')
         #
         self.e_dns_domain = ttk.Combobox(technique_lf)
         self.e_dns_domain_value = tkinter.StringVar()
