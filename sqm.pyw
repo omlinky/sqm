@@ -4026,7 +4026,7 @@ class MainApplication(tkinter.Frame):
         sql_union_values = self.chk_union_values_var.get()
         if sql_union_values == "on":
             self.e_union_values.config(state='normal')
-            union_values_sql = '--union-values="%s"' % (self.e_union_values_value.get())
+            union_values_sql = ' --union-values="%s"' % (self.e_union_values_value.get())
         else:
             self.e_union_values.config(state='disabled')
             union_values_sql = ""
