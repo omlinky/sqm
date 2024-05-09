@@ -769,7 +769,7 @@ class MainApplication(tkinter.Frame):
         self.e_time_limit.current(0)
         self.e_time_limit.bind('<<ComboboxSelected>>', self.f_time_limit)
         self.e_time_limit.grid(row=6, column=4, sticky='w', padx=5)
-        # ----unsafe-naming     Disable escaping of DBMS identifiers (e.g. \"user\")
+        # --unsafe-naming     Disable escaping of DBMS identifiers (e.g. \"user\")
         self.chk_unsafe_naming = ttk.Checkbutton(miscellaneous_lf)
         self.chk_unsafe_naming_var = tkinter.StringVar()
         self.chk_unsafe_naming.config(text="unsafe-naming", variable=self.chk_unsafe_naming_var, onvalue="on",
