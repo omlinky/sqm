@@ -760,7 +760,7 @@ class MainApplication(tkinter.Frame):
         self.chk_time_limit_var = tkinter.StringVar()
         self.chk_time_limit.config(text="time-limit", variable=self.chk_time_limit_var, onvalue="on",
                                    offvalue="off", command=self.f_time_limit)
-        self.chk_time_limit.grid(row=6, column=2, sticky='w')
+        self.chk_time_limit.grid(row=6, column=3, sticky='w')
         #
         self.e_time_limit = ttk.Combobox(miscellaneous_lf)
         self.e_time_limit_value = tkinter.StringVar()
@@ -768,7 +768,13 @@ class MainApplication(tkinter.Frame):
         self.e_time_limit['values'] = ['3600', '4600', '5600']
         self.e_time_limit.current(0)
         self.e_time_limit.bind('<<ComboboxSelected>>', self.f_time_limit)
-        self.e_time_limit.grid(row=6, column=3, sticky='w', padx=5)
+        self.e_time_limit.grid(row=6, column=4, sticky='w', padx=5)
+        # ----unsafe-naming     Disable escaping of DBMS identifiers (e.g. \"user\")
+        self.chk_unsafe_naming = ttk.Checkbutton(miscellaneous_lf)
+        self.chk_unsafe_naming_var = tkinter.StringVar()
+        self.chk_unsafe_naming.config(text="unsafe-naming", variable=self.chk_unsafe_naming_var, onvalue="on",
+                                      offvalue="off", command=self.f_unsafe_naming)
+        self.chk_unsafe_naming.grid(row=6, column=2, sticky='w', ipadx=10)
         # --base64     Parameter(s) containing Base64 encoded values
         self.chk_base64 = ttk.Checkbutton(miscellaneous_lf)
         self.chk_base64_var = tkinter.StringVar()
@@ -2861,6 +2867,15 @@ class MainApplication(tkinter.Frame):
             self.e_time_limit.config(state='disabled')
             time_limit_sql = ""
         return time_limit_sql
+
+    # --unsafe-naming    Perform unsafe naming substitutions
+    def f_unsafe_naming(self, *args):
+        sql_unsafe_naming = self.chk_unsafe_naming_var.get()
+        if sql_unsafe_naming == "on":
+            unsafe_naming_sql = ' --unsafe-naming'
+        else:
+            unsafe_naming_sql = ""
+        return unsafe_naming_sql
 
     # --smart             Conduct through tests only if positive heuristic(s)
     @property
@@ -5294,7 +5309,7 @@ class MainApplication(tkinter.Frame):
                       self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline +
                       self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank +
                       self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_time_limit() +
-                      self.f_smart + self.f_test_parameter() + self.f_param_exclude())
+                      self.f_unsafe_naming() + self.f_smart + self.f_test_parameter() + self.f_param_exclude())
 
         except:
             inject = "select the url checkbox parameter to build the command"
