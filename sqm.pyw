@@ -1050,7 +1050,8 @@ class MainApplication(tkinter.Frame):
             'firebird', 'sybase', 'maxdb', 'hsqldb', 'informix', 'mariadb', 'memsql', 'tidb', 'h2', 'monetdb', 'derby',
             'vertica', 'mckoi', 'presto', 'frontbase', 'cache', 'cratedb', 'cubrid', 'altibase', 'mimersql',
             'extremedb', 'virtuoso', 'yugabytedb', 'raima', 'iris', 'intersystems cache', 'apache ignite', 'drizzle',
-            'greenplum', 'mimersql', 'altibase', 'amazon redshift', 'clickhouse', 'enterprisedb', 'opengauss')
+            'greenplum', 'mimersql', 'altibase', 'amazon redshift', 'clickhouse', 'enterprisedb', 'opengauss', 'aurora',
+            'cockroachdb')
         self.box.current(0)
         self.box.bind('<<ComboboxSelected>>', self.f_dbms)
         self.box.grid(row=0, column=1, sticky='sw', padx=3)
