@@ -769,6 +769,12 @@ class MainApplication(tkinter.Frame):
         self.e_time_limit.current(0)
         self.e_time_limit.bind('<<ComboboxSelected>>', self.f_time_limit)
         self.e_time_limit.grid(row=6, column=4, sticky='w', padx=5)
+        # --disable-hashing     Disable hash analysis on table dumps
+        self.chk_disable_hashing = ttk.Checkbutton(miscellaneous_lf)
+        self.chk_disable_hashing_var = tkinter.StringVar()
+        self.chk_disable_hashing.config(text="disable-hashing", variable=self.chk_disable_hashing_var, onvalue="on",
+                                        offvalue="off", command=self.f_disable_hashing)
+        self.chk_disable_hashing.grid(row=6, column=5, sticky='w', ipadx=10)
         # --unsafe-naming     Disable escaping of DBMS identifiers (e.g. \"user\")
         self.chk_unsafe_naming = ttk.Checkbutton(miscellaneous_lf)
         self.chk_unsafe_naming_var = tkinter.StringVar()
@@ -2869,8 +2875,19 @@ class MainApplication(tkinter.Frame):
             time_limit_sql = ""
         return time_limit_sql
 
+    # --disable-hashing     Disable hash analysis on table dumps
+    @property
+    def f_disable_hashing(self):
+        sql_disable_hashing = self.chk_disable_hashing_var.get()
+        if sql_disable_hashing == "on":
+            disable_hashing_sql = ' --disable-hashing'
+        else:
+            disable_hashing_sql = ""
+        return disable_hashing_sql
+
     # --unsafe-naming    Perform unsafe naming substitutions
-    def f_unsafe_naming(self, *args):
+    @property
+    def f_unsafe_naming(self):
         sql_unsafe_naming = self.chk_unsafe_naming_var.get()
         if sql_unsafe_naming == "on":
             unsafe_naming_sql = ' --unsafe-naming'
@@ -5310,7 +5327,8 @@ class MainApplication(tkinter.Frame):
                       self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline +
                       self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank +
                       self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_time_limit() +
-                      self.f_unsafe_naming() + self.f_smart + self.f_test_parameter() + self.f_param_exclude())
+                      self.f_disable_hashing + self.f_unsafe_naming + self.f_smart + self.f_test_parameter() + 
+                      self.f_param_exclude())
 
         except:
             inject = "select the url checkbox parameter to build the command"
