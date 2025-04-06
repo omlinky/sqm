@@ -1568,12 +1568,18 @@ class MainApplication(tkinter.Frame):
         self.chk_drop_set_cookie.config(text="drop-set-cookie", variable=self.chk_drop_set_sookie_var, onvalue="on",
                                         offvalue="off", command=self.f_drop_set_cookie)
         self.chk_drop_set_cookie.grid(row=7, column=0, sticky='w')
+        # --http2
+        self.chk_http2 = ttk.Checkbutton(data_lf)
+        self.chk_http2_var = tkinter.StringVar()
+        self.chk_http2.config(text="http2", variable=self.chk_http2_var, onvalue="on",
+                              offvalue="off", command=self.f_http2)
+        self.chk_http2.grid(row=8, column=0, sticky='w')        
         # --user-agent=AGENT  HTTP User-Agent header
         self.chk_user_agent = ttk.Checkbutton(data_lf)
         self.chk_user_agent_var = tkinter.StringVar()
         self.chk_user_agent.config(text="user-agent", variable=self.chk_user_agent_var, onvalue="on",
                                    offvalue="off", command=self.f_user_agent)
-        self.chk_user_agent.grid(row=8, column=0, sticky='w')
+        self.chk_user_agent.grid(row=9, column=0, sticky='w')
         #
         self.e_user_agent = ttk.Combobox(data_lf, width=60)
         self.e_ua_value = tkinter.StringVar()
@@ -1584,20 +1590,20 @@ class MainApplication(tkinter.Frame):
         ]
         self.e_user_agent.current(0)
         self.e_user_agent.bind('<<ComboboxSelected>>', self.f_user_agent)
-        self.e_user_agent.grid(row=8, column=1, sticky='we', padx=3)
+        self.e_user_agent.grid(row=9, column=1, sticky='we', padx=3)
         # --random-agent      Use randomly selected HTTP User-Agent header value
         self.chk_random_agent = ttk.Checkbutton(data_lf)
         self.chk_random_agent_var = tkinter.StringVar()
         self.chk_random_agent.config(text="random-agent", variable=self.chk_random_agent_var, onvalue="on",
                                      offvalue="off",
                                      command=self.f_random_agent)
-        self.chk_random_agent.grid(row=9, column=0, sticky='w')
+        self.chk_random_agent.grid(row=10, column=0, sticky='w')
         # --host=HOST         HTTP Host header
         self.chk_host = ttk.Checkbutton(data_lf)
         self.chk_host_var = tkinter.StringVar()
         self.chk_host.config(text="host", variable=self.chk_host_var, onvalue="on",
                              offvalue="off", command=self.f_host)
-        self.chk_host.grid(row=10, column=0, sticky='w')
+        self.chk_host.grid(row=11, column=0, sticky='w')
         #
         self.e_host = ttk.Combobox(data_lf)
         self.e_host_value = tkinter.StringVar()
@@ -1605,14 +1611,14 @@ class MainApplication(tkinter.Frame):
         self.e_host['values'] = ('www.example.com')
         self.e_host.current(0)
         self.e_host.bind('<<ComboboxSelected>>', self.f_host)
-        self.e_host.grid(row=10, column=1, sticky='we', padx=3)
+        self.e_host.grid(row=11, column=1, sticky='we', padx=3)
         self.e_host.columnconfigure(0, weight=1)
         # --referer=REFERER   HTTP Referer header
         self.chk_referer = ttk.Checkbutton(data_lf)
         self.chk_referer_var = tkinter.StringVar()
         self.chk_referer.config(text="referer", variable=self.chk_referer_var, onvalue="on",
                                 offvalue="off", command=self.f_referer)
-        self.chk_referer.grid(row=11, column=0, sticky='w')
+        self.chk_referer.grid(row=12, column=0, sticky='w')
         #
         self.e_referer = ttk.Combobox(data_lf)
         self.e_referer_value = tkinter.StringVar()
@@ -1620,14 +1626,14 @@ class MainApplication(tkinter.Frame):
         self.e_referer['values'] = ('http://127.0.0.1', 'https://127.0.0.1')
         self.e_referer.current(0)
         self.e_referer.bind('<<ComboboxSelected>>', self.f_referer)
-        self.e_referer.grid(row=11, column=1, sticky='we', padx=3)
+        self.e_referer.grid(row=12, column=1, sticky='we', padx=3)
         self.e_referer.columnconfigure(0, weight=1)
         # -H HEADER, --hea..  Extra header (e.g. "X-Forwarded-For: 127.0.0.1")
         self.chk_header = ttk.Checkbutton(data_lf)
         self.chk_header_var = tkinter.StringVar()
         self.chk_header.config(text="Extra header", variable=self.chk_header_var, onvalue="on",
                                offvalue="off", command=self.f_header)
-        self.chk_header.grid(row=12, column=0, sticky='w')
+        self.chk_header.grid(row=13, column=0, sticky='w')
         #
         self.e_header = ttk.Combobox(data_lf)
         self.e_header_value = tkinter.StringVar()
@@ -1635,14 +1641,14 @@ class MainApplication(tkinter.Frame):
         self.e_header['values'] = ['X-Forwarded-For: 127.0.0.1']
         self.e_header.current(0)
         self.e_header.bind('<<ComboboxSelected>>', self.f_header)
-        self.e_header.grid(row=12, column=1, sticky='we', padx=3)
+        self.e_header.grid(row=13, column=1, sticky='we', padx=3)
         self.e_header.columnconfigure(0, weight=1)
         #    --headers=HEADERS   Extra headers (e.g. "Accept-Language: fr\nETag: 123") --headers=@file.txt
         self.chk_headers = ttk.Checkbutton(data_lf)
         self.chk_headers_var = tkinter.StringVar()
         self.chk_headers.config(text="headers", variable=self.chk_headers_var, onvalue="on",
                                 offvalue="off", command=self.f_headers)
-        self.chk_headers.grid(row=13, column=0, sticky='w')
+        self.chk_headers.grid(row=14, column=0, sticky='w')
         #
         self.e_headers = ttk.Combobox(data_lf, width=60)
         self.e_headers_value = tkinter.StringVar()
@@ -1650,25 +1656,25 @@ class MainApplication(tkinter.Frame):
         self.e_headers['values'] = ['Content-Type: application/x-www-form-urlencoded']
         self.e_headers.current(0)
         self.e_headers.bind('<<ComboboxSelected>>', self.f_headers)
-        self.e_headers.grid(row=13, column=1, sticky='we', padx=3)
+        self.e_headers.grid(row=14, column=1, sticky='we', padx=3)
         # --headers=@file.txt load your own txt file with headers
         self.chk_load_headers = ttk.Checkbutton(data_lf)
         self.chk_load_headers_var = tkinter.StringVar()
         self.chk_load_headers.config(text="load-headers", variable=self.chk_load_headers_var, onvalue="on",
                                      offvalue="off", command=self.f_load_headers)
-        self.chk_load_headers.grid(row=14, column=0, sticky='w')
+        self.chk_load_headers.grid(row=15, column=0, sticky='w')
         #
         self.var_read_load_headers = tkinter.StringVar()
         self.e_load_headers = ttk.Entry(data_lf, width=60)
         self.e_load_headers.config(text="", textvariable=self.var_read_load_headers)
-        self.e_load_headers.grid(row=14, column=1, sticky='w', padx=3)
+        self.e_load_headers.grid(row=15, column=1, sticky='w', padx=3)
         self.e_load_headers.columnconfigure(0, weight=1)
         # --auth-type=ATYPE   HTTP authentication type (Basic, Digest or NTLM)
         self.chk_auth_type = ttk.Checkbutton(data_lf)
         self.chk_auth_type_var = tkinter.StringVar()
         self.chk_auth_type.config(text="auth-type", variable=self.chk_auth_type_var, onvalue="on",
                                   offvalue="off", command=self.f_auth_type)
-        self.chk_auth_type.grid(row=15, column=0, sticky='w')
+        self.chk_auth_type.grid(row=16, column=0, sticky='w')
         #
         self.e_auth_type = ttk.Combobox(data_lf, width=60)
         self.e_auth_type_value = tkinter.StringVar()
@@ -1676,44 +1682,44 @@ class MainApplication(tkinter.Frame):
         self.e_auth_type['values'] = ('Basic', 'Digest', 'NTLM', 'PKI')
         self.e_auth_type.current(0)
         self.e_auth_type.bind('<<ComboboxSelected>>', self.f_auth_type)
-        self.e_auth_type.grid(row=15, column=1, sticky='we', padx=3)
+        self.e_auth_type.grid(row=16, column=1, sticky='we', padx=3)
         self.e_auth_type.columnconfigure(0, weight=1)
-        # --auth-cred=ACRED   HTTP authentication credentials (name:password)
-        self.chk_auth_cred = ttk.Checkbutton(data_lf)
-        self.chk_auth_cred_var = tkinter.StringVar()
-        self.chk_auth_cred.config(text="auth-cred", variable=self.chk_auth_cred_var, onvalue="on",
-                                  offvalue="off", command=self.f_auth_cred)
-        self.chk_auth_cred.grid(row=16, column=0, sticky='w')
-        #
-        self.e_auth_cred = ttk.Combobox(data_lf, width=60)
-        self.e_auth_cred_value = tkinter.StringVar()
-        self.e_auth_cred.config(textvariable=self.e_auth_cred_value, state='disabled')
-        self.e_auth_cred['values'] = ('name:password')
-        self.e_auth_cred.current(0)
-        self.e_auth_cred.bind('<<ComboboxSelected>>', self.f_auth_cred)
-        self.e_auth_cred.grid(row=16, column=1, sticky='we', padx=3)
-        self.e_auth_cred.columnconfigure(0, weight=1)
         # DATA 2
         data_lf_2 = ttk.Labelframe(data2, text='')
         data_lf_2.grid(row=0, column=0, pady=10, ipadx=3, ipady=3, sticky='we')
+        # --auth-cred=ACRED   HTTP authentication credentials (name:password)
+        self.chk_auth_cred = ttk.Checkbutton(data_lf_2)
+        self.chk_auth_cred_var = tkinter.StringVar()
+        self.chk_auth_cred.config(text="auth-cred", variable=self.chk_auth_cred_var, onvalue="on",
+                                  offvalue="off", command=self.f_auth_cred)
+        self.chk_auth_cred.grid(row=0, column=0, sticky='w')
+        #
+        self.e_auth_cred = ttk.Combobox(data_lf_2, width=60)
+        self.e_auth_cred_value = tkinter.StringVar()
+        self.e_auth_cred.config(textvariable=self.e_auth_cred_value, state='disabled')
+        self.e_auth_cred['values'] = 'name:password'
+        self.e_auth_cred.current(0)
+        self.e_auth_cred.bind('<<ComboboxSelected>>', self.f_auth_cred)
+        self.e_auth_cred.grid(row=0, column=1, sticky='we', padx=3)
+        self.e_auth_cred.columnconfigure(0, weight=1)
         # --auth-file=AUTH..  HTTP authentication PEM cert/private key file
         self.chk_auth_file = ttk.Checkbutton(data_lf_2)
         self.chk_auth_file_var = tkinter.StringVar()
         self.chk_auth_file.config(text="auth-file", variable=self.chk_auth_file_var, onvalue="on",
                                   offvalue="off", command=self.f_auth_file)
-        self.chk_auth_file.grid(row=0, column=0, sticky='w')
+        self.chk_auth_file.grid(row=1, column=0, sticky='w')
         #
         self.var_auth_file = tkinter.StringVar()
         self.e_auth_file = ttk.Entry(data_lf_2, width=60)
         self.e_auth_file.config(text="", textvariable=self.var_auth_file)
-        self.e_auth_file.grid(row=0, column=1, sticky='we', padx=3)
+        self.e_auth_file.grid(row=1, column=1, sticky='we', padx=3)
         self.e_auth_file.columnconfigure(0, weight=1)
         # --proxy=PROXY       Use a HTTP proxy to connect to the target url
         self.chk_proxy = ttk.Checkbutton(data_lf_2)
         self.chk_proxy_var = tkinter.StringVar()
         self.chk_proxy.config(text="proxy", variable=self.chk_proxy_var, onvalue="on",
                               offvalue="off", command=self.f_proxy)
-        self.chk_proxy.grid(row=1, column=0, sticky='w')
+        self.chk_proxy.grid(row=2, column=0, sticky='w')
         #
         self.e_proxy = ttk.Combobox(data_lf_2)
         self.e_proxy_value = tkinter.StringVar()
@@ -1722,14 +1728,14 @@ class MainApplication(tkinter.Frame):
                                   'socks5://localhost:8080')
         self.e_proxy.current(0)
         self.e_proxy.bind('<<ttk.ComboboxSelected>>', self.f_proxy)
-        self.e_proxy.grid(row=1, column=1, sticky='w', padx=3)
+        self.e_proxy.grid(row=2, column=1, sticky='w', padx=3)
         self.e_proxy.columnconfigure(0, weight=1)
         # --proxy-cred=PCRED  HTTP proxy authentication credentials (name:password)
         self.chk_proxy_cred = ttk.Checkbutton(data_lf_2)
         self.chk_proxy_cred_var = tkinter.StringVar()
         self.chk_proxy_cred.config(text="proxy-cred", variable=self.chk_proxy_cred_var, onvalue="on",
                                    offvalue="off", command=self.f_proxy_cred)
-        self.chk_proxy_cred.grid(row=2, column=0, sticky='w')
+        self.chk_proxy_cred.grid(row=3, column=0, sticky='w')
         #
         self.e_proxy_cred = ttk.Combobox(data_lf_2, width=60)
         self.e_proxy_cred_value = tkinter.StringVar()
@@ -1737,26 +1743,26 @@ class MainApplication(tkinter.Frame):
         self.e_proxy_cred['values'] = ('name:password')
         self.e_proxy_cred.current(0)
         self.e_proxy_cred.bind('<<ttk.ComboboxSelected>>', self.f_proxy_cred)
-        self.e_proxy_cred.grid(row=2, column=1, sticky='we', padx=3)
+        self.e_proxy_cred.grid(row=3, column=1, sticky='we', padx=3)
         self.e_proxy_cred.columnconfigure(0, weight=1)
         # --proxy-file=PRO..  Load proxy list from a file
         self.chk_proxy_file = ttk.Checkbutton(data_lf_2)
         self.chk_proxy_file_var = tkinter.StringVar()
         self.chk_proxy_file.config(text="proxy-file", variable=self.chk_proxy_file_var, onvalue="on",
                                    offvalue="off", command=self.f_proxy_file)
-        self.chk_proxy_file.grid(row=3, column=0, sticky='w')
+        self.chk_proxy_file.grid(row=4, column=0, sticky='w')
         #
         self.chk_read_proxy_file_var = tkinter.StringVar()
         self.e_proxy_file = ttk.Entry(data_lf_2, width=60)
         self.e_proxy_file.config(text="", textvariable=self.chk_read_proxy_file_var)
-        self.e_proxy_file.grid(row=3, column=1, sticky='we', padx=3)
+        self.e_proxy_file.grid(row=4, column=1, sticky='we', padx=3)
         self.e_proxy_file.columnconfigure(0, weight=1)
         # --proxy-freq=PRO.. Requests between change of proxy from a given list
         self.chk_proxy_freq = ttk.Checkbutton(data_lf_2)
         self.chk_proxy_freq_var = tkinter.StringVar()
         self.chk_proxy_freq.config(text="proxy-freq", variable=self.chk_proxy_freq_var, onvalue="on",
                                    offvalue="off", command=self.f_proxy_freq)
-        self.chk_proxy_freq.grid(row=4, column=0, sticky='w')
+        self.chk_proxy_freq.grid(row=5, column=0, sticky='w')
         #
         self.e_proxy_freq = ttk.Combobox(data_lf_2)
         self.e_proxy_freq_value = tkinter.StringVar()
@@ -1764,31 +1770,31 @@ class MainApplication(tkinter.Frame):
         self.e_proxy_freq['values'] = ('1', '2', '3', '4', '5')
         self.e_proxy_freq.current(0)
         self.e_proxy_freq.bind('<<ComboboxSelected>>', self.f_proxy_freq)
-        self.e_proxy_freq.grid(row=4, column=1, sticky='w', padx=3)
+        self.e_proxy_freq.grid(row=5, column=1, sticky='w', padx=3)
         # --ignore-proxy      Ignore system default HTTP proxy
         self.chk_ignore_proxy = ttk.Checkbutton(data_lf_2)
         self.chk_ignore_proxy_var = tkinter.StringVar()
         self.chk_ignore_proxy.config(text="ignore-proxy", variable=self.chk_ignore_proxy_var, onvalue="on",
                                      offvalue="off", command=self.f_ignore_proxy)
-        self.chk_ignore_proxy.grid(row=5, column=0, sticky='w')
+        self.chk_ignore_proxy.grid(row=6, column=0, sticky='w')
         # --ignore-redirects  Ignore redirection attempts
         self.chk_ignore_redirects = ttk.Checkbutton(data_lf_2)
         self.chk_ignore_redirects_var = tkinter.StringVar()
         self.chk_ignore_redirects.config(text="ignore-redirects", variable=self.chk_ignore_redirects_var, onvalue="on",
                                          offvalue="off", command=self.f_ignore_redirects)
-        self.chk_ignore_redirects.grid(row=6, column=0, sticky='w')
+        self.chk_ignore_redirects.grid(row=7, column=0, sticky='w')
         # --ignore-timeouts   Ignore connection timeouts
         self.chk_ignore_timeouts = ttk.Checkbutton(data_lf_2)
         self.chk_ignore_timeouts_var = tkinter.StringVar()
         self.chk_ignore_timeouts.config(text="ignore-timeouts", variable=self.chk_ignore_timeouts_var, onvalue="on",
                                         offvalue="off", command=self.f_ignore_timeouts)
-        self.chk_ignore_timeouts.grid(row=7, column=0, sticky='w')
+        self.chk_ignore_timeouts.grid(row=8, column=0, sticky='w')
         # --ignore-code=IG..  Ignore HTTP error code (e.g. 401)
         self.chk_ignore = ttk.Checkbutton(data_lf_2)
         self.chk_ignore_var = tkinter.StringVar()
         self.chk_ignore.config(text="ignore-code", variable=self.chk_ignore_var, onvalue="on",
                                offvalue="off", command=self.f_ignore)
-        self.chk_ignore.grid(row=8, column=0, sticky='w')
+        self.chk_ignore.grid(row=9, column=0, sticky='w')
         #
         self.e_ignore = ttk.Combobox(data_lf_2)
         self.e_ignore_value = tkinter.StringVar()
@@ -1797,19 +1803,19 @@ class MainApplication(tkinter.Frame):
                                    '500', '301', '503', '504', '520', '401,402,406,500')
         self.e_ignore.current(0)
         self.e_ignore.bind('<<ComboboxSelected>>', self.f_ignore)
-        self.e_ignore.grid(row=8, column=1, sticky='we', padx=3)
+        self.e_ignore.grid(row=9, column=1, sticky='we', padx=3)
         # --tor               Use Tor anonymity network
         self.chk_tor_use = ttk.Checkbutton(data_lf_2)
         self.chk_tor_use_var = tkinter.StringVar()
         self.chk_tor_use.config(text="tor", variable=self.chk_tor_use_var, onvalue="on",
                                 offvalue="off", command=self.f_tor_use)
-        self.chk_tor_use.grid(row=9, column=0, sticky='w')
+        self.chk_tor_use.grid(row=10, column=0, sticky='w')
         # --tor-port=TORPORT  Set Tor proxy port other than default
         self.chk_tor_port = ttk.Checkbutton(data_lf_2)
         self.chk_tor_port_var = tkinter.StringVar()
         self.chk_tor_port.config(text="tor-port", variable=self.chk_tor_port_var, onvalue="on",
                                  offvalue="off", command=self.f_tor_port)
-        self.chk_tor_port.grid(row=10, column=0, sticky='w')
+        self.chk_tor_port.grid(row=11, column=0, sticky='w')
         #
         self.e_tor_port = ttk.Combobox(data_lf_2, width=60)
         self.e_tor_port_value = tkinter.StringVar()
@@ -1817,13 +1823,13 @@ class MainApplication(tkinter.Frame):
         self.e_tor_port['values'] = ('9150', '9050')
         self.e_tor_port.current(0)
         self.e_tor_port.bind('<<ComboboxSelected>>', self.f_tor_port)
-        self.e_tor_port.grid(row=10, column=1, sticky='we', padx=3)
+        self.e_tor_port.grid(row=11, column=1, sticky='we', padx=3)
         # --tor-type=TORTYPE  Set Tor proxy type (HTTP - default, SOCKS4 or SOCKS5)
         self.chk_tor_type = ttk.Checkbutton(data_lf_2)
         self.chk_tor_type_var = tkinter.StringVar()
         self.chk_tor_type.config(text="tor-type", variable=self.chk_tor_type_var, onvalue="on",
                                  offvalue="off", command=self.f_tor_type)
-        self.chk_tor_type.grid(row=11, column=0, sticky='w')
+        self.chk_tor_type.grid(row=12, column=0, sticky='w')
         #
         self.e_tor_type = ttk.Combobox(data_lf_2, width=60)
         self.e_tor_type_value = tkinter.StringVar()
@@ -1831,19 +1837,19 @@ class MainApplication(tkinter.Frame):
         self.e_tor_type['values'] = ('HTTP', 'HTTPS', 'SOCKS4', 'SOCKS5')
         self.e_tor_type.current(0)
         self.e_tor_type.bind('<<ComboboxSelected>>', self.f_tor_type)
-        self.e_tor_type.grid(row=11, column=1, sticky='we', padx=3)
+        self.e_tor_type.grid(row=12, column=1, sticky='we', padx=3)
         # --check-tor         Check to see if Tor is used properly
         self.chk_tor = ttk.Checkbutton(data_lf_2)
         self.chk_tor_var = tkinter.StringVar()
         self.chk_tor.config(text="check-tor", variable=self.chk_tor_var, onvalue="on",
                             offvalue="off", command=self.f_tor)
-        self.chk_tor.grid(row=12, column=0, sticky='w')
+        self.chk_tor.grid(row=13, column=0, sticky='w')
         # --delay=DELAY       Delay in seconds between each HTTP request
         self.chk_delay = ttk.Checkbutton(data_lf_2)
         self.chk_delay_var = tkinter.StringVar()
         self.chk_delay.config(text="delay", variable=self.chk_delay_var, onvalue="on",
                               offvalue="off", command=self.f_delay)
-        self.chk_delay.grid(row=13, column=0, sticky='w')
+        self.chk_delay.grid(row=14, column=0, sticky='w')
         #
         self.e_delay = ttk.Combobox(data_lf_2)
         self.e_delay_value = tkinter.StringVar()
@@ -1851,14 +1857,14 @@ class MainApplication(tkinter.Frame):
         self.e_delay['values'] = ('0.5', '1', '1.5')
         self.e_delay.current(0)
         self.e_delay.bind('<<ComboboxSelected>>', self.f_delay)
-        self.e_delay.grid(row=13, column=1, sticky='we', padx=3)
+        self.e_delay.grid(row=14, column=1, sticky='we', padx=3)
         self.e_delay.columnconfigure(0, weight=1)
         # --timeout=TIMEOUT   Seconds to wait before timeout connection (default 30)
         self.chk_timeout = ttk.Checkbutton(data_lf_2)
         self.chk_time_out_var = tkinter.StringVar()
         self.chk_timeout.config(text="timeout", variable=self.chk_time_out_var, onvalue="on",
                                 offvalue="off", command=self.f_time_out)
-        self.chk_timeout.grid(row=14, column=0, sticky='w')
+        self.chk_timeout.grid(row=15, column=0, sticky='w')
         #
         self.e_time_out = ttk.Combobox(data_lf_2)
         self.e_timeout_value = tkinter.StringVar()
@@ -1866,14 +1872,14 @@ class MainApplication(tkinter.Frame):
         self.e_time_out['values'] = ('15', '20', '25', '30')
         self.e_time_out.current(0)
         self.e_time_out.bind('<<ComboboxSelected>>', self.f_time_out)
-        self.e_time_out.grid(row=14, column=1, sticky='we', padx=3)
+        self.e_time_out.grid(row=15, column=1, sticky='we', padx=3)
         self.e_time_out.columnconfigure(0, weight=1)
         # --retries=RETRIES   Retries when the connection timeouts (default 3)
         self.chk_retries = ttk.Checkbutton(data_lf_2)
         self.chk_retries_var = tkinter.StringVar()
         self.chk_retries.config(text="retries", variable=self.chk_retries_var, onvalue="on",
                                 offvalue="off", command=self.f_retries)
-        self.chk_retries.grid(row=15, column=0, sticky='w')
+        self.chk_retries.grid(row=16, column=0, sticky='w')
         #
         self.e_retries = ttk.Combobox(data_lf_2)
         self.e_retries_value = tkinter.StringVar()
@@ -1881,88 +1887,88 @@ class MainApplication(tkinter.Frame):
         self.e_retries['values'] = ('4', '5', '6')
         self.e_retries.current(0)
         self.e_retries.bind('<<ComboboxSelected>>', self.f_retries)
-        self.e_retries.grid(row=15, column=1, sticky='we', padx=3)
+        self.e_retries.grid(row=16, column=1, sticky='we', padx=3)
         self.e_retries.columnconfigure(0, weight=1)
+        # DATA 3
+        data_lf_3 = ttk.Labelframe(data3, text='')
+        data_lf_3.grid(row=0, column=0, pady=10, ipadx=3, ipady=3, sticky='we')
         # --randomize=RPARAM  Randomly change value for given parameter(s)
-        self.chk_randomize = ttk.Checkbutton(data_lf_2)
+        self.chk_randomize = ttk.Checkbutton(data_lf_3)
         self.chk_randomize_var = tkinter.StringVar()
         self.chk_randomize.config(text="randomize", variable=self.chk_randomize_var, onvalue="on",
                                   offvalue="off", command=self.f_randomize)
-        self.chk_randomize.grid(row=16, column=0, sticky='w')
+        self.chk_randomize.grid(row=0, column=0, sticky='w')
         #
-        self.e_randomize = ttk.Combobox(data_lf_2, width=60)
+        self.e_randomize = ttk.Combobox(data_lf_3, width=60)
         self.e_randomize_value = tkinter.StringVar()
         self.e_randomize.config(textvariable=self.e_randomize_value, state='disabled')
         self.e_randomize['values'] = 'id2=foo,bar,tre,sat'
         self.e_randomize.current(0)
         self.e_randomize.bind('<<ComboboxSelected>>', self.f_randomize)
-        self.e_randomize.grid(row=16, column=1, sticky='we', padx=3)
+        self.e_randomize.grid(row=0, column=1, sticky='we', padx=3)
         self.e_randomize.columnconfigure(0, weight=1)
-        # DATA 3
-        data_lf_3 = ttk.Labelframe(data3, text='')
-        data_lf_3.grid(row=0, column=0, pady=10, ipadx=3, ipady=3, sticky='we')
         # --safe-url=SAFURL   Url address to visit frequently during testing
         self.chk_safe_url = ttk.Checkbutton(data_lf_3)
         self.chk_safe_url_var = tkinter.StringVar()
         self.chk_safe_url.config(text="safe-url", variable=self.chk_safe_url_var, onvalue="on",
                                  offvalue="off", command=self.f_safe_url)
-        self.chk_safe_url.grid(row=0, column=0, sticky='w')
+        self.chk_safe_url.grid(row=1, column=0, sticky='w')
         #
         self.e_safe_url = ttk.Entry(data_lf_3, width=60)
-        self.e_safe_url.grid(row=0, column=1, sticky='we', padx=3)
+        self.e_safe_url.grid(row=1, column=1, sticky='we', padx=3)
         self.e_safe_url.columnconfigure(0, weight=1)
         # --safe-post=SAFE..  POST data to send to a safe URL
         self.chk_safe_post = ttk.Checkbutton(data_lf_3)
         self.chk_safe_post_var = tkinter.StringVar()
         self.chk_safe_post.config(text="safe-post", variable=self.chk_safe_post_var, onvalue="on",
                                   offvalue="off", command=self.f_safe_post)
-        self.chk_safe_post.grid(row=1, column=0, sticky='w')
+        self.chk_safe_post.grid(row=2, column=0, sticky='w')
         #
         self.e_safe_post = ttk.Entry(data_lf_3, width=60)
-        self.e_safe_post.grid(row=1, column=1, sticky='we', padx=3)
+        self.e_safe_post.grid(row=2, column=1, sticky='we', padx=3)
         self.e_safe_post.columnconfigure(0, weight=1)
         # --safe-req=SAFER..  Load safe HTTP request from a file
         self.chk_safe_req = ttk.Checkbutton(data_lf_3)
         self.chk_safe_req_var = tkinter.StringVar()
         self.chk_safe_req.config(text="safe-req", variable=self.chk_safe_req_var, onvalue="on",
                                  offvalue="off", command=self.f_safe_req)
-        self.chk_safe_req.grid(row=2, column=0, sticky='w')
+        self.chk_safe_req.grid(row=3, column=0, sticky='w')
         #
         self.e_safe_req = ttk.Entry(data_lf_3, width=60)
-        self.e_safe_req.grid(row=2, column=1, sticky='we', padx=3)
+        self.e_safe_req.grid(row=3, column=1, sticky='we', padx=3)
         self.e_safe_req.columnconfigure(0, weight=1)
         # --safe-freq=SAFE..  Test requests between two visits to a given safe URL
         self.chk_safe_freq = ttk.Checkbutton(data_lf_3)
         self.chk_safe_freq_var = tkinter.StringVar()
         self.chk_safe_freq.config(text="safe-freq", variable=self.chk_safe_freq_var, onvalue="on",
                                   offvalue="off", command=self.f_safe_freq)
-        self.chk_safe_freq.grid(row=3, column=0, sticky='w')
+        self.chk_safe_freq.grid(row=4, column=0, sticky='w')
         #
         self.e_safe_freq = ttk.Entry(data_lf_3, width=60)
-        self.e_safe_freq.grid(row=3, column=1, sticky='we', padx=3)
+        self.e_safe_freq.grid(row=4, column=1, sticky='we', padx=3)
         self.e_safe_freq.columnconfigure(0, weight=1)
         # --skip-urlencode    Skip URL encoding of POST data
         self.chk_skip_urlencode = ttk.Checkbutton(data_lf_3)
         self.chk_skip_urlencode_var = tkinter.StringVar()
         self.chk_skip_urlencode.config(text="skip-urlencode", variable=self.chk_skip_urlencode_var, onvalue="on",
                                        offvalue="off", command=self.f_skip_urlencode)
-        self.chk_skip_urlencode.grid(row=4, column=0, sticky='w')
+        self.chk_skip_urlencode.grid(row=5, column=0, sticky='w')
         # --csrf-token=CSR..  Parameter used to hold anti-CSRF token
         self.chk_csrf_token = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_token_var = tkinter.StringVar()
         self.chk_csrf_token.config(text="csrf-token", variable=self.chk_csrf_token_var, onvalue="on",
                                    offvalue="off", command=self.f_csrf_token)
-        self.chk_csrf_token.grid(row=5, column=0, sticky='w')
+        self.chk_csrf_token.grid(row=6, column=0, sticky='w')
         #
         self.e_csrf_token = ttk.Entry(data_lf_3, width=60)
-        self.e_csrf_token.grid(row=5, column=1, sticky='we', padx=3)
+        self.e_csrf_token.grid(row=6, column=1, sticky='we', padx=3)
         self.e_csrf_token.columnconfigure(0, weight=1)
         # --csrf-method=CS..  HTTP method to use during anti-CSRF token page visit
         self.chk_csrf_method = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_method_var = tkinter.StringVar()
         self.chk_csrf_method.config(text="csrf-method", variable=self.chk_csrf_method_var, onvalue="on",
                                     offvalue="off", command=self.f_csrf_method)
-        self.chk_csrf_method.grid(row=6, column=0, sticky='w')
+        self.chk_csrf_method.grid(row=7, column=0, sticky='w')
         #
         self.e_csrf_method = ttk.Combobox(data_lf_3)
         self.e_csrf_method_value = tkinter.StringVar()
@@ -1972,33 +1978,33 @@ class MainApplication(tkinter.Frame):
                                         'CONNECT', 'DEBUG', 'GET', '   GET', 'get')
         self.e_csrf_method.current(0)
         self.e_csrf_method.bind('<<ComboboxSelected>>', self.f_csrf_method)
-        self.e_csrf_method.grid(row=6, column=1, sticky='w', padx=3)
+        self.e_csrf_method.grid(row=7, column=1, sticky='w', padx=3)
         # --csrf-data=POST data to send during anti-CSRF token page visit
         self.chk_csrf_data_method = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_data_method_var = tkinter.StringVar()
         self.chk_csrf_data_method.config(text="csrf-data", variable=self.chk_csrf_data_method_var, onvalue="on",
                                          offvalue="off", command=self.f_csrf_data)
-        self.chk_csrf_data_method.grid(row=7, column=0, sticky='w')
+        self.chk_csrf_data_method.grid(row=8, column=0, sticky='w')
         #
         self.e_csrf_data = ttk.Entry(data_lf_3, width=60)
-        self.e_csrf_data.grid(row=7, column=1, sticky='we', padx=3)
+        self.e_csrf_data.grid(row=8, column=1, sticky='we', padx=3)
         self.e_csrf_data.columnconfigure(0, weight=1)
         # --csrf-url=CSRFURL  URL address to visit to extract anti-CSRF token
         self.chk_csrf_url = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_url_var = tkinter.StringVar()
         self.chk_csrf_url.config(text="csfr-url", variable=self.chk_csrf_url_var, onvalue="on",
                                  offvalue="off", command=self.f_csrf_url)
-        self.chk_csrf_url.grid(row=8, column=0, sticky='w')
+        self.chk_csrf_url.grid(row=9, column=0, sticky='w')
         #
         self.e_csrf_url = ttk.Entry(data_lf_3, width=60)
-        self.e_csrf_url.grid(row=8, column=1, sticky='we', padx=3)
+        self.e_csrf_url.grid(row=9, column=1, sticky='we', padx=3)
         self.e_csrf_url.columnconfigure(0, weight=1)
         # --csrf-retries    Retries for anti-CSRF token retrieval
         self.chk_csrf_retries = ttk.Checkbutton(data_lf_3)
         self.chk_csrf_retries_var = tkinter.StringVar()
         self.chk_csrf_retries.config(text="csrf-retries", variable=self.chk_csrf_retries_var, onvalue="on",
                                      offvalue="off", command=self.f_csrf_retries)
-        self.chk_csrf_retries.grid(row=9, column=0, sticky='w')
+        self.chk_csrf_retries.grid(row=10, column=0, sticky='w')
         #
         self.e_csrf_retries = ttk.Combobox(data_lf_3)
         self.e_csrf_retries_value = tkinter.StringVar()
@@ -2006,25 +2012,25 @@ class MainApplication(tkinter.Frame):
         self.e_csrf_retries['values'] = ('4', '5', '6')
         self.e_csrf_retries.current(0)
         self.e_csrf_retries.bind('<<ComboboxSelected>>', self.f_csrf_retries)
-        self.e_csrf_retries.grid(row=9, column=1, sticky='w', padx=3)
+        self.e_csrf_retries.grid(row=10, column=1, sticky='w', padx=3)
         # --force-ssl         Force usage of SSL/HTTPS requests
         self.chk_force_ssl = ttk.Checkbutton(data_lf_3)
         self.chk_force_ssl_var = tkinter.StringVar()
         self.chk_force_ssl.config(text="force-ssl", variable=self.chk_force_ssl_var, onvalue="on",
                                   offvalue="off", command=self.f_force_ssl)
-        self.chk_force_ssl.grid(row=10, column=0, sticky='w')
+        self.chk_force_ssl.grid(row=11, column=0, sticky='w')
         # --hpp      Use HTTP parameter pollution
         self.chk_hpp = ttk.Checkbutton(data_lf_3)
         self.chk_hpp_var = tkinter.StringVar()
         self.chk_hpp.config(text="hpp", variable=self.chk_hpp_var, onvalue="on",
                             offvalue="off", command=self.f_hpp)
-        self.chk_hpp.grid(row=11, column=0, sticky='w')
+        self.chk_hpp.grid(row=12, column=0, sticky='w')
         # --eval=EVALCODE     Evaluate provided Python code before the request (e.g."import hashlib;id2=hashlib.md5(id)
         self.chk_eval_code = ttk.Checkbutton(data_lf_3)
         self.chk_eval_code_var = tkinter.StringVar()
         self.chk_eval_code.config(text="eval", variable=self.chk_eval_code_var, onvalue="on",
                                   offvalue="off", command=self.f_eval_code)
-        self.chk_eval_code.grid(row=12, column=0, sticky='w')
+        self.chk_eval_code.grid(row=13, column=0, sticky='w')
         #
         self.e_eval_code = ttk.Combobox(data_lf_3, width=60)
         self.e_eval_code_value = tkinter.StringVar()
@@ -2032,14 +2038,14 @@ class MainApplication(tkinter.Frame):
         self.e_eval_code['values'] = "import%20hashlib;id2=hashlib.md5(id).hexdigest()"
         self.e_eval_code.current(0)
         self.e_eval_code.bind('<<ComboboxSelected>>', self.f_eval_code)
-        self.e_eval_code.grid(row=12, column=1, sticky='we', padx=3)
+        self.e_eval_code.grid(row=13, column=1, sticky='we', padx=3)
         self.e_eval_code.columnconfigure(0, weight=1)
         # --chunked            Use HTTP chunked transfer encoded (POST) requests
         self.chk_chunked = ttk.Checkbutton(data_lf_3)
         self.chk_chunked_var = tkinter.StringVar()
         self.chk_chunked.config(text="chunked", variable=self.chk_chunked_var, onvalue="on",
                                 offvalue="off", command=self.f_chunked)
-        self.chk_chunked.grid(row=13, column=0, sticky='w')
+        self.chk_chunked.grid(row=14, column=0, sticky='w')
         # ENUMERATION_1
         enumerate_lf = ttk.Labelframe(enumeration_f, text='')
         enumerate_lf.grid(row=0, column=0, ipadx=3, padx=3, pady=3, sticky='nw')
@@ -3467,6 +3473,16 @@ class MainApplication(tkinter.Frame):
             drop_set_cookie_sql = ""
         return drop_set_cookie_sql
 
+    # --http2
+    @property
+    def f_http2(self):
+        sql_http2 = self.chk_http2_var.get()
+        if sql_http2 == "on":
+            http2_sql = ' --http2'
+        else:
+            http2_sql = ""
+        return http2_sql
+        
     # --randomize=RPARAM  Randomly change value for given parameter(s)
     def f_randomize(self, *args):
         sql_randomize = self.chk_randomize_var.get()
@@ -5293,7 +5309,7 @@ class MainApplication(tkinter.Frame):
                       self.f_predict_output + self.f_keep_alive + self.f_null_connection + self.f_threads() +
                       self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
                       self.f_union_values() + self.f_cookie + self.read_live_cookies + self.read_load_cookies +
-                      self.f_drop_set_cookie + self.f_prefix() + self.f_suffix() + self.f_user_agent() +
+                      self.f_drop_set_cookie + self.f_http2 + self.f_prefix() + self.f_suffix() + self.f_user_agent() +
                       self.f_randomize() + self.f_force_ssl + self.f_host() + self.f_referer() + self.f_headers() +
                       self.read_load_headers + self.read_auth_file + self.f_auth_cred() + self.f_auth_type() +
                       self.f_delay() + self.f_time_out() + self.f_retries() + self.f_safe_url() +
