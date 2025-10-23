@@ -366,7 +366,7 @@ class MainApplication(tkinter.Frame):
         self.chk_parse_errors = ttk.Checkbutton(gen_opt_lf)
         self.chk_parse_errors_var = tkinter.StringVar()
         self.chk_parse_errors.config(text="parse-errors", variable=self.chk_parse_errors_var, onvalue="on",
-                                     offvalue="off", command=self.chk_parse_errors)
+                                     offvalue="off", command=self.f_parse_errors)
         self.chk_parse_errors.grid(row=2, column=0, sticky='w')
         # --repair            Redump entries having unknown character marker (?)
         self.chk_repair = ttk.Checkbutton(gen_opt_lf)
