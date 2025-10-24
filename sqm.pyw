@@ -2533,9 +2533,8 @@ class MainApplication(tkinter.Frame):
         self.chk_msf_path.grid(row=6, column=0, sticky='w')
         #
         self.e_msf_path_var = tkinter.StringVar()
-        self.e_read_msf_path = ttk.Entry(os_acc_lf, width=60)
+        self.e_read_msf_path = ttk.Entry(os_acc_lf, width=60, textvariable=self.e_msf_path_var)
         self.e_read_msf_path.grid(row=6, column=1, sticky='we', padx=3)
-        self.e_read_msf_path.config(text="", textvariable=self.e_msf_path_var)
         # --tmp-path=TMPPATH  Remote absolute path of temporary files directory
         self.chk_tmp_path = ttk.Checkbutton(os_acc_lf)
         self.chk_tmp_path_var = tkinter.StringVar()
