@@ -11,7 +11,6 @@ import tkinter.filedialog
 import tkinter.font
 import tkinter.ttk
 from tkinter import ttk, font
-from typing import Literal, cast
 import urllib.parse
 
 
@@ -1016,10 +1015,7 @@ class MainApplication(tkinter.Frame):
         self.e_verbose.bind('<<ComboboxSelected>>', self.f_verbose)
         self.e_verbose.grid(row=0, column=9, sticky='w')
         # INJECTION | DETECTION | TECHNIQUE
-        paned_i_t_o = ttk.Panedwindow(
-            s_det_tech_f,
-            orient=cast(Literal["vertical", "horizontal"], tk.HORIZONTAL)
-        )
+        paned_i_t_o = ttk.Panedwindow(s_det_tech_f, orient="horizontal")
         paned_i_t_o.rowconfigure(0, weight=1)
         paned_i_t_o.columnconfigure(0, weight=1)
         # INJECTION
