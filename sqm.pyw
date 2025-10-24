@@ -11,6 +11,7 @@ import tkinter.filedialog
 import tkinter.font
 import tkinter.ttk
 from tkinter import ttk, font
+from typing import Literal, cast
 import urllib.parse
 
 
@@ -216,8 +217,8 @@ class MainApplication(tkinter.Frame):
                                    height=22, bg='#002B36', fg='#93A1A1')
         scrol_ses.config(command=self.sesTXT.yview)
         self.sesTXT.grid(row=0, column=0, ipadx=30, sticky='nswe')
-        self.sesTXT.bind('<F3>', self.on_find)
-        self.sesTXT.bind('<F4>', self.on_find_all)
+        self.sesTXT.bind('<F3>', lambda e: self.on_find())
+        self.sesTXT.bind('<F4>', lambda e: self.on_find_all())
         # Button Panel
         but_panel = ttk.Labelframe(watch_log, text='')
         but_panel.grid(row=1, sticky='we', columnspan=2)
@@ -236,12 +237,11 @@ class MainApplication(tkinter.Frame):
         sesbut.grid(row=1, column=3, sticky='ws', ipadx=3)
         #
         self.search_var = tkinter.StringVar()
-        self.searchEdit = ttk.Entry(but_panel, width=30)
-        self.searchEdit.config(text="", textvariable=self.search_var)
+        self.searchEdit = ttk.Entry(but_panel, width=30, textvariable=self.search_var)
         self.searchEdit.grid(row=1, column=0, sticky='w', padx=3)
         self.search_var.set('HotKey: F3-find, F4-find all')
-        self.searchEdit.bind('<F3>', self.on_find)
-        self.searchEdit.bind('<F4>', self.on_find_all)
+        self.searchEdit.bind('<F3>', lambda e: self.on_find())
+        self.searchEdit.bind('<F4>', lambda e: self.on_find_all())
         self.sesTXT.bind('<Alt_L><r>', self.logs)
         #
         ses_fbut = ttk.Button(but_panel, width=15)
@@ -311,8 +311,7 @@ class MainApplication(tkinter.Frame):
         query_l_f.rowconfigure(0, weight=1)
         paned_url.add(query_l_f)
         self.sql_var = tkinter.StringVar()
-        self.sqlEdit = ttk.Entry(query_l_f)
-        self.sqlEdit.config(text="", textvariable=self.sql_var)
+        self.sqlEdit = ttk.Entry(query_l_f, textvariable=self.sql_var)
         self.sqlEdit.grid(sticky='we')
         self.sqlEdit.columnconfigure(0, weight=1)
         paned_url.grid(row=0, column=0, sticky='nwe', rowspan=2)
@@ -550,8 +549,7 @@ class MainApplication(tkinter.Frame):
         self.chk_preprocess.grid(row=3, column=6, sticky='w')
         #
         self.e_preprocess_var = tkinter.StringVar()
-        self.e_preprocess = ttk.Entry(gen_opt_lf, width=7)
-        self.e_preprocess.config(text="", textvariable=self.e_preprocess_var)
+        self.e_preprocess = ttk.Entry(gen_opt_lf, width=7, textvariable=self.e_preprocess_var)
         self.e_preprocess.grid(row=3, column=7, sticky='w')
         self.e_preprocess.columnconfigure(0, weight=1)
         # --postprocess        Use given script(s) for postprocessing of response data
@@ -562,9 +560,8 @@ class MainApplication(tkinter.Frame):
         self.chk_post_process.grid(row=4, column=6, sticky='w')
         #
         self.e_post_process_var = tkinter.StringVar()
-        self.e_post_process = ttk.Entry(gen_opt_lf, width=7)
-        self.e_post_process.config(text="", textvariable=self.e_post_process_var)
-        self.e_post_process.grid(row=4, column=7,  sticky='w')
+        self.e_post_process = ttk.Entry(gen_opt_lf, width=7, textvariable=self.e_post_process_var)
+        self.e_post_process.grid(row=4, column=7, sticky='w')
         self.e_post_process.columnconfigure(0, weight=1)
         # --test-skip=TEST..  Skip tests by payloads and/or titles (e.g. BENCHMARK)
         self.chk_test_skip = ttk.Checkbutton(gen_opt_lf)
@@ -594,8 +591,7 @@ class MainApplication(tkinter.Frame):
         self.chk_dump_file.grid(row=4, column=2, sticky='w')
         #
         self.e_dump_file_var = tkinter.StringVar()
-        self.e_dump_file = ttk.Entry(gen_opt_lf, width=7)
-        self.e_dump_file.config(text="", textvariable=self.e_dump_file_var)
+        self.e_dump_file = ttk.Entry(gen_opt_lf, width=7, textvariable=self.e_dump_file_var)
         self.e_dump_file.grid(row=4, column=3, sticky='we')
         # --abort-on-empty Abort data retrieval on empty results
         self.chk_abort_on_empty = ttk.Checkbutton(gen_opt_lf)
@@ -611,8 +607,7 @@ class MainApplication(tkinter.Frame):
         self.chk_session_file.grid(row=4, column=0, sticky='w', ipadx=15)
         #
         self.e_session_file_var = tkinter.StringVar()
-        self.e_session_file = ttk.Entry(gen_file_lf, width=20)
-        self.e_session_file.config(text="", textvariable=self.e_session_file_var)
+        self.e_session_file = ttk.Entry(gen_file_lf, width=20, textvariable=self.e_session_file_var)
         self.e_session_file.grid(row=4, column=1, sticky='we')
         # -t TRAFFICFILE      Log all HTTP traffic into a textual file
         self.chk_traffic_file = ttk.Checkbutton(gen_file_lf)
@@ -622,8 +617,7 @@ class MainApplication(tkinter.Frame):
         self.chk_traffic_file.grid(row=4, column=2, sticky='w', ipadx=15)
 
         self.e_traffic_file_var = tkinter.StringVar()
-        self.e_traffic_file = ttk.Entry(gen_file_lf, width=20)
-        self.e_traffic_file.config(text="", textvariable=self.e_traffic_file_var)
+        self.e_traffic_file = ttk.Entry(gen_file_lf, width=20, textvariable=self.e_traffic_file_var)
         self.e_traffic_file.grid(row=4, column=3, sticky='we')
         # --output-dir=OUT..  Custom output directory path
         self.chk_output_dir = ttk.Checkbutton(gen_file_lf)
@@ -633,8 +627,7 @@ class MainApplication(tkinter.Frame):
         self.chk_output_dir.grid(row=5, column=0, sticky='w', ipadx=15)
         #
         self.e_output_dir_var = tkinter.StringVar()
-        self.e_output_dir = ttk.Entry(gen_file_lf, width=20)
-        self.e_output_dir.config(text="", textvariable=self.e_output_dir_var)
+        self.e_output_dir = ttk.Entry(gen_file_lf, width=20, textvariable=self.e_output_dir_var)
         self.e_output_dir.grid(row=5, column=1, sticky='we')
         # --save=SAVECONFIG   Save options to a configuration INI file
         self.chk_save = ttk.Checkbutton(gen_file_lf)
@@ -644,8 +637,7 @@ class MainApplication(tkinter.Frame):
         self.chk_save.grid(row=5, column=2, sticky='w', ipadx=15)
         #
         self.var_save_config = tkinter.StringVar()
-        self.e_save_config = ttk.Entry(gen_file_lf, width=20)
-        self.e_save_config.config(text="", textvariable=self.var_save_config)
+        self.e_save_config = ttk.Entry(gen_file_lf, width=20, textvariable=self.var_save_config)
         self.e_save_config.grid(row=5, column=3, sticky='we')
         # --scope=SCOPE       Regexp to filter targets from provided proxy log
         self.chk_scope = ttk.Checkbutton(gen_file_lf)
@@ -664,8 +656,7 @@ class MainApplication(tkinter.Frame):
         self.chk_har.grid(row=6, column=2, sticky='w', ipadx=15)
         #
         self.var_har_file = tkinter.StringVar()
-        self.e_har = ttk.Entry(gen_file_lf, width=20)
-        self.e_har.config(text="", textvariable=self.var_har_file)
+        self.e_har = ttk.Entry(gen_file_lf, width=20, textvariable=self.var_har_file)
         self.e_har.grid(row=6, column=3, sticky='we')
         # MISCELLANEOUS
         # https://github.com/sqlmapproject/sqlmap/commit/5650abbb4a1a35d7b51a53cb62e4f272a2fe69c5#diff-136d7f40c753ef8815a16d28370a9294
@@ -886,8 +877,7 @@ class MainApplication(tkinter.Frame):
         self.chk_crack.grid(row=5, column=3, sticky='w')
         #
         self.e_crack_var = tkinter.StringVar()
-        self.e_crack = ttk.Entry(miscellaneous_lf, width=10)
-        self.e_crack.config(text="", textvariable=self.e_crack_var)
+        self.e_crack = ttk.Entry(miscellaneous_lf, width=10, textvariable=self.e_crack_var)
         self.e_crack.grid(row=5, column=4, sticky='w', padx=5)
         #
         # --answers=ANSWERS   Set question answers (e.g. "quit=N,follow=N")
@@ -1026,7 +1016,10 @@ class MainApplication(tkinter.Frame):
         self.e_verbose.bind('<<ComboboxSelected>>', self.f_verbose)
         self.e_verbose.grid(row=0, column=9, sticky='w')
         # INJECTION | DETECTION | TECHNIQUE
-        paned_i_t_o = ttk.Panedwindow(s_det_tech_f, orient=tkinter.HORIZONTAL)
+        paned_i_t_o = ttk.Panedwindow(
+            s_det_tech_f,
+            orient=cast(Literal["vertical", "horizontal"], tk.HORIZONTAL)
+        )
         paned_i_t_o.rowconfigure(0, weight=1)
         paned_i_t_o.columnconfigure(0, weight=1)
         # INJECTION
@@ -1129,6 +1122,12 @@ class MainApplication(tkinter.Frame):
         self.e_suffix.bind('<<ComboboxSelected>>', self.f_suffix)
         self.e_suffix.grid(row=5, column=1, sticky='we', padx=3)
         # --os=OS             Force back-end DBMS operating system to this value
+        self.chk_os = ttk.Checkbutton(injection_lf)
+        self.chk_os_var = tkinter.StringVar()
+        self.chk_os.config(text="OS", variable=self.chk_os_var, onvalue="on",
+                           offvalue="off", command=self.f_os)
+        self.chk_os.grid(row=6, column=0, sticky='w')
+        #
         self.e_os = ttk.Combobox(injection_lf)
         self.e_os_value = tkinter.StringVar()
         self.e_os.config(textvariable=self.e_os_value, state='disabled', width=30)
@@ -1136,22 +1135,17 @@ class MainApplication(tkinter.Frame):
         self.e_os.current(0)
         self.e_os.bind('<<ComboboxSelected>>', self.f_os)
         self.e_os.grid(row=6, column=1, sticky='we', padx=3)
-        #
-        self.chk_os = ttk.Checkbutton(injection_lf)
-        self.chk_os_var = tkinter.StringVar()
-        self.chk_os.config(text="OS", variable=self.chk_os_var, onvalue="on",
-                           offvalue="off", command=self.f_os)
-        self.chk_os.grid(row=6, column=0, sticky='w')
         # --skip=SKIP         Skip testing for given parameter(s)
-        self.e_skip = ttk.Entry(injection_lf)
-        self.e_skip.config(text="", textvariable="", width=30)
-        self.e_skip.grid(row=7, column=1, sticky='we', padx=3)
-        #
         self.chk_skip = ttk.Checkbutton(injection_lf)
         self.chk_skip_var = tkinter.StringVar()
         self.chk_skip.config(text="skip", variable=self.chk_skip_var, onvalue="on",
                              offvalue="off", command=self.f_skip)
         self.chk_skip.grid(row=7, column=0, sticky='w')
+        #
+        self.e_skip_var = tkinter.StringVar()
+        self.e_skip = ttk.Entry(injection_lf, width=30, textvariable=self.e_skip_var)
+        self.e_skip_var = tkinter.StringVar()
+        self.e_skip.grid(row=7, column=1, sticky='we', padx=3)
         # --tamper-parm=22  Use parameter for tamper script
         self.chk_tamper_parm = ttk.Checkbutton(injection_lf)
         self.chk_tamper_parm_var = tkinter.StringVar()
@@ -1167,7 +1161,7 @@ class MainApplication(tkinter.Frame):
         self.e_tamper_parm.bind('<<ComboboxSelected>>', self.f_tamper_parm)
         self.e_tamper_parm.grid(row=8, column=1, sticky='we', padx=3)
         #
-        paned_inj = ttk.Panedwindow(injection_lf, orient=tkinter.HORIZONTAL)
+        paned_inj = ttk.Panedwindow(injection_lf, orient="horizontal")
         paned_inj.rowconfigure(0, weight=1)
         paned_inj.columnconfigure(0, weight=1)
         # add:
@@ -1205,7 +1199,7 @@ class MainApplication(tkinter.Frame):
         self.chk_skip_static = ttk.Checkbutton(chk_inj_lf)
         self.chk_skip_static_var = tkinter.StringVar()
         self.chk_skip_static.config(text="skip-static", variable=self.chk_skip_static_var, onvalue="on",
-                                    offvalue="off", command=self.chk_skip_static)
+                                    offvalue="off", command=self.f_skip_static)
         self.chk_skip_static.grid(row=1, column=1, sticky='w')
         # --invalid-string    Use random strings for invalidating values
         self.chk_invalid_string = ttk.Checkbutton(chk_inj_lf)
@@ -1229,7 +1223,7 @@ class MainApplication(tkinter.Frame):
         self.tamper['yscrollcommand'] = scroll_tamper.set
         scroll_tamper.grid(row=0, column=1, sticky='ns')
         #
-        paned_d_t_o = ttk.Panedwindow(s_det_tech_f, orient=tkinter.HORIZONTAL)
+        paned_d_t_o = ttk.Panedwindow(s_det_tech_f, orient="horizontal")
         paned_d_t_o.columnconfigure(0, weight=1)
         #
         detection_lf = ttk.Labelframe(paned_d_t_o, text='Detection')
@@ -1458,7 +1452,7 @@ class MainApplication(tkinter.Frame):
         self.chk_sec_req.config(text="second-req", variable=self.chk_second_req_var, onvalue="on",
                                 offvalue="off", command=self.f_second_req)
         self.chk_sec_req.grid(row=8, column=0, sticky='nw')
-        sep = ttk.Separator(technique_lf, orient=tkinter.HORIZONTAL)
+        sep = ttk.Separator(technique_lf, orient="vertical")
         sep.grid(row=8, ipady=20, sticky='w')
         #
         self.entry_second_req = ttk.Combobox(technique_lf)
@@ -1546,8 +1540,7 @@ class MainApplication(tkinter.Frame):
         self.chk_live_cookies.grid(row=5, column=0, sticky='w')
         #
         self.var_read_live_cookies = tkinter.StringVar()
-        self.e_live_cookies = ttk.Entry(data_lf, width=60)
-        self.e_live_cookies.config(text="", textvariable=self.var_read_live_cookies)
+        self.e_live_cookies = ttk.Entry(data_lf, width=60, textvariable=self.var_read_live_cookies)
         self.e_live_cookies.grid(row=5, column=1, sticky='we', padx=3)
         self.e_live_cookies.columnconfigure(0, weight=1)
         # --load-cookies=LOC  File containing cookies in Netscape/wget format
@@ -1558,8 +1551,7 @@ class MainApplication(tkinter.Frame):
         self.chk_load_cookies.grid(row=6, column=0, sticky='w')
         #
         self.var_read_load_cookies = tkinter.StringVar()
-        self.e_load_cookies = ttk.Entry(data_lf, width=60)
-        self.e_load_cookies.config(text="", textvariable=self.var_read_load_cookies)
+        self.e_load_cookies = ttk.Entry(data_lf, width=60, textvariable=self.var_read_load_cookies)
         self.e_load_cookies.grid(row=6, column=1, sticky='we', padx=3)
         self.e_load_cookies.columnconfigure(0, weight=1)
         # --drop-set-cookie   Ignore Set-Cookie header from response
@@ -1671,8 +1663,7 @@ class MainApplication(tkinter.Frame):
         self.chk_load_headers.grid(row=16, column=0, sticky='w')
         #
         self.var_read_load_headers = tkinter.StringVar()
-        self.e_load_headers = ttk.Entry(data_lf, width=60)
-        self.e_load_headers.config(text="", textvariable=self.var_read_load_headers)
+        self.e_load_headers = ttk.Entry(data_lf, width=60, textvariable=self.var_read_load_headers)
         self.e_load_headers.grid(row=16, column=1, sticky='w', padx=3)
         self.e_load_headers.columnconfigure(0, weight=1)
         # DATA 2
@@ -1716,8 +1707,7 @@ class MainApplication(tkinter.Frame):
         self.chk_auth_file.grid(row=2, column=0, sticky='w')
         #
         self.var_auth_file = tkinter.StringVar()
-        self.e_auth_file = ttk.Entry(data_lf_2, width=60)
-        self.e_auth_file.config(text="", textvariable=self.var_auth_file)
+        self.e_auth_file = ttk.Entry(data_lf_2, width=60, textvariable=self.var_auth_file)
         self.e_auth_file.grid(row=2, column=1, sticky='we', padx=3)
         self.e_auth_file.columnconfigure(0, weight=1)
         # --proxy=PROXY       Use a HTTP proxy to connect to the target url
@@ -1759,8 +1749,7 @@ class MainApplication(tkinter.Frame):
         self.chk_proxy_file.grid(row=5, column=0, sticky='w')
         #
         self.chk_read_proxy_file_var = tkinter.StringVar()
-        self.e_proxy_file = ttk.Entry(data_lf_2, width=60)
-        self.e_proxy_file.config(text="", textvariable=self.chk_read_proxy_file_var)
+        self.e_proxy_file = ttk.Entry(data_lf_2, width=60, textvariable=self.chk_read_proxy_file_var)
         self.e_proxy_file.grid(row=5, column=1, sticky='we', padx=3)
         self.e_proxy_file.columnconfigure(0, weight=1)
         # --proxy-freq=PRO.. Requests between change of proxy from a given list
@@ -2183,8 +2172,8 @@ class MainApplication(tkinter.Frame):
                               offvalue="off", command=self.f_first)
         self.chk_first.grid(row=1, column=1, sticky='w', padx=3)
         #
-        self.entry_first = ttk.Entry(dump_lf)
-        self.entry_first.config(text="", textvariable="", width=3)
+        self.entry_first_var = tkinter.StringVar()
+        self.entry_first = ttk.Entry(dump_lf, width=3, textvariable=self.entry_first_var)
         self.entry_first.grid(row=1, column=2, sticky='w')
         # --last=LASTCHAR     Last query output word character to retrieve
         self.chk_last = ttk.Checkbutton(dump_lf)
@@ -2193,8 +2182,8 @@ class MainApplication(tkinter.Frame):
                              offvalue="off", command=self.f_last)
         self.chk_last.grid(row=2, column=1, sticky='w', padx=3)
         #
-        self.entry_last = ttk.Entry(dump_lf)
-        self.entry_last.config(text="", textvariable="", width=3)
+        self.entry_last_var = tkinter.StringVar()
+        self.entry_last = ttk.Entry(dump_lf, width=3, textvariable=self.entry_last_var)
         self.entry_last.grid(row=2, column=2, sticky='w')
         # ENUMIRATION_4
         dump_lf_4 = ttk.Labelframe(enumeration_f, text='')
@@ -2225,34 +2214,35 @@ class MainApplication(tkinter.Frame):
         dtc_lf.grid(row=2, column=0, pady=10, padx=5, sticky='w', columnspan=5)
         dtc_lf.columnconfigure(0, weight=1)
         # -D DB               DBMS database to enumerate
-        self.e_database_enumerate = ttk.Entry(dtc_lf, width=52)
-        self.e_database_enumerate.config(text="", textvariable="")
-        self.e_database_enumerate.grid(row=0, column=1, sticky='w', padx=3)
-        #
         self.chk_database = ttk.Checkbutton(dtc_lf)
         self.chk_database_enumerate_var = tkinter.StringVar()
         self.chk_database.config(text="DB", variable=self.chk_database_enumerate_var, onvalue="on",
                                  offvalue="off", command=self.f_database_enumerate)
         self.chk_database.grid(row=0, column=0, sticky='w')
+        #
+        self.e_database_var = tkinter.StringVar()
+        self.e_database_enumerate = ttk.Entry(dtc_lf, width=52, textvariable=self.e_database_var)
+        self.e_database_enumerate.grid(row=0, column=1, sticky='w', padx=3)
         # -T TBL              DBMS database table to enumerate
-        self.e_table = ttk.Entry(dtc_lf, width=52)
-        self.e_table.config(text="", textvariable="")
-        self.e_table.grid(row=1, column=1, sticky='w', padx=3)
         self.chk_table = ttk.Checkbutton(dtc_lf)
         self.chk_table_var = tkinter.StringVar()
         self.chk_table.config(text="TBL", variable=self.chk_table_var, onvalue="on",
                               offvalue="off", command=self.f_table)
         self.chk_table.grid(row=1, column=0, sticky='w')
-        # -C COL              DBMS database table column to enumerate
-        self.e_column = ttk.Entry(dtc_lf, width=52)
-        self.e_column.config(text="", textvariable="")
-        self.e_column.grid(row=2, column=1, sticky='w', padx=3)
         #
+        self.e_table_var = tkinter.StringVar()
+        self.e_table = ttk.Entry(dtc_lf, width=52, textvariable=self.e_table_var)
+        self.e_table.grid(row=1, column=1, sticky='w', padx=3)
+        # -C COL              DBMS database table column to enumerate
         self.chk_column = ttk.Checkbutton(dtc_lf)
         self.chk_column_var = tkinter.StringVar()
         self.chk_column.config(text="COL", variable=self.chk_column_var, onvalue="on",
                                offvalue="off", command=self.f_column)
         self.chk_column.grid(row=2, column=0, sticky='w')
+        #
+        self.e_column_var = tkinter.StringVar()
+        self.e_column = ttk.Entry(dtc_lf, width=52, textvariable=self.e_column_var)
+        self.e_column.grid(row=2, column=1, sticky='w', padx=3)
         # -U USER             DBMS user to enumerate
         self.chk_user = ttk.Checkbutton(dtc_lf)
         self.chk_user_var = tkinter.StringVar()
@@ -2260,8 +2250,8 @@ class MainApplication(tkinter.Frame):
                              offvalue="off", command=self.f_user)
         self.chk_user.grid(row=3, column=0, sticky='w')
         #
-        self.e_user = ttk.Entry(dtc_lf, width=52)
-        self.e_user.config(text="", textvariable="")
+        self.e_user_var = tkinter.StringVar()
+        self.e_user = ttk.Entry(dtc_lf, width=52, textvariable=self.e_user_var)
         self.e_user.grid(row=3, column=1, sticky='w', padx=3)
         # -X EXCLUDE          DBMS database identifier(s) to not enumerate
         self.chk_exclude = ttk.Checkbutton(dtc_lf)
@@ -2303,8 +2293,7 @@ class MainApplication(tkinter.Frame):
         #
         self.start_var = tkinter.StringVar()
         self.start_var.set("start,stop")
-        self.e_start = ttk.Entry(dtc_lf, width=52)
-        self.e_start.config(text="", textvariable=self.start_var)
+        self.e_start = ttk.Entry(dtc_lf, width=52, textvariable=self.start_var)
         self.e_start.grid(row=6, column=1, sticky='w', padx=3)
         # SQLQUERY START PAINT
         sql_query_lf = ttk.Labelframe(enumeration_f, text='')
@@ -2344,8 +2333,7 @@ class MainApplication(tkinter.Frame):
         self.chk_sql_file.grid(row=2, column=0, sticky='w')
         #
         self.var_sql_file = tkinter.StringVar()
-        self.entry_sql_file = ttk.Entry(sql_query_lf, width=52)
-        self.entry_sql_file.config(text="", textvariable=self.var_sql_file)
+        self.entry_sql_file = ttk.Entry(sql_query_lf, width=52, textvariable=self.var_sql_file)
         self.entry_sql_file.grid(row=2, column=1, sticky='w', padx=3)
         self.entry_sql_file.columnconfigure(0, weight=1)
         # BRUTEFORCE
@@ -2385,8 +2373,8 @@ class MainApplication(tkinter.Frame):
                                    offvalue="off", command=self.f_shared_lib)
         self.chk_shared_lib.grid(row=1, column=0, sticky='w')
         #
-        self.e_shared_lib = ttk.Entry(char_bf_lf)
-        self.e_shared_lib.config(text="", textvariable="", width=3)
+        self.e_shared_lib_var = tkinter.StringVar()
+        self.e_shared_lib = ttk.Entry(char_bf_lf, textvariable=self.e_shared_lib_var, width=3)
         self.e_shared_lib.grid(row=1, column=1, sticky='we', padx=3)
         # ACCESS
         access_f = ttk.Notebook(file_f)
@@ -2420,8 +2408,7 @@ class MainApplication(tkinter.Frame):
         self.chk_file_write.grid(row=1, column=0, sticky='w')
         #
         self.e_file_write_var = tkinter.StringVar()
-        self.e_file_write = ttk.Entry(file_read_lf, width=60)
-        self.e_file_write.config(text="", textvariable=self.e_file_write_var)
+        self.e_file_write = ttk.Entry(file_read_lf, width=60, textvariable=self.e_file_write_var)
         self.e_file_write.grid(row=1, column=1, sticky='w', padx=3)
         #
         self.file_write = options_file_write = {}
@@ -2444,7 +2431,7 @@ class MainApplication(tkinter.Frame):
         self.view_file.config(text="view log", command=self.v_file)
         self.view_file.grid(row=0, column=3, sticky='ne', rowspan=2)
         # Default *log,*config
-        config_dl = ttk.Panedwindow(file_acc, orient=tkinter.HORIZONTAL, width=100, height=240)
+        config_dl = ttk.Panedwindow(file_acc, orient="horizontal", width=100, height=240)
         config_dl.rowconfigure(0, weight=1)
         config_dl.columnconfigure(0, weight=1)
         #
@@ -5240,35 +5227,41 @@ class MainApplication(tkinter.Frame):
         load_host = self.read_host()
         # print load_host
         self.sesTXT.delete("1.0", tkinter.END)
-        # highlight it
-        s = ['available databases', 'Database:', 'Table:', '[*]',
-             'database management system users:', 'current user:',
-             'database management system users', 'password hashes:',
-             'password hash:', 'found databases', 'file saved to:',
-             ]
+
+        keywords = [
+            'available databases', 'Database:', 'Table:', '[*]',
+            'database management system users:', 'current user:',
+            'database management system users', 'password hashes:',
+            'password hash:', 'found databases', 'file saved to:',
+        ]
+
         try:
-            log_size = os.path.getsize("./output/" + load_host + "/" + logfile)
+            log_path = f"./output/{load_host}/{logfile}"
+            log_size = os.path.getsize(log_path)
             if log_size != 0:
                 self.sqlmap()
-                #
-                self.sesTXT.insert(tkinter.END, open(("./output/%s/%s" % (load_host, logfile)), 'r').read())
-                self.sesTXT.mark_set(tkinter.INSERT, '1.0')
-                for tagz in s:
-                    idx = '1.0'
-                    while 1:
-                        idx = self.sesTXT.search(tagz, idx, nocase=1, stopindex=tkinter.END)
-                        if not idx: 
+                with open(log_path, "r", encoding="utf-8", errors="replace") as fh:
+                    self.sesTXT.insert(tkinter.END, fh.read())
+
+                self.sesTXT.mark_set(tkinter.INSERT, "1.0")
+
+                # настройка тега — один раз
+                self.sesTXT.tag_config('found', font=('arial', 8, 'bold'))
+
+                for tagz in keywords:
+                    idx = "1.0"
+                    while True:
+                        idx = self.sesTXT.search(tagz, idx, nocase=True, stopindex=tkinter.END)
+                        if not idx:
                             break
-                        last_idx = '"%s"+%dc' % (idx, len(tagz))
+                        last_idx = f"{idx}+{len(tagz)}c"
                         self.sesTXT.tag_add('found', idx, last_idx)
-                        idx = last_idx
-                        self.sesTXT.tag_config('found', font=('arial', 8, 'bold'))
-                        self.sesTXT.focus()
+                        idx = last_idx  # продолжаем искать дальше
+                self.sesTXT.focus_set()
             else:
-                self.sesTXT.insert(tkinter.END, u"Log-Empty " + load_host + ".")
+                self.sesTXT.insert(tkinter.END, f"Log-Empty {load_host}.")
         except (IOError, OSError):
-            self.sesTXT.insert(tkinter.END, u"Log-Not-Found " + load_host + ".")
-        return
+            self.sesTXT.insert(tkinter.END, f"Log-Not-Found {load_host}.")
 
     # Show current session
     def session(self):
