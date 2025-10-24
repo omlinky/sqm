@@ -261,7 +261,7 @@ class MainApplication(tkinter.Frame):
         options_traf['parent'] = watch_log
         options_traf['title'] = 'Open Traffic FILE'
         #
-        paned_url = ttk.Panedwindow(builder_frame, orient=tkinter.VERTICAL)
+        paned_url = ttk.Panedwindow(builder_frame, orient="vertical")
         paned_url.columnconfigure(0, weight=1)
         paned_url.rowconfigure(0, weight=1)
         # TARGETS:
@@ -1215,7 +1215,7 @@ class MainApplication(tkinter.Frame):
         self.tamper.columnconfigure(0, weight=1)
         self.tamper.grid(row=0, column=0, padx=5, sticky='nswe')
         # Listbox - TAMPER SCROLL (Listed all tampers and get them scroll)
-        scroll_tamper = ttk.Scrollbar(tampers_lf, orient=tkinter.VERTICAL, command=self.tamper.yview)
+        scroll_tamper = ttk.Scrollbar(tampers_lf, orient="vertical", command=self.tamper.yview)
         self.tamper['yscrollcommand'] = scroll_tamper.set
         scroll_tamper.grid(row=0, column=1, sticky='ns')
         #
@@ -2454,7 +2454,7 @@ class MainApplication(tkinter.Frame):
         self.Lcat.columnconfigure(0, weight=1)
         self.Lcat.bind("<Double-Button-1>", self.show_def_log)
         # Scroll
-        scrollcat = ttk.Scrollbar(cat_lf, orient=tkinter.VERTICAL, command=self.Lcat.yview)
+        scrollcat = ttk.Scrollbar(cat_lf, orient="vertical", command=self.Lcat.yview)
         self.Lcat['yscrollcommand'] = scrollcat.set
         scrollcat.grid(row=0, column=1, sticky='ns')
         # Show Default *log, *config
