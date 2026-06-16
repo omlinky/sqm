@@ -2601,7 +2601,7 @@ class MainApplication(tkinter.Frame):
         # --api
         self.chk_api = ttk.Checkbutton(api_options)
         self.chk_api_var = tkinter.StringVar()
-        self.chk_api.config(text="api", variable=self.chk_chunked_var, onvalue="on",
+        self.chk_api.config(text="api", variable=self.chk_api_var, onvalue="on",
                             offvalue="off", command=self.f_api)
         self.chk_api.grid(row=0, column=0, sticky='w')
         # --taskid
@@ -2610,12 +2610,12 @@ class MainApplication(tkinter.Frame):
         self.chk_task_id.config(text="taskid", variable=self.chk_task_id_var, onvalue="on",
                                 offvalue="off", command=self.f_task_id)
         self.chk_task_id.grid(row=0, column=1, sticky='w')
-        # --database
-        self.chk_database = ttk.Checkbutton(api_options)
+        # --database (API option, distinct from -D database-to-enumerate above)
+        self.chk_database_api = ttk.Checkbutton(api_options)
         self.chk_database_var = tkinter.StringVar()
-        self.chk_database.config(text="database", variable=self.chk_database_var, onvalue="on",
-                                 offvalue="off", command=self.f_database)
-        self.chk_database.grid(row=0, column=2, sticky='w')
+        self.chk_database_api.config(text="database", variable=self.chk_database_var, onvalue="on",
+                                     offvalue="off", command=self.f_database)
+        self.chk_database_api.grid(row=0, column=2, sticky='w')
 
     # ####################################################
     #                Functions:                          #
