@@ -657,6 +657,16 @@ class MainApplication(tkinter.Frame):
         self.var_har_file = tkinter.StringVar()
         self.e_har = ttk.Entry(gen_file_lf, width=20, textvariable=self.var_har_file)
         self.e_har.grid(row=6, column=3, sticky='we')
+        # --report-json Store run results to a JSON file
+        self.chk_report_json = ttk.Checkbutton(gen_file_lf)
+        self.chk_report_json_var = tkinter.StringVar()
+        self.chk_report_json.config(text="report-json", variable=self.chk_report_json_var, onvalue="on",
+                                    offvalue="off", command=self.f_report_json)
+        self.chk_report_json.grid(row=7, column=0, sticky='w', ipadx=15)
+        #
+        self.e_report_json_var = tkinter.StringVar()
+        self.e_report_json = ttk.Entry(gen_file_lf, width=20, textvariable=self.e_report_json_var)
+        self.e_report_json.grid(row=7, column=1, sticky='we')
         # MISCELLANEOUS
         # https://github.com/sqlmapproject/sqlmap/commit/5650abbb4a1a35d7b51a53cb62e4f272a2fe69c5#diff-136d7f40c753ef8815a16d28370a9294
         miscellaneous_lf = ttk.Labelframe(settings_f, text='Miscellaneous')
@@ -4243,6 +4253,27 @@ class MainApplication(tkinter.Frame):
             sql_har_file = ""
         return sql_har_file
 
+    # --report-json=REPORTJSON   Store run results to a JSON file
+    def f_report_json(self):
+        sql_report_json = self.chk_report_json_var.get()
+        if sql_report_json == "on":
+            report_json_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".json")
+            if report_json_file:
+                self.e_report_json_var.set(report_json_file.name)
+        elif sql_report_json == "off":
+            self.e_report_json_var.set("")
+        return
+
+    # --report-json=REPORTJSON   Store run results to a JSON file
+    @property
+    def save_report_json_file(self):
+        report_json_file = self.e_report_json_var.get()
+        if report_json_file != "":
+            sql_report_json_file = ' --report-json="%s"' % report_json_file
+        else:
+            sql_report_json_file = ""
+        return sql_report_json_file
+
     # -b, --banner        Retrieve DBMS banner
     @property
     def f_banner(self):
@@ -4808,18 +4839,14 @@ class MainApplication(tkinter.Frame):
     # --stop=LIMITSTOP    Last query output entry to retrieve
     @property
     def f_start_stop(self):
-        try:
-            sql_start = self.chk_start_var.get()
-            if sql_start == "on":
-                param = self.e_start.get()
-                start = param.split(',')[0]
-                stop = param.split(',')[1]
-                start_sql = ' --start="%s" --stop="%s"' % (start, stop)
-            else:
-                start_sql = ""
-            return start_sql
-        except ImportError:
-            pass
+        sql_start = self.chk_start_var.get()
+        if sql_start == "on":
+            param = self.e_start.get() or ""
+            parts = param.split(',')
+            start = parts[0] if len(parts) > 0 else ""
+            stop = parts[1] if len(parts) > 1 else ""
+            return ' --start="%s" --stop="%s"' % (start, stop)
+        return ""
 
     # --sql-shell         Prompt for an interactive SQL shell
     @property
@@ -5342,13 +5369,13 @@ class MainApplication(tkinter.Frame):
                       self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() +
                       self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() +
                       self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file +
-                      self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + self.f_beep +
-                      self.pre_process_script + self.post_process_script + self.f_skip_static + self.f_cleanup +
-                      self.f_murphy_rate + self.f_skip_heuristics + self.f_skip_waf + self.f_offline +
-                      self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + self.f_mobile + self.f_page_rank +
-                      self.f_read_crack + self.f_base64 + self.f_base64safe + self.f_purge + self.f_time_limit() +
-                      self.f_disable_hashing + self.f_unsafe_naming + self.f_smart + self.f_test_parameter() + 
-                      self.f_param_exclude())
+                      self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + 
+                      self.save_report_json_file + self.f_beep + self.pre_process_script + self.post_process_script + 
+                      self.f_skip_static + self.f_cleanup + self.f_murphy_rate + self.f_skip_heuristics + 
+                      self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + 
+                      self.f_mobile + self.f_page_rank + self.f_read_crack + self.f_base64 + self.f_base64safe + 
+                      self.f_purge + self.f_time_limit() + self.f_disable_hashing + self.f_unsafe_naming + 
+                      self.f_smart + self.f_test_parameter() + self.f_param_exclude())
 
         except:
             inject = "select the url checkbox parameter to build the command"
