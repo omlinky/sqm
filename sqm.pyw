@@ -5241,14 +5241,8 @@ class MainApplication(tkinter.Frame):
     # load log without query
     # self.chkLog_var with query
     def logs(self, *args):
-        logfile = ""
-        if self.chkLog_var.get() == "on":
-            logfile = "log"
-        else:
-            logfile = "gui_log"
-
+        logfile = "log" if self.chkLog_var.get() == "on" else "gui_log"
         load_host = self.read_host()
-        # print load_host
         self.sesTXT.delete("1.0", tkinter.END)
 
         keywords = [
@@ -5267,8 +5261,6 @@ class MainApplication(tkinter.Frame):
                     self.sesTXT.insert(tkinter.END, fh.read())
 
                 self.sesTXT.mark_set(tkinter.INSERT, "1.0")
-
-                # настройка тега — один раз
                 self.sesTXT.tag_config('found', font=('arial', 8, 'bold'))
 
                 for tagz in keywords:
@@ -5279,7 +5271,7 @@ class MainApplication(tkinter.Frame):
                             break
                         last_idx = f"{idx}+{len(tagz)}c"
                         self.sesTXT.tag_add('found', idx, last_idx)
-                        idx = last_idx  # продолжаем искать дальше
+                        idx = last_idx
                 self.sesTXT.focus_set()
             else:
                 self.sesTXT.insert(tkinter.END, f"Log-Empty {load_host}.")
