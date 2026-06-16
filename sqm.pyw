@@ -5237,7 +5237,6 @@ class MainApplication(tkinter.Frame):
                 f = os.open(r"./output/" + load_host + "/gui_log", mode)
                 os.write(f, qq.encode() + '\n'.encode())
                 os.close(f)
-
     # load log without query
     # self.chkLog_var with query
     def logs(self, *args):
