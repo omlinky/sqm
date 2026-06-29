@@ -1213,6 +1213,18 @@ class MainApplication(tkinter.Frame):
         self.chk_invalid_string.config(text='invalid-string', variable=self.chk_invalid_string_var, onvalue="on",
                                        offvalue="off", command=self.f_invalid_string)
         self.chk_invalid_string.grid(row=1, column=2, sticky='w')
+        # --prove   Provide proof of injection point exploitation
+        self.chk_prove = ttk.Checkbutton(chk_inj_lf)
+        self.chk_prove_var = tkinter.StringVar()
+        self.chk_prove.config(text="prove", variable=self.chk_prove_var, onvalue="on",
+                              offvalue="off", command=self.commands)
+        self.chk_prove.grid(row=2, column=0, sticky='w')
+        # --auto-waf   Automatically apply WAF bypass (random-agent + tamper)
+        self.chk_auto_waf = ttk.Checkbutton(chk_inj_lf)
+        self.chk_auto_waf_var = tkinter.StringVar()
+        self.chk_auto_waf.config(text="auto-waf", variable=self.chk_auto_waf_var, onvalue="on",
+                                 offvalue="off", command=self.commands)
+        self.chk_auto_waf.grid(row=2, column=1, sticky='w')
         # --tamper=TAMPER     Use given script(s) for tampering injection data
         self.tamper = tkinter.Listbox(tampers_lf, height=9, width=10, selectmode=tkinter.EXTENDED)
         # *.py in listbox, exclude __init__.py
@@ -2215,6 +2227,12 @@ class MainApplication(tkinter.Frame):
         #
         self.e_pivot = ttk.Entry(dump_lf_4, width=10)
         self.e_pivot.grid(row=1, column=1, sticky='w', padx=3)
+        # --procs   Retrieve stored procedures/functions and their source
+        self.chk_procs = ttk.Checkbutton(dump_lf_4)
+        self.chk_procs_var = tkinter.StringVar()
+        self.chk_procs.config(text="procs", variable=self.chk_procs_var, onvalue="on",
+                              offvalue="off", command=self.f_statements)
+        self.chk_procs.grid(row=2, column=0, sticky='w')
         # Block #1
         dtc_lf = ttk.Labelframe(enumeration_f, text='')
         dtc_lf.grid(row=2, column=0, pady=10, padx=5, sticky='w', columnspan=5)
@@ -2651,375 +2669,274 @@ class MainApplication(tkinter.Frame):
 
     # --beep              Sound alert when SQL injection found
     @property
-    def f_beep(self):
-        sql_beep = self.chk_beep_var.get()
-        if sql_beep == "on":
-            beep_sql = ' --beep'
-        else:
-            beep_sql = ""
-        return beep_sql
+    def f_procs(self):
+        if self.chk_procs_var.get() == "on":
+            return " --procs"
+        return ""
 
     # --skip-static       Skip testing parameters that not appear dynamic
     @property
     def f_skip_static(self):
-        sql_skip_static = self.chk_skip_static_var.get()
-        if sql_skip_static == "on":
-            skip_static_sql = ' --skip-static'
-        else:
-            skip_static_sql = ''
-        return skip_static_sql
+        if self.chk_skip_static_var.get() == "on":
+            return " --skip-static"
+        return ""
 
     # --cleanup           Clean up the DBMS by sqlmap specific UDF and tables
     @property
     def f_cleanup(self):
-        sql_cleanup = self.chk_cleanup_var.get()
-        if sql_cleanup == "on":
-            cleanup_sql = ' --cleanup'
-        else:
-            cleanup_sql = ""
-        return cleanup_sql
+        if self.chk_cleanup_var.get() == "on":
+            return " --cleanup"
+        return ""
 
     # --murphy-rate
     @property
     def f_murphy_rate(self):
-        sql_murphy_rate = self.chk_murphy_rate_var.get()
-        if sql_murphy_rate == "on":
-            murphy_rate_sql = ' --murphy-rate'
-        else:
-            murphy_rate_sql = ""
-        return murphy_rate_sql
+        if self.chk_murphy_rate_var.get() == "on":
+            return " --murphy-rate"
+        return ""
 
     # --skip-heuristics   Skip heuristic detection of SQLi/XSS vulnerabilities
     @property
     def f_skip_heuristics(self):
-        sql_skip_heuristics = self.chk_skip_heuristics_var.get()
-        if sql_skip_heuristics == "on":
-            skip_heuristics_sql = ' --skip-heuristics'
-        else:
-            skip_heuristics_sql = ""
-        return skip_heuristics_sql
+        if self.chk_skip_heuristics_var.get() == "on":
+            return " --skip-heuristics"
+        return ""
 
     # --skip-waf          Skip heuristic detection of WAF/IPS/IDS protection
     @property
     def f_skip_waf(self):
-        sql_skip_waf = self.chk_skip_waf_var.get()
-        if sql_skip_waf == "on":
-            skip_waf_sql = ' --skip-waf'
-        else:
-            skip_waf_sql = ""
-        return skip_waf_sql
+        if self.chk_skip_waf_var.get() == "on":
+            return " --skip-waf"
+        return ""
 
     # --offline           Work in offline mode (only use session data)
     @property
     def f_offline(self):
-        sql_offline = self.chk_offline_var.get()
-        if sql_offline == "on":
-            offline_sql = ' --offline'
-        else:
-            offline_sql = ""
-        return offline_sql
+        if self.chk_offline_var.get() == "on":
+            return " --offline"
+        return ""
 
     # --sqlmap-shell      Prompt for an interactive sqlmap shell
     @property
     def f_sqlmap_shell(self):
-        sql_sqlmap_shell = self.chk_sqlmap_shell_var.get()
-        if sql_sqlmap_shell == "on":
-            sqlmap_shell_sql = ' --sqlmap-shell'
-        else:
-            sqlmap_shell_sql = ""
-        return sqlmap_shell_sql
+        if self.chk_sqlmap_shell_var.get() == "on":
+            return " --sqlmap-shell"
+        return ""
 
     # --tmp-dir=TMPDIR    Local directory for storing temporary files
     def f_tmp_dir(self, *args):
-        sql_tmp_dir = self.chk_tmp_dir_var.get()
-        if sql_tmp_dir == "on":
-            tmp_dir_sql = ' --tmp-dir="%s"' % (self.e_tmp_dir.get())
-        else:
-            tmp_dir_sql = ""
-        return tmp_dir_sql
+        if self.chk_tmp_dir_var.get() == "on":
+            return f' --tmp-dir="{self.e_tmp_dir.get()}"'
+        return ""
 
     # --web-root=WEBROOT    Web server document root directory (e.g. "/var/www")
     def f_web_root(self, *args):
-        sql_web_root = self.chk_web_root_var.get()
-        if sql_web_root == "on":
-            self.e_web_root.config(state='normal')
-            web_root_sql = ' --web-root="%s"' % (self.e_web_root.get())
-        else:
-            self.e_web_root.config(state='disabled')
-            web_root_sql = ""
-        return web_root_sql
+        if self.chk_web_root_var.get() == "on":
+            self.e_web_root.config(state="normal")
+            return f' --web-root="{self.e_web_root.get()}"'
 
-    # --disable-precon     Disable preconnection of sqlmap (check for 200 answer - may abuse some WAFs)
+        self.e_web_root.config(state="disabled")
+        return ""
+
+    # --disable-precon     Disable preconnection of sqlmap
     def f_disable_precon(self):
-        sql_disable_precon = self.chk_disable_precon_var.get()
-        if sql_disable_precon == "on":
-            disable_precon_sql = ' --disable-precon'
-        else:
-            disable_precon_sql = ""
-        return disable_precon_sql
-    
+        if self.chk_disable_precon_var.get() == "on":
+            return " --disable-precon"
+        return ""
+
     # --dump-file=DUMP.. Store dumped data to a custom file
     def f_dump_file(self):
-        sql_dump_file = self.chk_dump_file_var.get()
-        if sql_dump_file == "on":
-            dump_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+        if self.chk_dump_file_var.get() == "on":
+            dump_file = tkinter.filedialog.asksaveasfile(
+                mode="w",
+                defaultextension=".txt"
+            )
             if dump_file:
                 self.e_dump_file_var.set(dump_file.name)
-        elif sql_dump_file == "off":
+        else:
             self.e_dump_file_var.set("")
 
     # --dump-file=DUMP.. Store dumped data to a custom file
     @property
     def f_save_dump_file(self):
-        sql_save_dump_file = self.e_dump_file_var.get()
-        if sql_save_dump_file != "":
-            save_dump_file_sql = ' --dump-file="%s"' % sql_save_dump_file
-        else:
-            save_dump_file_sql = ""
-        return save_dump_file_sql
-    
+        value = self.e_dump_file_var.get()
+        if value:
+            return f' --dump-file="{value}"'
+        return ""
+
     # --abort-on-empty Abort data retrieval on empty results
     def f_abort_on_empty(self):
-        sql_abort_on_empty = self.chk_abort_on_empty_var.get()
-        if sql_abort_on_empty == "on":
-            abort_on_empty_sql = ' --abort-on-empty'
-        else:
-            abort_on_empty_sql = ""
-        return abort_on_empty_sql
+        if self.chk_abort_on_empty_var.get() == "on":
+            return " --abort-on-empty"
+        return ""
 
     # --dependencies      Check for missing sqlmap dependencies
     @property
     def f_dependencies(self):
-        sql_dependencies = self.chk_dependencies_var.get()
-        if sql_dependencies == "on":
-            dependencies_sql = ' --dependencies'
-        else:
-            dependencies_sql = ""
-        return dependencies_sql
+        if self.chk_dependencies_var.get() == "on":
+            return " --dependencies"
+        return ""
 
     # --gpage=GOOGLEPAGE  Use Google dork results from specified page number
     @property
     def f_gpage(self):
-        sql_gpage = self.chk_gpage_var.get()
-        if sql_gpage == "on":
-            gpage_sql = ' --gpage="%s"' % (self.e_gpage.get())
-        else:
-            gpage_sql = ""
-        return gpage_sql
+        if self.chk_gpage_var.get() == "on":
+            return f' --gpage="{self.e_gpage.get()}"'
+        return ""
 
-    # -z MNEMONICS        Use short mnemonics (e.g. "flu,bat,ban,tec=EU")
+    # -z MNEMONICS        Use short mnemonics
     @property
     def f_z(self):
-        sql_z = self.chk_z_var.get()
-        if sql_z == "on":
-            z_sql = ' -z "%s"' % (self.e_z.get())
-        else:
-            z_sql = ""
-        return z_sql
+        if self.chk_z_var.get() == "on":
+            return f' -z "{self.e_z.get()}"'
+        return ""
 
     # --mobile            Imitate smartphone through HTTP User-Agent header
     @property
     def f_mobile(self):
-        sql_mobile = self.chk_mobile_var.get()
-        if sql_mobile == "on":
-            mobile_sql = ' --mobile'
-        else:
-            mobile_sql = ""
-        return mobile_sql
+        if self.chk_mobile_var.get() == "on":
+            return " --mobile"
+        return ""
 
-    # --page-rank         Display page rank (PR) for Google dork results
+    # --page-rank         Display page rank for Google dork results
     @property
     def f_page_rank(self):
-        sql_page_rank = self.chk_page_rank_var.get()
-        if sql_page_rank == "on":
-            page_rank_sql = ' --page-rank'
-        else:
-            page_rank_sql = ""
-        return page_rank_sql
+        if self.chk_page_rank_var.get() == "on":
+            return " --page-rank"
+        return ""
 
     # --base64    Parameter(s) containing Base64 encoded values
     @property
     def f_base64(self):
-        sql_base64 = self.chk_base64_var.get()
-        if sql_base64 == "on":
-            base64_sql = ' --base64'
-        else:
-            base64_sql = ""
-        return base64_sql
+        if self.chk_base64_var.get() == "on":
+            return " --base64"
+        return ""
 
     # --base64-safe    Use URL and filename safe Base64 alphabet
-    # (Reference: https://en.wikipedia.org/wiki/Base64#URL_applications)
     @property
     def f_base64safe(self):
-        sql_base64safe = self.chk_base64safe_var.get()
-        if sql_base64safe == "on":
-            base64safe_sql = ' --base64-safe'
-        else:
-            base64safe_sql = ""
-        return base64safe_sql
+        if self.chk_base64safe_var.get() == "on":
+            return " --base64-safe"
+        return ""
 
     # --purge     Safely remove all content from output directory
     @property
     def f_purge(self):
-        sql_purge = self.chk_purge_var.get()
-        if sql_purge == "on":
-            purge_sql = ' --purge'
-        else:
-            purge_sql = ""
-        return purge_sql
+        if self.chk_purge_var.get() == "on":
+            return " --purge"
+        return ""
 
-    # --time-limit  Run with a time limit in seconds (e.g. 3600)
+    # --time-limit  Run with a time limit in seconds
     def f_time_limit(self, *args):
-        sql_time_limit = self.chk_time_limit_var.get()
-        if sql_time_limit == "on":
-            self.e_time_limit.config(state='normal')
-            time_limit_sql = ' --time-limit="%s"' % (self.e_time_limit.get())
-        else:
-            self.e_time_limit.config(state='disabled')
-            time_limit_sql = ""
-        return time_limit_sql
+        if self.chk_time_limit_var.get() == "on":
+            self.e_time_limit.config(state="normal")
+            return f' --time-limit="{self.e_time_limit.get()}"'
+
+        self.e_time_limit.config(state="disabled")
+        return ""
 
     # --disable-hashing     Disable hash analysis on table dumps
     @property
     def f_disable_hashing(self):
-        sql_disable_hashing = self.chk_disable_hashing_var.get()
-        if sql_disable_hashing == "on":
-            disable_hashing_sql = ' --disable-hashing'
-        else:
-            disable_hashing_sql = ""
-        return disable_hashing_sql
+        if self.chk_disable_hashing_var.get() == "on":
+            return " --disable-hashing"
+        return ""
 
     # --unsafe-naming    Perform unsafe naming substitutions
     @property
     def f_unsafe_naming(self):
-        sql_unsafe_naming = self.chk_unsafe_naming_var.get()
-        if sql_unsafe_naming == "on":
-            unsafe_naming_sql = ' --unsafe-naming'
-        else:
-            unsafe_naming_sql = ""
-        return unsafe_naming_sql
+        if self.chk_unsafe_naming_var.get() == "on":
+            return " --unsafe-naming"
+        return ""
 
     # --smart             Conduct through tests only if positive heuristic(s)
     @property
     def f_smart(self):
-        sql_smart = self.chk_smart_var.get()
-        if sql_smart == "on":
-            smart_sql = ' --smart'
-        else:
-            smart_sql = ""
-        return smart_sql
+        if self.chk_smart_var.get() == "on":
+            return " --smart"
+        return ""
 
-    # --wizard            Simple wizard interface for beginner users
+     # --wizard            Simple wizard interface for beginner users
     @property
     def f_wizard(self):
-        sql_wizard = self.chk_wizard_var.get()
-        if sql_wizard == "on":
-            wizard_sql = ' --wizard'
-        else:
-            wizard_sql = ""
-        return wizard_sql
+        if self.chk_wizard_var.get() == "on":
+            return " --wizard"
+        return ""
 
     # --dummy
     @property
     def f_dummy(self):
-        sql_dummy = self.chk_dummy_var.get()
-        if sql_dummy == "on":
-            dummy_sql = ' --dummy'
-        else:
-            dummy_sql = ""
-        return dummy_sql
+        if self.chk_dummy_var.get() == "on":
+            return " --dummy"
+        return ""
 
-    # --crack             Load and crack hashes from a file (standalone)
+    # --crack             Load and crack hashes from a file
     def f_crack(self):
-        sql_crack = self.chk_crack_var.get()
-        if sql_crack == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_crack_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.e_crack_var.set(filename.name)
-        elif sql_crack == "off":
+        else:
             self.e_crack_var.set("")
-        return
 
-    # --crack             Load and crack hashes from a file (standalone)
+    # --crack             Load and crack hashes from a file
     @property
     def f_read_crack(self):
-        sql_read_crack = self.e_crack_var.get()
-        if sql_read_crack != "":
-            read_crack_sql = ' --crack="%s"' % sql_read_crack
-        else:
-            read_crack_sql = ""
-        return read_crack_sql
+        value = self.e_crack_var.get()
+        if value:
+            return f' --crack="{value}"'
+        return ""
 
     # --debug
     @property
     def f_debug(self):
-        sql_debug = self.chk_debug_var.get()
-        if sql_debug == "on":
-            debug_sql = ' --debug'
-        else:
-            debug_sql = ""
-        return debug_sql
+        if self.chk_debug_var.get() == "on":
+            return " --debug"
+        return ""
 
     # --disable-stats
     @property
     def f_disable_stats(self):
-        sql_disable_stats = self.chk_disable_stats_var.get()
-        if sql_disable_stats == "on":
-            disable_stats_sql = ' --disable-stats'
-        else:
-            disable_stats_sql = ""
-        return disable_stats_sql
+        if self.chk_disable_stats_var.get() == "on":
+            return " --disable-stats"
+        return ""
 
     # --profile
     @property
     def f_profile(self):
-        sql_profile = self.chk_profile_var.get()
-        if sql_profile == "on":
-            profile_sql = ' --profile'
-        else:
-            profile_sql = ""
-        return profile_sql
+        if self.chk_profile_var.get() == "on":
+            return " --profile"
+        return ""
 
     # --force-dbms
     @property
     def f_force_dbms(self):
-        sql_force_dbms = self.chk_force_dbms_var.get()
-        if sql_force_dbms == "on":
-            force_dbms_sql = ' --force-dbms'
-        else:
-            force_dbms_sql = ""
-        return force_dbms_sql
+        if self.chk_force_dbms_var.get() == "on":
+            return " --force-dbms"
+        return ""
 
     # --alert=ALERT       Run shell command(s) when SQL injection is found
     @property
     def f_alert(self):
-        sql_alert = self.chk_alert_var.get()
-        if sql_alert == "on":
-            alert_sql = ' --alert="%s"' % (self.e_alert.get())
-        else:
-            alert_sql = ""
-        return alert_sql
+        if self.chk_alert_var.get() == "on":
+            return f' --alert="{self.e_alert.get()}"'
+        return ""
 
-    # --answers=ANSWERS   Set question answers (e.g. "quit=N,follow=N")
+    # --answers=ANSWERS   Set question answers
     def f_answers(self, *args):
-        sql_answers = self.chk_answers_var.get()
-        if sql_answers == "on":
-            self.e_answers.config(state='normal')
-            answers_sql = ' --answers="%s"' % (self.e_answers_value.get())
-        else:
-            self.e_answers.config(state='disabled')
-            answers_sql = ""
-        return answers_sql
+        if self.chk_answers_var.get() == "on":
+            self.e_answers.config(state="normal")
+            return f' --answers="{self.e_answers_value.get()}"'
+
+        self.e_answers.config(state="disabled")
+        return ""
 
     # --disable-coloring            Disable console output coloring
     @property
     def f_disable_coloring(self):
-        sql_disable_coloring = self.chk_disable_coloring_var.get()
-        if sql_disable_coloring == "on":
-            disable_colorinng_sql = ' --disable-coloring'
-        else:
-            disable_colorinng_sql = ""
-        return disable_colorinng_sql
+        if self.chk_disable_coloring_var.get() == "on":
+            return " --disable-coloring"
+        return ""
 
     # -s SESSIONFILE      Save and resume all data retrieved on a session file
     def f_session_file(self):
@@ -3033,35 +2950,41 @@ class MainApplication(tkinter.Frame):
         return
 
     # -s SESSIONFILE      Save and resume all data retrieved on a session file
+    def f_session_file(self):
+        if self.chk_session_file_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
+            if filename:
+                self.e_session_file_var.set(filename.name)
+        else:
+            self.e_session_file_var.set("")
+
+    # -s SESSIONFILE      Save and resume all data retrieved on a session file
     @property
     def f_read_session_file(self):
-        sql_read_session_file = self.e_session_file_var.get()
-        if sql_read_session_file != "":
-            read_session_file_sql = ' -s "%s"' % sql_read_session_file
-        else:
-            read_session_file_sql = ""
-        return read_session_file_sql
+        value = self.e_session_file_var.get()
+        if value:
+            return f' -s "{value}"'
+        return ""
 
     # -t TRAFFICFILE      Log all HTTP traffic into a textual file
     def f_read_traffic_file(self):
-        sql_read_traffic_file = self.chk_read_traffic_file_var.get()
-        if sql_read_traffic_file == "on":
-            read_traffic_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".txt")
-            if read_traffic_file:
-                self.e_traffic_file_var.set(read_traffic_file.name)
-        elif sql_read_traffic_file == "off":
+        if self.chk_read_traffic_file_var.get() == "on":
+            traffic_file = tkinter.filedialog.asksaveasfile(
+                mode="w",
+                defaultextension=".txt"
+            )
+            if traffic_file:
+                self.e_traffic_file_var.set(traffic_file.name)
+        else:
             self.e_traffic_file_var.set("")
-        return
 
     # -t TRAFFICFILE      Log all HTTP traffic into a textual file
     @property
     def f_save_traffic_file(self):
-        sql_save_traffic_file = self.e_traffic_file_var.get()
-        if sql_save_traffic_file != "":
-            save_traffic_file_sql = ' -t "%s"' % sql_save_traffic_file
-        else:
-            save_traffic_file_sql = ""
-        return save_traffic_file_sql
+        value = self.e_traffic_file_var.get()
+        if value:
+            return f' -t "{value}"'
+        return ""
 
     # Open Session FILE
     def f_open_session_file(self):
@@ -3149,12 +3072,9 @@ class MainApplication(tkinter.Frame):
     # --file-read=FILE..  Read a file from the back-end DBMS file system
     @property
     def f_file_read(self):
-        sql_file_read = self.chk_file_read_var.get()
-        if sql_file_read == "on":
-            file_read_sql = ' --file-read="%s"' % (self.e_file_read.get())
-        else:
-            file_read_sql = ""
-        return file_read_sql
+        if self.chk_file_read_var.get() == "on":
+            return f' --file-read="{self.e_file_read.get()}"'
+        return ""
 
     # --file-write=WFILE  Write a local file on the back-end DBMS file system
     def f_file_write(self):
@@ -3170,2055 +3090,1582 @@ class MainApplication(tkinter.Frame):
     # --file-write=WFILE  Write a local file on the back-end DBMS file system
     @property
     def f_read_file_write(self):
-        sql_read_file_write = self.e_file_write_var.get()
-        if sql_read_file_write != "":
-            read_file_write_sql = ' --file-write="%s"' % sql_read_file_write
-        else:
-            read_file_write_sql = ""
-        return read_file_write_sql
+        value = self.e_file_write_var.get()
+        if value:
+            return f' --file-write="{value}"'
+        return ""
 
     # --file-dest=DFILE   Back-end DBMS absolute filepath to write to
     @property
     def f_file_dest(self):
-        sql_file_dest = self.chk_file_dest_var.get()
-        if sql_file_dest == "on":
-            file_dest_sql = ' --file-dest="%s"' % (self.e_file_dest.get())
-        else:
-            file_dest_sql = ""
-        return file_dest_sql
+        if self.chk_file_dest_var.get() == "on":
+            return f' --file-dest="{self.e_file_dest.get()}"'
+        return ""
 
     # --os-cmd=OSCMD      Execute an operating system command
     @property
     def f_os_cmd(self):
-        sql_os_cmd = self.chk_os_cmd_var.get()
-        if sql_os_cmd == "on":
-            os_cmd_sql = ' --os-cmd="%s"' % (self.e_os_cmd.get())
-        else:
-            os_cmd_sql = ""
-        return os_cmd_sql
+        if self.chk_os_cmd_var.get() == "on":
+            return f' --os-cmd="{self.e_os_cmd.get()}"'
+        return ""
 
     # --os-shell          Prompt for an interactive operating system shell
     @property
     def f_os_shell(self):
-        sql_os_shell = self.chk_os_shell_var.get()
-        if sql_os_shell == "on":
-            os_shell_sql = ' --os-shell'
-        else:
-            os_shell_sql = ""
-        return os_shell_sql
+        if self.chk_os_shell_var.get() == "on":
+            return " --os-shell"
+        return ""
 
     # --os-pwn            Prompt for an out-of-band shell, meterpreter or VNC
     @property
     def f_os_pwn(self):
-        sql_os_pwn = self.chk_os_pwn_var.get()
-        if sql_os_pwn == "on":
-            os_pwn_sql = ' --os-pwn'
-        else:
-            os_pwn_sql = ""
-        return os_pwn_sql
+        if self.chk_os_pwn_var.get() == "on":
+            return " --os-pwn"
+        return ""
 
     # --os-smbrelay       One click prompt for an OOB shell, meterpreter or VNC
     @property
     def f_os_smbrelay(self):
-        sql_os_smbrelay = self.chk_os_smbrelay_var.get()
-        if sql_os_smbrelay == "on":
-            os_smbrelay_sql = ' --os-smbrelay'
-        else:
-            os_smbrelay_sql = ""
-        return os_smbrelay_sql
+        if self.chk_os_smbrelay_var.get() == "on":
+            return " --os-smbrelay"
+        return ""
 
     # --os-bof            Stored procedure buffer overflow exploitation
     @property
     def f_os_bof(self):
-        sql_os_bof = self.chk_os_bof_var.get()
-        if sql_os_bof == "on":
-            os_bof_sql = ' --os-bof'
-        else:
-            os_bof_sql = ""
-        return os_bof_sql
+        if self.chk_os_bof_var.get() == "on":
+            return " --os-bof"
+        return ""
 
     # --priv-esc          Database process' user privilege escalation
     @property
     def f_priv_esc(self):
-        sql_priv_esc = self.chk_priv_esc_var.get()
-        if sql_priv_esc == "on":
-            priv_esc_sql = ' --priv-esc'
-        else:
-            priv_esc_sql = ""
-        return priv_esc_sql
+        if self.chk_priv_esc_var.get() == "on":
+            return " --priv-esc"
+        return ""
 
     # --msf-path=MSFPATH  Local path where Metasploit Framework is installed
     def f_msf_path(self):
-        sql_msf_path = self.chk_msf_path_var.get()
-        if sql_msf_path == "on":
-            msf_path_sql = tkinter.filedialog.askdirectory()
-            if msf_path_sql:
-                self.e_msf_path_var.set(msf_path_sql)
-        elif sql_msf_path == "off":
+        if self.chk_msf_path_var.get() == "on":
+            value = tkinter.filedialog.askdirectory()
+            if value:
+                self.e_msf_path_var.set(value)
+        else:
             self.e_msf_path_var.set("")
-        return
 
     # --msf-path=MSFPATH  Local path where Metasploit Framework is installed
     @property
     def f_read_msf_path(self):
-        sql_read_msf_path = self.chk_msf_path_var.get()
-        if sql_read_msf_path == "on":
-            read_msf_path_sql = ' --msf-path="%s"' % (self.e_read_msf_path.get())
-        else:
-            read_msf_path_sql = ""
-        return read_msf_path_sql
+        if self.chk_msf_path_var.get() == "on":
+            return f' --msf-path="{self.e_read_msf_path.get()}"'
+        return ""
 
     # --tmp-path=TMPPATH  Remote absolute path of temporary files directory
     @property
     def f_tmp_path(self):
-        sql_tmp_path = self.chk_tmp_path_var.get()
-        if sql_tmp_path == "on":
-            tmp_path_sql = ' --tmp-path="%s"' % (self.e_tmp_path.get())
-        else:
-            tmp_path_sql = ""
-        return tmp_path_sql
+        if self.chk_tmp_path_var.get() == "on":
+            return f' --tmp-path="{self.e_tmp_path.get()}"'
+        return ""
 
     # --reg-read          Read a Windows registry key value
     @property
     def f_reg_read(self):
-        sql_reg_read = self.chk_reg_read_var.get()
-        if sql_reg_read == "on":
-            reg_read_sql = ' --reg-read'
-        else:
-            reg_read_sql = ""
-        return reg_read_sql
+        if self.chk_reg_read_var.get() == "on":
+            return " --reg-read"
+        return ""
 
     # --reg-add           Write a Windows registry key value data
     @property
     def f_reg_add(self):
-        sql_reg_add = self.chk_reg_add_var.get()
-        if sql_reg_add == "on":
-            reg_add_sql = ' --reg-add'
-        else:
-            reg_add_sql = ""
-        return reg_add_sql
+        if self.chk_reg_add_var.get() == "on":
+            return " --reg-add"
+        return ""
 
     # --reg-del           Delete a Windows registry key value
     @property
     def f_reg_del(self):
-        sql_reg_del = self.chk_reg_del_var.get()
-        if sql_reg_del == "on":
-            reg_del_sql = ' --reg-del'
-        else:
-            reg_del_sql = ""
-        return reg_del_sql
+        if self.chk_reg_del_var.get() == "on":
+            return " --reg-del"
+        return ""
 
     # --reg-key=REGKEY    Windows registry key
     @property
     def f_reg_key(self):
-        sql_reg_key = self.chk_reg_key_var.get()
-        if sql_reg_key == "on":
-            reg_key_sql = ' --reg-key="%s"' % (self.e_reg_key.get())
-        else:
-            reg_key_sql = ""
-        return reg_key_sql
+        if self.chk_reg_key_var.get() == "on":
+            return f' --reg-key="{self.e_reg_key.get()}"'
+        return ""
 
     # --reg-value=REGVAL  Windows registry key value
     @property
     def f_reg_value(self):
-        sql_reg_value = self.chk_reg_value_var.get()
-        if sql_reg_value == "on":
-            reg_value_sql = ' --reg-value="%s"' % (self.e_reg_value.get())
-        else:
-            reg_value_sql = ""
-        return reg_value_sql
+        if self.chk_reg_value_var.get() == "on":
+            return f' --reg-value="{self.e_reg_value.get()}"'
+        return ""
 
     # --reg-data=REGDATA  Windows registry key value data
     @property
     def f_reg_data(self):
-        sql_reg_data = self.chk_reg_data_var.get()
-        if sql_reg_data == "on":
-            reg_data_sql = ' --reg-data="%s"' % (self.e_reg_data.get())
-        else:
-            reg_data_sql = ""
-        return reg_data_sql
+        if self.chk_reg_data_var.get() == "on":
+            return f' --reg-data="{self.e_reg_data.get()}"'
+        return ""
 
     # --reg-type=REGTYPE  Windows registry key value type
     @property
     def f_reg_type(self):
-        sql_reg_type = self.chk_reg_type_var.get()
-        if sql_reg_type == "on":
-            reg_type_sql = ' --reg-type="%s"' % (self.e_reg_type.get())
-        else:
-            reg_type_sql = ""
-        return reg_type_sql
+        if self.chk_reg_type_var.get() == "on":
+            return f' --reg-type="{self.e_reg_type.get()}"'
+        return ""
 
     # --api
     @property
     def f_api(self):
-        sql_api = self.chk_api_var.get()
-        if sql_api == "on":
-            api_sql = ' --api'
-        else:
-            api_sql = ""
-        return api_sql
+        if self.chk_api_var.get() == "on":
+            return " --api"
+        return ""
 
     # --taskid
     @property
     def f_task_id(self):
-        sql_task_id = self.chk_task_id_var.get()
-        if sql_task_id == "on":
-            task_id_sql = ' --taskid'
-        else:
-            task_id_sql = ""
-        return task_id_sql
+        if self.chk_task_id_var.get() == "on":
+            return " --taskid"
+        return ""
 
     # --database
     @property
     def f_database(self):
-        sql_database = self.chk_database_var.get()
-        if sql_database == "on":
-            database_sql = ' --database'
-        else:
-            database_sql = ""
-        return database_sql
+        if self.chk_database_var.get() == "on":
+            return " --database"
+        return ""
 
     # --sql-query=QUERY   SQL statement to be executed
     def f_sql_query(self, *args):
-        sql_query = self.chk_sql_query_var.get()
-        if sql_query == "on":
-            self.e_sql_query.config(state='normal')
-            query_sql = ' --sql-query="%s"' % (self.e_sql_query.get())
-        else:
-            self.e_sql_query.config(state='disabled')
-            query_sql = ""
-        return query_sql
+        if self.chk_sql_query_var.get() == "on":
+            self.e_sql_query.config(state="normal")
+            return f' --sql-query="{self.e_sql_query.get()}"'
+
+        self.e_sql_query.config(state="disabled")
+        return ""
 
     # --data=DATA         Data string to be sent through POST
     @property
     def f_data(self):
-        sql_data = self.chk_data_var.get()
-        if sql_data == "on":
-            data_sql = ' --data="%s"' % (self.e_data.get())
-        else:
-            data_sql = ""
-        return data_sql
+        if self.chk_data_var.get() == "on":
+            return f' --data="{self.e_data.get("1.0", "end-1c")}"'
+        return ""
 
     # --param-del=PARA..  Character used for splitting parameter values
     @property
     def f_param_del(self):
-        sql_param_del = self.chk_param_del_var.get()
-        if sql_param_del == "on":
-            param_del_sql = ' --param-del="%s"' % (self.e_param_del.get())
-        else:
-            param_del_sql = ""
-        return param_del_sql
+        if self.chk_param_del_var.get() == "on":
+            return f' --param-del="{self.e_param_del.get()}"'
+        return ""
 
     # --cookie=COOKIE     HTTP Cookie header value
     @property
     def f_cookie(self):
-        sql_cookie = self.chk_cookie_var.get()
-        if sql_cookie == "on":
-            cookie_sql = ' --cookie="%s"' % (self.e_cookie.get())
-        else:
-            cookie_sql = ""
-        return cookie_sql
+        if self.chk_cookie_var.get() == "on":
+            return f' --cookie="{self.e_cookie.get()}"'
+        return ""
 
     # --live-cookies=L.. Live cookies file used for loading up-to-date values
     def f_live_cookies(self):
-        sql_live_cookies = self.chk_live_cookies_var.get()
-        if sql_live_cookies == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_live_cookies_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.var_read_live_cookies.set(filename.name)
-        elif sql_live_cookies == "off":
+        else:
             self.var_read_live_cookies.set("")
-        return
 
     # --live-cookies=L.. Live cookies file used for loading up-to-date values
     @property
     def read_live_cookies(self):
-        sql_read_live_cookies = self.var_read_live_cookies.get()
-        if sql_read_live_cookies != "":
-            read_live_cookies_sql = ' --live-cookies="%s"' % sql_read_live_cookies
-        else:
-            read_live_cookies_sql = ""
-        return read_live_cookies_sql
+        value = self.var_read_live_cookies.get()
+        if value:
+            return f' --live-cookies="{value}"'
+        return ""
 
     # --load-cookies=L..  File containing cookies in Netscape/wget format
     def f_load_cookies(self):
-        sql_load_cookies = self.chk_load_cookies_var.get()
-        if sql_load_cookies == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_load_cookies_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.var_read_load_cookies.set(filename.name)
-        elif sql_load_cookies == "off":
+        else:
             self.var_read_load_cookies.set("")
-        return
 
     # --load-cookies=L..  File containing cookies in Netscape/wget format
     @property
     def read_load_cookies(self):
-        sql_read_load_cookies = self.var_read_load_cookies.get()
-        if sql_read_load_cookies != "":
-            read_load_cookies_sql = ' --load-cookies="%s"' % sql_read_load_cookies
-        else:
-            read_load_cookies_sql = ""
-        return read_load_cookies_sql
+        value = self.var_read_load_cookies.get()
+        if value:
+            return f' --load-cookies="{value}"'
+        return ""
 
     # --drop-set-cookie   Ignore Set-Cookie header from response
     @property
     def f_drop_set_cookie(self):
-        sql_drop_set_cookie = self.chk_drop_set_sookie_var.get()
-        if sql_drop_set_cookie == "on":
-            drop_set_cookie_sql = ' --drop-set-cookie'
-        else:
-            drop_set_cookie_sql = ""
-        return drop_set_cookie_sql
+        if self.chk_drop_set_sookie_var.get() == "on":
+            return " --drop-set-cookie"
+        return ""
 
     # --http1
     @property
     def f_http1(self):
-        sql_http1 = self.chk_http1_var.get()
-        if sql_http1 == "on":
-            http1_sql = ' --http1'
-        else:
-            http1_sql = ""
-        return http1_sql
-        
+        if self.chk_http1_var.get() == "on":
+            return " --http1"
+        return ""
+
     # --http2
     @property
     def f_http2(self):
-        sql_http2 = self.chk_http2_var.get()
-        if sql_http2 == "on":
-            http2_sql = ' --http2'
-        else:
-            http2_sql = ""
-        return http2_sql
-        
+        if self.chk_http2_var.get() == "on":
+            return " --http2"
+        return ""
+
     # --randomize=RPARAM  Randomly change value for given parameter(s)
     def f_randomize(self, *args):
-        sql_randomize = self.chk_randomize_var.get()
-        if sql_randomize == "on":
-            self.e_randomize.config(state='normal')
-            randomize_sql = ' --randomize="%s"' % (self.e_randomize.get())
-        else:
-            self.e_randomize.config(state='disabled')
-            randomize_sql = ""
-        return randomize_sql
+        if self.chk_randomize_var.get() == "on":
+            self.e_randomize.config(state="normal")
+            return f' --randomize="{self.e_randomize.get()}"'
+
+        self.e_randomize.config(state="disabled")
+        return ""
 
     # --force-ssl         Force usage of SSL/HTTPS requests
     @property
     def f_force_ssl(self):
-        sql_force_ssl = self.chk_force_ssl_var.get()
-        if sql_force_ssl == "on":
-            force_ssl_sql = ' --force-ssl'
-        else:
-            force_ssl_sql = ""
-        return force_ssl_sql
+        if self.chk_force_ssl_var.get() == "on":
+            return " --force-ssl"
+        return ""
 
     # --random-agent     Use randomly selected HTTP User-Agent header
     @property
     def f_random_agent(self):
-        sql_random_agent = self.chk_random_agent_var.get()
-        if sql_random_agent == "on":
-            random_agent_sql = ' --random-agent'
-        else:
-            random_agent_sql = ""
-        return random_agent_sql
+        if self.chk_random_agent_var.get() == "on":
+            return " --random-agent"
+        return ""
 
     # --proxy-cred=PCRED  HTTP proxy authentication credentials (name:password)
     def f_proxy_cred(self, *args):
-        sql_proxy_cred = self.chk_proxy_cred_var.get()
-        if sql_proxy_cred == "on":
-            self.e_proxy_cred.config(state='normal')
-            proxy_cred_sql = ' --proxy-cred="%s"' % (self.e_proxy_cred.get())
-        else:
-            self.e_proxy_cred.config(state='disabled')
-            proxy_cred_sql = ""
-        return proxy_cred_sql
+        if self.chk_proxy_cred_var.get() == "on":
+            self.e_proxy_cred.config(state="normal")
+            return f' --proxy-cred="{self.e_proxy_cred.get()}"'
+
+        self.e_proxy_cred.config(state="disabled")
+        return ""
 
     # --ignore-proxy      Ignore system default HTTP proxy
     @property
     def f_ignore_proxy(self):
-        sql_ignore_proxy = self.chk_ignore_proxy_var.get()
-        if sql_ignore_proxy == "on":
-            ignore_proxy_sql = ' --ignore-proxy'
-        else:
-            ignore_proxy_sql = ""
-        return ignore_proxy_sql
+        if self.chk_ignore_proxy_var.get() == "on":
+            return " --ignore-proxy"
+        return ""
 
     # --ignore-redirects    Ignore redirection attempts
     @property
     def f_ignore_redirects(self):
-        sql_ignore_redirects = self.chk_ignore_redirects_var.get()
-        if sql_ignore_redirects == "on":
-            ignore_redirects_sql = ' --ignore-redirects'
-        else:
-            ignore_redirects_sql = ""
-        return ignore_redirects_sql
+        if self.chk_ignore_redirects_var.get() == "on":
+            return " --ignore-redirects"
+        return ""
 
     # --ignore-timeouts   Ignore connection timeouts
     @property
     def f_ignore_timeouts(self):
-        sql_ignore_timeouts = self.chk_ignore_timeouts_var.get()
-        if sql_ignore_timeouts == "on":
-            ignore_timeouts_sql = ' --ignore-timeouts'
-        else:
-            ignore_timeouts_sql = ""
-        return ignore_timeouts_sql
+        if self.chk_ignore_timeouts_var.get() == "on":
+            return " --ignore-timeouts"
+        return ""
 
     # --proxy-file=PRO..  Load proxy list from a file
     def f_proxy_file(self):
-        sql_proxy_file = self.chk_proxy_file_var.get()
-        if sql_proxy_file == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_proxy_file_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.chk_read_proxy_file_var.set(filename.name)
-        elif sql_proxy_file == "off":
+        else:
             self.chk_read_proxy_file_var.set("")
-        return
 
     # --proxy-file=PRO..  Load proxy list from a file
     @property
     def f_read_proxy_file(self):
-        sql_read_proxy_file = self.chk_read_proxy_file_var.get()
-        if sql_read_proxy_file != "":
-            sql_read_proxy_file = ' --proxy-file="%s"' % sql_read_proxy_file
-        else:
-            sql_read_proxy_file = ""
-        return sql_read_proxy_file
+        value = self.chk_read_proxy_file_var.get()
+        if value:
+            return f' --proxy-file="{value}"'
+        return ""
 
     # --proxy-freq=PRO.. Requests between change of proxy from a given list
     def f_proxy_freq(self, *args):
-        sql_proxy_freq = self.chk_proxy_freq_var.get()
-        if sql_proxy_freq == "on":
-            self.e_proxy_freq.config(state='normal')
-            proxy_freq_sql = ' --proxy-freq="%s"' % (self.e_proxy_freq.get())
-        else:
-            self.e_proxy_freq.config(state='disabled')
-            proxy_freq_sql = ""
-        return proxy_freq_sql
+        if self.chk_proxy_freq_var.get() == "on":
+            self.e_proxy_freq.config(state="normal")
+            return f' --proxy-freq="{self.e_proxy_freq.get()}"'
+
+        self.e_proxy_freq.config(state="disabled")
+        return ""
 
     # --hpp               Use HTTP parameter pollution
     @property
     def f_hpp(self):
-        sql_hpp = self.chk_hpp_var.get()
-        if sql_hpp == "on":
-            hpp_sql = ' --hpp'
-        else:
-            hpp_sql = ""
-        return hpp_sql
+        if self.chk_hpp_var.get() == "on":
+            return " --hpp"
+        return ""
 
     # --cookie-del=COO..  Character used for splitting cookie values
     @property
     def f_cookie_del(self):
-        sql_cookie_del = self.chk_cookie_del_var.get()
-        if sql_cookie_del == "on":
-            cookie_del_sql = ' --cookie-del="%s"' % (self.e_cookie_del.get())
-        else:
-            cookie_del_sql = ""
-        return cookie_del_sql
+        if self.chk_cookie_del_var.get() == "on":
+            return f' --cookie-del="{self.e_cookie_del.get()}"'
+        return ""
 
     # --host=HOST         HTTP Host header
     def f_host(self, *args):
-        sql_host = self.chk_host_var.get()
-        if sql_host == "on":
-            self.e_host.config(state='normal')
-            host_sql = ' --host="%s"' % (self.e_host_value.get())
-        else:
-            self.e_host.config(state='disabled')
-            host_sql = ""
-        return host_sql
+        if self.chk_host_var.get() == "on":
+            self.e_host.config(state="normal")
+            return f' --host="{self.e_host_value.get()}"'
+
+        self.e_host.config(state="disabled")
+        return ""
 
     # --referer=REFERER   HTTP Referer header
     def f_referer(self, *args):
-        sql_referer = self.chk_referer_var.get()
-        if sql_referer == "on":
-            self.e_referer.config(state='normal')
-            referer_sql = ' --referer="%s"' % (self.e_referer_value.get())
-        else:
-            self.e_referer.config(state='disabled')
-            referer_sql = ""
-        return referer_sql
+        if self.chk_referer_var.get() == "on":
+            self.e_referer.config(state="normal")
+            return f' --referer="{self.e_referer_value.get()}"'
+
+        self.e_referer.config(state="disabled")
+        return ""
 
     # --headers=HEADERS   Extra headers (e.g. "Accept-Language: fr\nETag: 123")
     def f_headers(self, *args):
-        sql_headers = self.chk_headers_var.get()
-        if sql_headers == "on":
-            self.e_headers.config(state='normal')
-            headers_sql = ' --headers="%s"' % (self.e_headers_value.get())
-        else:
-            self.e_headers.config(state='disabled')
-            headers_sql = ""
-        return headers_sql
+        if self.chk_headers_var.get() == "on":
+            self.e_headers.config(state="normal")
+            return f' --headers="{self.e_headers_value.get()}"'
+
+        self.e_headers.config(state="disabled")
+        return ""
 
     # --headers=@file.txt load your own txt file with headers
     def f_load_headers(self):
-        sql_load_headers = self.chk_load_headers_var.get()
-        if sql_load_headers == "on":
-            filename = tkinter.filedialog.askopenfilename(initialdir="./SQM/", title="broweser_simulation_header",
-                                                          filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
+        if self.chk_load_headers_var.get() == "on":
+            filename = tkinter.filedialog.askopenfilename(
+                initialdir="./SQM/",
+                title="broweser_simulation_header",
+                filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
+            )
             if filename:
                 self.var_read_load_headers.set(filename)
-        elif sql_load_headers == "off":
+        else:
             self.var_read_load_headers.set("")
-        return
 
     # --headers=@file.txt load your own txt file with headers
     @property
     def read_load_headers(self):
-        sql_read_load_headers = self.var_read_load_headers.get()
-        if sql_read_load_headers != "":
-            read_load_headers_sql = ' --headers="%s"' % sql_read_load_headers
-        else:
-            read_load_headers_sql = ""
-        return read_load_headers_sql
+        value = self.var_read_load_headers.get()
+        if value:
+            return f' --headers="{value}"'
+        return ""
 
     # --auth-type=ATYPE   HTTP authentication type (Basic, Digest or NTLM)
     def f_auth_type(self, *args):
-        sql_auth_type = self.chk_auth_type_var.get()
-        if sql_auth_type == "on":
-            self.e_auth_type.config(state='normal')
-            auth_type_sql = ' --auth-type="%s"' % (self.e_auth_type.get())
-        else:
-            self.e_auth_type.config(state='disabled')
-            auth_type_sql = ""
-        return auth_type_sql
+        if self.chk_auth_type_var.get() == "on":
+            self.e_auth_type.config(state="normal")
+            return f' --auth-type="{self.e_auth_type.get()}"'
+
+        self.e_auth_type.config(state="disabled")
+        return ""
 
     # --auth-cred=ACRED   HTTP authentication credentials (name:password)
     def f_auth_cred(self, *args):
-        sql_auth_cred = self.chk_auth_cred_var.get()
-        if sql_auth_cred == "on":
-            self.e_auth_cred.config(state='normal')
-            auth_cred_sql = ' --auth-cred="%s"' % (self.e_auth_cred.get())
-        else:
-            self.e_auth_cred.config(state='disabled')
-            auth_cred_sql = ""
-        return auth_cred_sql
+        if self.chk_auth_cred_var.get() == "on":
+            self.e_auth_cred.config(state="normal")
+            return f' --auth-cred="{self.e_auth_cred.get()}"'
+
+        self.e_auth_cred.config(state="disabled")
+        return ""
 
     # --auth-file=AUTH..  HTTP authentication PEM cert/private key file
     def f_auth_file(self):
-        sql_auth_file = self.chk_auth_file_var.get()
-        if sql_auth_file == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_auth_file_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.var_auth_file.set(filename.name)
-        elif sql_auth_file == "off":
+        else:
             self.var_auth_file.set("")
-        return
 
     # --auth-file=AUTH..  HTTP authentication PEM cert/private key file
     @property
     def read_auth_file(self):
-        auth_file = self.var_auth_file.get()
-        if auth_file != "":
-            sql_auth_file = ' --auth-file="%s"' % auth_file
-        else:
-            sql_auth_file = ""
-        return sql_auth_file
+        value = self.var_auth_file.get()
+        if value:
+            return f' --auth-file="{value}"'
+        return ""
 
     # --delay=DELAY       Delay in seconds between each HTTP request
     def f_delay(self, *args):
-        sql_delay = self.chk_delay_var.get()
-        if sql_delay == "on":
-            self.e_delay.config(state='normal')
-            delay_sql = ' --delay="%s"' % (self.e_delay_value.get())
-        else:
-            self.e_delay.config(state='disabled')
-            delay_sql = ""
-        return delay_sql
+        if self.chk_delay_var.get() == "on":
+            self.e_delay.config(state="normal")
+            return f' --delay="{self.e_delay_value.get()}"'
+
+        self.e_delay.config(state="disabled")
+        return ""
 
     # --timeout=TIMEOUT   Seconds to wait before timeout connection (default 30)
     def f_time_out(self, *args):
-        sql_time_out = self.chk_time_out_var.get()
-        if sql_time_out == "on":
-            self.e_time_out.config(state='normal')
-            time_out_sql = ' --timeout="%s"' % (self.e_time_out.get())
-        else:
-            self.e_time_out.config(state='disabled')
-            time_out_sql = ""
-        return time_out_sql
+        if self.chk_time_out_var.get() == "on":
+            self.e_time_out.config(state="normal")
+            return f' --timeout="{self.e_time_out.get()}"'
+
+        self.e_time_out.config(state="disabled")
+        return ""
 
     # --retries=RETRIES   Retries when the connection timeouts (default 3)
     def f_retries(self, *args):
-        sql_retries = self.chk_retries_var.get()
-        if sql_retries == "on":
-            self.e_retries.config(state='normal')
-            retries_sql = ' --retries="%s"' % (self.e_retries.get())
-        else:
-            self.e_retries.config(state='disabled')
-            retries_sql = ""
-        return retries_sql
+        if self.chk_retries_var.get() == "on":
+            self.e_retries.config(state="normal")
+            return f' --retries="{self.e_retries.get()}"'
+
+        self.e_retries.config(state="disabled")
+        return ""
 
     # --safe-url=SAFURL   Url address to visit frequently during testing
     def f_safe_url(self):
-        sql_safe_url = self.chk_safe_url_var.get()
-        if sql_safe_url == "on":
-            safe_url_sql = ' --safe-url="%s"' % (self.e_safe_url.get())
-        else:
-            safe_url_sql = ""
-        return safe_url_sql
+        if self.chk_safe_url_var.get() == "on":
+            return f' --safe-url="{self.e_safe_url.get()}"'
+        return ""
 
     # --skip-urlencode    Skip URL encoding of payload data
     @property
     def f_skip_urlencode(self):
-        sql_skip_urlencode = self.chk_skip_urlencode_var.get()
-        if sql_skip_urlencode == "on":
-            skip_urlencode_sql = ' --skip-urlencode'
-        else:
-            skip_urlencode_sql = ""
-        return skip_urlencode_sql
+        if self.chk_skip_urlencode_var.get() == "on":
+            return " --skip-urlencode"
+        return ""
 
-    # --eval=EVALCODE Evaluate provided Python code before the request (e.g."import hashlib;id2=hashlib.md5(id).hexdige
+    # --eval=EVALCODE Evaluate provided Python code before the request
     def f_eval_code(self, *args):
-        sql_eval_code = self.chk_eval_code_var.get()
-        if sql_eval_code == "on":
-            self.e_eval_code.config(state='normal')
-            eval_code_sql = ' --eval="%s"' % (self.e_eval_code.get())
-        else:
-            self.e_eval_code.config(state='disabled')
-            eval_code_sql = ""
-        return eval_code_sql
+        if self.chk_eval_code_var.get() == "on":
+            self.e_eval_code.config(state="normal")
+            return f' --eval="{self.e_eval_code.get()}"'
+
+        self.e_eval_code.config(state="disabled")
+        return ""
 
     # --chunked            Use HTTP chunked transfer encoded (POST) requests
     @property
     def f_chunked(self):
-        sql_chunked = self.chk_chunked_var.get()
-        if sql_chunked == "on":
-            chunked_sql = ' --chunked'
-        else:
-            chunked_sql = ""
-        return chunked_sql
+        if self.chk_chunked_var.get() == "on":
+            return " --chunked"
+        return ""
 
     # --method=METHOD     Force usage of given HTTP method (e.g. PUT)
     def f_method(self, *args):
-        sql_method = self.chk_method_var.get()
-        self.e_method.config(state='readonly')
-        if sql_method == "on":
-            method_sql = ' --method="%s"' % (self.e_method_value.get())
-        else:
-            self.e_method.config(state='disabled')
-            method_sql = ""
-        return method_sql
+        if self.chk_method_var.get() == "on":
+            self.e_method.config(state="readonly")
+            return f' --method="{self.e_method_value.get()}"'
+
+        self.e_method.config(state="disabled")
+        return ""
 
     # -H HEADER, --hea..  Extra header (e.g. "X-Forwarded-For: 127.0.0.1")
     def f_header(self, *args):
-        sql_header = self.chk_header_var.get()
-        if sql_header == "on":
-            self.e_header.config(state='normal')
-            header_sql = ' -H "%s"' % (self.e_header_value.get())
-        else:
-            self.e_header.config(state='disabled')
-            header_sql = ""
-        return header_sql
+        if self.chk_header_var.get() == "on":
+            self.e_header.config(state="normal")
+            return f' -H "{self.e_header_value.get()}"'
+
+        self.e_header.config(state="disabled")
+        return ""
 
     # --ignore-code=IG..  Ignore HTTP error code (e.g. 401)
     def f_ignore(self, *args):
-        sql_ignore = self.chk_ignore_var.get()
-        if sql_ignore == "on":
-            self.e_ignore.config(state='normal')
-            ignore_sql = ' --ignore-code="%s"' % (self.e_ignore_value.get())
-        else:
-            self.e_ignore.config(state='disabled')
-            ignore_sql = ""
-        return ignore_sql
+        if self.chk_ignore_var.get() == "on":
+            self.e_ignore.config(state="normal")
+            return f' --ignore-code="{self.e_ignore_value.get()}"'
+
+        self.e_ignore.config(state="disabled")
+        return ""
 
     # --safe-post=SAFE..  POST data to send to a safe URL
     @property
     def f_safe_post(self):
-        sql_safe_post = self.chk_safe_post_var.get()
-        if sql_safe_post == "on":
-            safe_post_sql = ' --safe-post="%s"' % (self.e_safe_post.get())
-        else:
-            safe_post_sql = ""
-        return safe_post_sql
+        if self.chk_safe_post_var.get() == "on":
+            return f' --safe-post="{self.e_safe_post.get()}"'
+        return ""
 
     # --safe-req=SAFER..  Load safe HTTP request from a file
     @property
     def f_safe_req(self):
-        sql_safe_req = self.chk_safe_req_var.get()
-        if sql_safe_req == "on":
-            safe_req_sql = ' --safe-req="%s"' % (self.e_safe_req.get())
-        else:
-            safe_req_sql = ""
-        return safe_req_sql
+        if self.chk_safe_req_var.get() == "on":
+            return f' --safe-req="{self.e_safe_req.get()}"'
+        return ""
 
     # --safe-freq=SAFE..  Test requests between two visits to a given safe URL
     @property
     def f_safe_freq(self):
-        sql_safe_freq = self.chk_safe_freq_var.get()
-        if sql_safe_freq == "on":
-            safe_freq_sql = ' --safe-freq="%s"' % (self.e_safe_freq.get())
-        else:
-            safe_freq_sql = ""
-        return safe_freq_sql
+        if self.chk_safe_freq_var.get() == "on":
+            return f' --safe-freq="{self.e_safe_freq.get()}"'
+        return ""
 
-    #  --csrf-token=CSR..  Parameter used to hold anti-CSRF token
+    # --csrf-token=CSR..  Parameter used to hold anti-CSRF token
     def f_csrf_token(self):
-        sql_csrf_token = self.chk_csrf_token_var.get()
-        if sql_csrf_token == "on":
-            csrf_token_sql = ' --csrf-token="%s"' % (self.e_csrf_token.get())
-        else:
-            csrf_token_sql = ""
-        return csrf_token_sql
+        if self.chk_csrf_token_var.get() == "on":
+            return f' --csrf-token="{self.e_csrf_token.get()}"'
+        return ""
 
     # --csrf-method=CS..  HTTP method to use during anti-CSRF token page visit
     def f_csrf_method(self, *args):
-        sql_csrf_method = self.chk_csrf_method_var.get()
-        self.e_csrf_method.config(state='readonly')
-        if sql_csrf_method == "on":
-            csrf_method_sql = ' --csrf-method="%s"' % (self.e_csrf_method_value.get())
-        else:
-            self.e_csrf_method.config(state='disabled')
-            csrf_method_sql = ""
-        return csrf_method_sql
-    
+        if self.chk_csrf_method_var.get() == "on":
+            self.e_csrf_method.config(state="readonly")
+            return f' --csrf-method="{self.e_csrf_method_value.get()}"'
+
+        self.e_csrf_method.config(state="disabled")
+        return ""
+
     # --csrf-data=POST data to send during anti-CSRF token page visit
     def f_csrf_data(self, *args):
-        sql_csrf_data = self.chk_csrf_data_method_var.get()
-        if sql_csrf_data == "on":
-            csrf_data_sql = ' --csrf-data="%s"' % (self.e_csrf_data.get())
-        else:
-            csrf_data_sql = ""
-        return csrf_data_sql
+        if self.chk_csrf_data_method_var.get() == "on":
+            return f' --csrf-data="{self.e_csrf_data.get()}"'
+        return ""
 
     # --csrf-retries    Retries for anti-CSRF token retrieval
     def f_csrf_retries(self, *args):
-        sql_csrf_retries = self.chk_csrf_retries_var.get()
-        if sql_csrf_retries == "on":
-            csrf_retries_sql = ' --csrf-retries="%s"' % (self.e_csrf_retries_value.get())
-        else:
-            csrf_retries_sql = ""
-        return csrf_retries_sql
+        if self.chk_csrf_retries_var.get() == "on":
+            return f' --csrf-retries="{self.e_csrf_retries_value.get()}"'
+        return ""
 
-    #  --csrf-url=CSRFURL  URL address to visit to extract anti-CSRF token
+    # --csrf-url=CSRFURL  URL address to visit to extract anti-CSRF token
     @property
-    def f_csrf_url(self, *args):
-        sql_csrf_url = self.chk_csrf_url_var.get()
-        if sql_csrf_url == "on":
-            csrf_url_sql = ' --csrf-url="%s"' % (self.e_csrf_url.get())
-        else:
-            csrf_url_sql = ""
-        return csrf_url_sql
+    def f_csrf_url(self):
+        if self.chk_csrf_url_var.get() == "on":
+            return f' --csrf-url="{self.e_csrf_url.get()}"'
+        return ""
 
     # --prefix=PREFIX     Injection payload prefix string
     def f_prefix(self, *args):
-        sql_prefix = self.chk_prefix_var.get()
-        if sql_prefix == "on":
-            self.e_prefix.config(state='normal')
-            prefix_sql = ' --prefix="%s"' % (self.e_prefix_value.get())
-        else:
-            self.e_prefix.config(state='disabled')
-            prefix_sql = ""
-        return prefix_sql
+        if self.chk_prefix_var.get() == "on":
+            self.e_prefix.config(state="normal")
+            return f' --prefix="{self.e_prefix_value.get()}"'
+
+        self.e_prefix.config(state="disabled")
+        return ""
 
     # --suffix=SUFFIX     Injection payload suffix string
     def f_suffix(self, *args):
-        sql_suffix = self.chk_suffix_var.get()
-        if sql_suffix == "on":
-            self.e_suffix.config(state='normal')
-            suffix_sql = ' --suffix="%s"' % (self.e_suffix_value.get())
-        else:
-            self.e_suffix.config(state='disabled')
-            suffix_sql = ""
-        return suffix_sql
+        if self.chk_suffix_var.get() == "on":
+            self.e_suffix.config(state="normal")
+            return f' --suffix="{self.e_suffix_value.get()}"'
+
+        self.e_suffix.config(state="disabled")
+        return ""
 
     # --os=OS             Force back-end DBMS operating system to this value
     def f_os(self, *args):
-        sql_os = self.chk_os_var.get()
-        if sql_os == "on":
-            self.e_os.config(state='normal')
-            os_sql = ' --os=%s' % (self.e_os.get())
-        else:
-            self.e_os.config(state='disabled')
-            os_sql = ""
-        return os_sql
+        if self.chk_os_var.get() == "on":
+            self.e_os.config(state="normal")
+            return f' --os="{self.e_os.get()}"'
+
+        self.e_os.config(state="disabled")
+        return ""
 
     # --skip=SKIP         Skip testing for given parameter(s)
     @property
     def f_skip(self):
-        sql_skip = self.chk_skip_var.get()
-        if sql_skip == "on":
-            skip_sql = ' --skip="%s"' % (self.e_skip.get())
-        else:
-            skip_sql = ""
-        return skip_sql
+        if self.chk_skip_var.get() == "on":
+            return f' --skip="{self.e_skip.get()}"'
+        return ""
 
     # --tamper-parm=22  Use parameter for tamper script
     def f_tamper_parm(self, *args):
-        sql_tamper_parm = self.chk_tamper_parm_var.get()
-        if sql_tamper_parm == "on":
-            self.e_tamper_parm.config(state='normal')
-            tamper_parm_sql = ' --tamper-%s' % (self.e_tamper_parm.get())
-        else:
-            self.e_tamper_parm.config(state='disabled')
-            tamper_parm_sql = ""
-        return tamper_parm_sql
+        if self.chk_tamper_parm_var.get() == "on":
+            self.e_tamper_parm.config(state="normal")
+            return f" --tamper-{self.e_tamper_parm.get()}"
+
+        self.e_tamper_parm.config(state="disabled")
+        return ""
 
     # --invalid-logical   Use logical operations for invalidating values
     @property
     def f_invalid_logical(self):
-        sql_invalid_logical = self.chk_invalid_logical_var.get()
-        if sql_invalid_logical == "on":
-            invalid_logical_sql = " --invalid-logical"
-        else:
-            invalid_logical_sql = ""
-        return invalid_logical_sql
+        if self.chk_invalid_logical_var.get() == "on":
+            return " --invalid-logical"
+        return ""
 
     # --invalid-bignum    Use big numbers for invalidating values
     @property
     def f_invalid_bignum(self):
-        sql_invalid_bignum = self.chk_invalid_bignum_var.get()
-        if sql_invalid_bignum == "on":
-            invalid_bignum_sql = " --invalid-bignum"
-        else:
-            invalid_bignum_sql = ""
-        return invalid_bignum_sql
+        if self.chk_invalid_bignum_var.get() == "on":
+            return " --invalid-bignum"
+        return ""
 
     # --no-cast           Turn off payload casting mechanism
     @property
     def f_no_cast(self):
-        sql_no_cast = self.chk_no_cast_var.get()
-        if sql_no_cast == "on":
-            no_cast_sql = " --no-cast"
-        else:
-            no_cast_sql = ""
-        return no_cast_sql
+        if self.chk_no_cast_var.get() == "on":
+            return " --no-cast"
+        return ""
 
     # --no-escape         Turn off string escaping mechanism
     @property
     def f_no_escape(self):
-        sql_no_escape = self.chk_no_escape_var.get()
-        if sql_no_escape == "on":
-            no_escape_sql = " --no-escape"
-        else:
-            no_escape_sql = ""
-        return no_escape_sql
+        if self.chk_no_escape_var.get() == "on":
+            return " --no-escape"
+        return ""
 
     # --invalid-string    Use random strings for invalidating values
     @property
     def f_invalid_string(self):
-        sql_invalid_string = self.chk_invalid_string_var.get()
-        if sql_invalid_string == "on":
-            invalid_string_sql = " --invalid-string"
-        else:
-            invalid_string_sql = ""
-        return invalid_string_sql
+        if self.chk_invalid_string_var.get() == "on":
+            return " --invalid-string"
+        return ""
+
+    # --prove   Provide proof of injection point exploitation
+    @property
+    def f_prove(self):
+        if self.chk_prove_var.get() == "on":
+            return " --prove"
+        return ""
+
+    # --auto-waf  (emits --random-agent + --tamper=between,randomcase,space2comment)
+    @property
+    def f_auto_waf(self):
+        if self.chk_auto_waf_var.get() == "on":
+            return " --auto-waf"
+        return ""
 
     # --string=STRING     String to match when query is evaluated to True
     def f_string(self, *args):
-        sql_string = self.chk_string_var.get()
-        if sql_string == "on":
-            self.e_string.config(state='normal')
-            string_sql = ' --string="%s"' % (self.e_string.get())
-        else:
-            self.e_string.config(state='disabled')
-            string_sql = ""
-        return string_sql
+        if self.chk_string_var.get() == "on":
+            self.e_string.config(state="normal")
+            return f' --string="{self.e_string.get()}"'
+
+        self.e_string.config(state="disabled")
+        return ""
 
     # --not-string=NOT  String to match when query is evaluated to False
     def f_not_string(self, *args):
-        sql_not_string = self.chk_not_string_var.get()
-        if sql_not_string == "on":
-            self.e_not_string.config(state='normal')
-            not_string_sql = ' --not-string="%s"' % (self.e_not_string.get())
-        else:
-            self.e_not_string.config(state='disabled')
-            not_string_sql = ""
-        return not_string_sql
+        if self.chk_not_string_var.get() == "on":
+            self.e_not_string.config(state="normal")
+            return f' --not-string="{self.e_not_string.get()}"'
+
+        self.e_not_string.config(state="disabled")
+        return ""
 
     # --regexp=REGEXP     Regexp to match when query is evaluated to True
     def f_regexp(self, *args):
-        sql_regexp = self.chk_regexp_var.get()
-        if sql_regexp == "on":
-            self.e_regexp.config(state='normal')
-            regexp_sql = ' --regexp="%s"' % (self.e_regexp.get())
-        else:
-            self.e_regexp.config(state='disabled')
-            regexp_sql = ""
-        return regexp_sql
+        if self.chk_regexp_var.get() == "on":
+            self.e_regexp.config(state="normal")
+            return f' --regexp="{self.e_regexp.get()}"'
+
+        self.e_regexp.config(state="disabled")
+        return ""
 
     # --code=CODE         HTTP code to match when query is evaluated to True
     def f_code(self, *args):
-        sql_code = self.chk_code_var.get()
-        if sql_code == "on":
-            self.e_code.config(state='normal')
-            code_sql = ' --code=%s' % (self.e_code_value.get())
-        else:
-            self.e_code.config(state='disabled')
-            code_sql = ""
-        return code_sql
+        if self.chk_code_var.get() == "on":
+            self.e_code.config(state="normal")
+            return f' --code="{self.e_code_value.get()}"'
+
+        self.e_code.config(state="disabled")
+        return ""
 
     # --union-cols=UCOLS  Range of columns to test for UNION query SQL injection
     def f_union_cols(self, *args):
-        sql_union_cols = self.chk_union_cols_var.get()
-        if sql_union_cols == "on":
-            self.e_union_cols.config(state='normal')
-            col_sql = ' --union-cols="%s"' % (self.e_union_cols_value.get())
-        else:
-            self.e_union_cols.config(state='disabled')
-            col_sql = ""
-        return col_sql
+        if self.chk_union_cols_var.get() == "on":
+            self.e_union_cols.config(state="normal")
+            return f' --union-cols="{self.e_union_cols_value.get()}"'
+
+        self.e_union_cols.config(state="disabled")
+        return ""
 
     # --union-char=UCHAR  Character to use for bruteforcing number of columns
     def f_union_char(self, *args):
-        sql_union_char = self.chk_union_char_var.get()
-        if sql_union_char == "on":
-            self.e_union_char.config(state='normal')
-            union_char_sql = ' --union-char="%s"' % (self.e_union_char_value.get())
-        else:
-            self.e_union_char.config(state='disabled')
-            union_char_sql = ""
-        return union_char_sql
+        if self.chk_union_char_var.get() == "on":
+            self.e_union_char.config(state="normal")
+            return f' --union-char="{self.e_union_char_value.get()}"'
+
+        self.e_union_char.config(state="disabled")
+        return ""
 
     # --union-from=UFROM  Table to use in FROM part of UNION query SQL injection
     def f_union_from(self, *args):
-        sql_union_from = self.chk_union_from_var.get()
-        if sql_union_from == "on":
-            self.e_union_from.config(state='normal')
-            union_from_sql = ' --union-from="%s"' % (self.e_union_from_value.get())
-        else:
-            self.e_union_from.config(state='disabled')
-            union_from_sql = ""
-        return union_from_sql
+        if self.chk_union_from_var.get() == "on":
+            self.e_union_from.config(state="normal")
+            return f' --union-from="{self.e_union_from_value.get()}"'
+
+        self.e_union_from.config(state="disabled")
+        return ""
 
     # --union-values="'foobar',*,1."
     def f_union_values(self, *args):
-        sql_union_values = self.chk_union_values_var.get()
-        if sql_union_values == "on":
-            self.e_union_values.config(state='normal')
-            union_values_sql = ' --union-values="%s"' % (self.e_union_values_value.get())
-        else:
-            self.e_union_values.config(state='disabled')
-            union_values_sql = ""
-        return union_values_sql
+        if self.chk_union_values_var.get() == "on":
+            self.e_union_values.config(state="normal")
+            return f' --union-values="{self.e_union_values_value.get()}"'
+
+        self.e_union_values.config(state="disabled")
+        return ""
 
     # --time-sec=TIMESEC  Seconds to delay the DBMS response (default 5)
     def f_time_sec(self, *args):
-        sql_time_sec = self.chk_time_sec_var.get()
-        if sql_time_sec == "on":
-            self.e_time_sec.config(state='normal')
-            sec_sql = ' --time-sec="%s"' % (self.e_time_sec_value.get())
-        else:
-            self.e_time_sec.config(state='disabled')
-            sec_sql = ""
-        return sec_sql
+        if self.chk_time_sec_var.get() == "on":
+            self.e_time_sec.config(state="normal")
+            return f' --time-sec="{self.e_time_sec_value.get()}"'
+
+        self.e_time_sec.config(state="disabled")
+        return ""
 
     # -o                  Turn on all optimization switches
     @property
     def f_optimization(self):
-        sql_optimization = self.chk_optimization_var.get()
-        if sql_optimization == "on":
-            optimization_sql = " -o"
-        else:
-            optimization_sql = ""
-        return optimization_sql
+        if self.chk_optimization_var.get() == "on":
+            return " -o"
+        return ""
 
     # --predict-output    Predict common queries output
     @property
     def f_predict_output(self):
-        sql_predict_output = self.chk_predict_output_var.get()
-        if sql_predict_output == "on":
-            predict_output_sql = " --predict-output"
-        else:
-            predict_output_sql = ""
-        return predict_output_sql
+        if self.chk_predict_output_var.get() == "on":
+            return " --predict-output"
+        return ""
 
     # --keep-alive        Use persistent HTTP(s) connections
     @property
     def f_keep_alive(self):
-        sql_keep_alive = self.chk_keep_alive_var.get()
-        if sql_keep_alive == "on":
-            keep_alive_sql = " --keep-alive"
-        else:
-            keep_alive_sql = ""
-        return keep_alive_sql
+        if self.chk_keep_alive_var.get() == "on":
+            return " --keep-alive"
+        return ""
 
     # --null-connection   Retrieve page length without actual HTTP response body
     @property
     def f_null_connection(self):
-        sql_null_connection = self.chk_null_connection_var.get()
-        if sql_null_connection == "on":
-            null_connection_sql = " --null-connection"
-        else:
-            null_connection_sql = ""
-        return null_connection_sql
+        if self.chk_null_connection_var.get() == "on":
+            return " --null-connection"
+        return ""
 
     # --text-only         Compare pages based only on the textual content
     @property
     def f_text_only(self):
-        sql_text_only = self.chk_text_only_var.get()
-        if sql_text_only == "on":
-            text_only_sql = " --text-only"
-        else:
-            text_only_sql = ""
-        return text_only_sql
+        if self.chk_text_only_var.get() == "on":
+            return " --text-only"
+        return ""
 
     # --titles            Compare pages based only on their titles
     @property
     def f_titles(self):
-        sql_titles = self.chk_titles_var.get()
-        if sql_titles == "on":
-            titles_sql = " --titles"
-        else:
-            titles_sql = ""
-        return titles_sql
+        if self.chk_titles_var.get() == "on":
+            return " --titles"
+        return ""
 
     # --batch             Never ask for user input, use the default behaviour
     @property
     def f_batch(self):
-        sql_batch = self.chk_batch_var.get()
-        if sql_batch == "on":
-            batch_sql = " --batch"
-        else:
-            batch_sql = ""
-        return batch_sql
-    
-    # --no-logging          Stop logging creating
+        if self.chk_batch_var.get() == "on":
+            return " --batch"
+        return ""
+
+    # --no-logging          Disable logging to a file
     @property
     def f_no_logging(self):
-        sql_no_logging = self.chk_no_logging_var.get()
-        if sql_no_logging == "on":
-            no_logging_sql = " --no-logging"
-        else:
-            no_logging_sql = ""
-        return no_logging_sql
+        if self.chk_no_logging_var.get() == "on":
+            return " --no-logging"
+        return ""
 
     # --binary-fields=..  Result fields having binary values (e.g. "digest")
     def f_binary_fields(self, *args):
-        sql_binary_fields = self.chk_binary_fields_var.get()
-        if sql_binary_fields == "on":
-            self.e_binary_fields.config(state='normal')
-            binary_fields_sql = ' --binary-fields="%s"' % (self.e_binary_fields.get())
-        else:
-            self.e_binary_fields.config(state='disabled')
-            binary_fields_sql = ""
-        return binary_fields_sql
+        if self.chk_binary_fields_var.get() == "on":
+            self.e_binary_fields.config(state="normal")
+            return f' --binary-fields="{self.e_binary_fields.get()}"'
+
+        self.e_binary_fields.config(state="disabled")
+        return ""
 
     # --hex               Use DBMS hex function(s) for data retrieval
     @property
     def f_hex(self):
-        sql_hex = self.chk_hex_var.get()
-        if sql_hex == "on":
-            hex_sql = " --hex"
-        else:
-            hex_sql = ""
-        return hex_sql
+        if self.chk_hex_var.get() == "on":
+            return " --hex"
+        return ""
 
     # --save=SAVECONFIG   Save options to a configuration INI file
     def f_save(self):
-        sql_save_config = self.chk_Save_var.get()
-        if sql_save_config == "on":
-            save_config_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".ini")
+        if self.chk_Save_var.get() == "on":
+            save_config_file = tkinter.filedialog.asksaveasfile(
+                mode="w",
+                defaultextension=".ini"
+            )
             if save_config_file:
                 self.var_save_config.set(save_config_file.name)
-        elif sql_save_config == "off":
+        else:
             self.var_save_config.set("")
-        return
 
     # --save=SAVECONFIG   Save options to a configuration INI file
     @property
     def save_config(self):
-        config_file = self.var_save_config.get()
-        if config_file != "":
-            sql_config_file = ' --save="%s"' % config_file
-        else:
-            sql_config_file = ""
-        return sql_config_file
+        value = self.var_save_config.get()
+        if value:
+            return f' --save="{value}"'
+        return ""
 
     # --scope=SCOPE       Regexp to filter targets from provided proxy log
     @property
     def f_scope(self):
-        sql_scope = self.chk_scope_var.get()
-        if sql_scope == "on":
-            scope_sql = ' --scope="%s"' % self.e_scope.get()
-        else:
-            scope_sql = ""
-        return scope_sql
+        if self.chk_scope_var.get() == "on":
+            return f' --scope="{self.e_scope.get()}"'
+        return ""
 
     # --har=HARFILE       Log all HTTP traffic into a HAR file
     def f_har(self):
-        sql_har = self.chk_har_var.get()
-        if sql_har == "on":
-            har_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".har")
+        if self.chk_har_var.get() == "on":
+            har_file = tkinter.filedialog.asksaveasfile(
+                mode="w",
+                defaultextension=".har"
+            )
             if har_file:
                 self.var_har_file.set(har_file.name)
-        elif sql_har == "off":
+        else:
             self.var_har_file.set("")
-        return
 
     # --har=HARFILE       Log all HTTP traffic into a HAR file
     @property
     def save_har_file(self):
-        har_file = self.var_har_file.get()
-        if har_file != "":
-            sql_har_file = ' --har="%s"' % har_file
-        else:
-            sql_har_file = ""
-        return sql_har_file
+        value = self.var_har_file.get()
+        if value:
+            return f' --har="{value}"'
+        return ""
 
     # --report-json=REPORTJSON   Store run results to a JSON file
     def f_report_json(self):
-        sql_report_json = self.chk_report_json_var.get()
-        if sql_report_json == "on":
-            report_json_file = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".json")
+        if self.chk_report_json_var.get() == "on":
+            report_json_file = tkinter.filedialog.asksaveasfile(
+                mode="w",
+                defaultextension=".json"
+            )
             if report_json_file:
                 self.e_report_json_var.set(report_json_file.name)
-        elif sql_report_json == "off":
+        else:
             self.e_report_json_var.set("")
-        return
 
     # --report-json=REPORTJSON   Store run results to a JSON file
     @property
     def save_report_json_file(self):
-        report_json_file = self.e_report_json_var.get()
-        if report_json_file != "":
-            sql_report_json_file = ' --report-json="%s"' % report_json_file
-        else:
-            sql_report_json_file = ""
-        return sql_report_json_file
+        value = self.e_report_json_var.get()
+        if value:
+            return f' --report-json="{value}"'
+        return ""
 
     # -b, --banner        Retrieve DBMS banner
     @property
     def f_banner(self):
-        sql_banner = self.f_banner_var.get()
-        if sql_banner == "on":
-            banner_sql = ' --banner'
-        else:
-            banner_sql = ""
-        return banner_sql
+        if self.f_banner_var.get() == "on":
+            return " --banner"
+        return ""
 
     # -f, --fingerprint   Perform an extensive DBMS version fingerprint
     @property
     def f_finger_print(self):
-        sql_finger_print = self.chk_finger_print_var.get()
-        if sql_finger_print == "on":
-            finger_print_sql = " -f"
-        else:
-            finger_print_sql = ""
-        return finger_print_sql
+        if self.chk_finger_print_var.get() == "on":
+            return " -f"
+        return ""
 
     # --dbms=DBMS         Force back-end DBMS to this value
     def f_dbms(self, *args):
-        sql_dbms = self.chk_dbms_var.get()
-        if sql_dbms == "on":
-            self.box.config(state='readonly')
-            dbms_sql = ' --dbms=%s' % (self.box.get())
-        else:
-            self.box.config(state='disabled')
-            dbms_sql = ""
-        return dbms_sql
+        if self.chk_dbms_var.get() == "on":
+            self.box.config(state="readonly")
+            return f' --dbms="{self.box.get()}"'
+
+        self.box.config(state="disabled")
+        return ""
 
     # --dbms-cred=DBMS..  DBMS authentication credentials (user:password)
     def f_dbms_cred(self, *args):
-        sql_dbms_cred = self.chk_dbms_cred_var.get()
-        if sql_dbms_cred == "on":
-            self.e_dbms_cred.config(state='normal')
-            dbms_cred_sql = ' --dbms-cred="%s"' % (self.e_dbms_cred.get())
-        else:
-            self.e_dbms_cred.config(state='disabled')
-            dbms_cred_sql = ""
-        return dbms_cred_sql
+        if self.chk_dbms_cred_var.get() == "on":
+            self.e_dbms_cred.config(state="normal")
+            return f' --dbms-cred="{self.e_dbms_cred.get()}"'
+
+        self.e_dbms_cred.config(state="disabled")
+        return ""
 
     # -p TESTPARAMETER    Testable parameter(s)
     def f_test_parameter(self, *args):
-        sql_test_parameter = self.chk_test_parameter_var.get()
-        if sql_test_parameter == "on":
-            self.e_test_parameter.config(state='normal')
-            test_parameter_sql = ' -p %s' % (self.e_test_parameter.get())
-        else:
-            self.e_test_parameter.config(state='disabled')
-            test_parameter_sql = ""
-        return test_parameter_sql
+        if self.chk_test_parameter_var.get() == "on":
+            self.e_test_parameter.config(state="normal")
+            return f" -p {self.e_test_parameter.get()}"
 
-    # --param-exclude     Regexp to exclude parameters from testing (e.g. \"ses\")
+        self.e_test_parameter.config(state="disabled")
+        return ""
+
+    # --param-exclude     Regexp to exclude parameters from testing (e.g. "ses")
     def f_param_exclude(self):
-        sql_param_exclude = self.chkParam_exclude_var.get()
-        if sql_param_exclude == "on":
-            sql_param_exclude = ' --param-exclude="%s"' % (self.entry_param_exclude.get())
-        else:
-            sql_param_exclude = ""
-        return sql_param_exclude
+        if self.chkParam_exclude_var.get() == "on":
+            return f' --param-exclude="{self.entry_param_exclude.get()}"'
+        return ""
 
-    # --level=LEVEL       Level of tests to perform (1-5, default 1)
+    # --level=LEVEL    Level of tests to perform (1-5, default 1)
     def f_level(self, *args):
-        sql_level = self.chk_level_var.get()
-        if sql_level == "on":
-            self.e_level.config(state='readonly')
-            level_sql = ' --level=%s' % (self.e_level_value.get())
-        else:
-            self.e_level.config(state='disabled')
-            level_sql = ""
-        return level_sql
+        if self.chk_level_var.get() == "on":
+            self.e_level.config(state="readonly")
+            return f' --level="{self.e_level_value.get()}"'
+
+        self.e_level.config(state="disabled")
+        return ""
 
     # --risk=RISK         Risk of tests to perform (1-3, default 1)
     def f_risk(self, *args):
-        sql_risk = self.chk_risk_var.get()
-        if sql_risk == "on":
-            self.e_risk.config(state='readonly')
-            risk_sql = ' --risk=%s' % (self.e_risk_value.get())
-        else:
-            self.e_risk.config(state='disabled')
-            risk_sql = ""
-        return risk_sql
+        if self.chk_risk_var.get() == "on":
+            self.e_risk.config(state="readonly")
+            return f' --risk="{self.e_risk_value.get()}"'
+
+        self.e_risk.config(state="disabled")
+        return ""
 
     # -v VERBOSE            Verbosity level: 0-6 (default 1)
     def f_verbose(self, *args):
-        sql_verbose = self.chk_verbose_var.get()
-        if sql_verbose == "on":
-            self.e_verbose.config(state='readonly')
-            verb_sql = ' -v %s' % (self.e_verbose_value.get())
-        else:
-            self.e_verbose.config(state='disabled')
-            verb_sql = ""
-        return verb_sql
+        if self.chk_verbose_var.get() == "on":
+            self.e_verbose.config(state="readonly")
+            return f" -v {self.e_verbose_value.get()}"
+
+        self.e_verbose.config(state="disabled")
+        return ""
 
     # --threads=THREADS   Max number of concurrent HTTP(s) requests (default 1)
     def f_threads(self, *args):
-        sql_threads = self.chk_threads_var.get()
-        if sql_threads == "on":
-            self.threads.config(state='readonly')
-            threads_sql = ' --threads=%s' % (self.threads_value.get())
-        else:
-            self.threads.config(state='disabled')
-            threads_sql = ""
-        return threads_sql
+        if self.chk_threads_var.get() == "on":
+            self.threads.config(state="readonly")
+            return f' --threads="{self.threads_value.get()}"'
+
+        self.threads.config(state="disabled")
+        return ""
 
     # --technique=TECH    SQL injection techniques to use (default "BEUSTQ")
     def f_technique(self, *args):
-        sql_technique = self.chk_tech_var.get()
-        if sql_technique == "on":
-            self.e_technique.config(state='normal')
-            technique_sql = ' --technique=%s' % (self.e_technique_value.get())
-        else:
-            self.e_technique.config(state='disabled')
-            technique_sql = ""
-        return technique_sql
+        if self.chk_tech_var.get() == "on":
+            self.e_technique.config(state="normal")
+            return f' --technique="{self.e_technique_value.get()}"'
+
+        self.e_technique.config(state="disabled")
+        return ""
 
     # --dns-domain=DNS..  Domain name used for DNS exfiltration attack
     def f_dns_domain(self, *args):
-        sql_dns_domain = self.chk_dns_domain_var.get()
-        if sql_dns_domain == "on":
-            self.e_dns_domain.config(state='normal')
-            dns_sql = ' --dns-domain="%s"' % (self.e_dns_domain.get())
-        else:
-            self.e_dns_domain.config(state='disabled')
-            dns_sql = ""
-        return dns_sql
+        if self.chk_dns_domain_var.get() == "on":
+            self.e_dns_domain.config(state="normal")
+            return f' --dns-domain="{self.e_dns_domain.get()}"'
+
+        self.e_dns_domain.config(state="disabled")
+        return ""
 
     # --second-url=SEC..  Resulting page URL searched for second-order response
     def f_second_url(self, *args):
-        sql_second_url = self.chk_second_url_var.get()
-        if sql_second_url == "on":
-            self.entry_sec_url.config(state='normal')
-            second_url_sql = ' --second-url="%s"' % (self.e_second_url_value.get())
-        else:
-            self.entry_sec_url.config(state='disabled')
-            second_url_sql = ""
-        return second_url_sql
+        if self.chk_second_url_var.get() == "on":
+            self.entry_sec_url.config(state="normal")
+            return f' --second-url="{self.e_second_url_value.get()}"'
+
+        self.entry_sec_url.config(state="disabled")
+        return ""
 
     # --second-req=SEC..  Load second-order HTTP request from file
     def f_second_req(self, *args):
-        sql_second_req = self.chk_second_req_var.get()
-        if sql_second_req == "on":
-            self.entry_second_req.config(state='normal')
-            sec_req_sql = ' --second-req="%s"' % (self.e_second_req_value.get())
-        else:
-            self.entry_second_req.config(state='disabled')
-            sec_req_sql = ""
-        return sec_req_sql
+        if self.chk_second_req_var.get() == "on":
+            self.entry_second_req.config(state="normal")
+            return f' --second-req="{self.e_second_req_value.get()}"'
+
+        self.entry_second_req.config(state="disabled")
+        return ""
 
     # --tamper=TAMPER Use given script(s) for tampering injection data
     def f_tamper(self):
         sel = self.tamper.curselection()
-        if 0 < len(sel):
-            tam_sql = ' --tamper="%s"' % (",".join([self.tamper.get(x) for x in sel]))
-        else:
-            tam_sql = ""
-        return tam_sql
+        if sel:
+            return f' --tamper="{",".join(self.tamper.get(i) for i in sel)}"'
+        return ""
 
     # --current-user      Retrieve DBMS current user
     @property
     def f_current_user(self):
-        sql_current_user = self.chk_current_user_var.get()
-        if sql_current_user == "on":
-            current_user_sql = " --current-user"
-        else:
-            current_user_sql = ""
-        return current_user_sql
+        if self.chk_current_user_var.get() == "on":
+            return " --current-user"
+        return ""
 
     # --current-db        Retrieve DBMS current database
     @property
     def f_current_db(self):
-        sql_current_db = self.chk_current_db_var.get()
-        if sql_current_db == "on":
-            current_db_sql = " --current-db"
-        else:
-            current_db_sql = ""
-        return current_db_sql
+        if self.chk_current_db_var.get() == "on":
+            return " --current-db"
+        return ""
 
     # -a, --all           Retrieve everything
     @property
     def f_all(self):
-        sql_all = self.chk_all_var.get()
-        if sql_all == "on":
-            all_sql = " --all"
-        else:
-            all_sql = ""
-        return all_sql
+        if self.chk_all_var.get() == "on":
+            return " --all"
+        return ""
 
     # --is-dba            Detect if the DBMS current user is DBA
     @property
     def f_is_dba(self):
-        sql_is_dba = self.chk_is_dba_var.get()
-        if sql_is_dba == "on":
-            is_dba_sql = " --is-dba"
-        else:
-            is_dba_sql = ""
-        return is_dba_sql
+        if self.chk_is_dba_var.get() == "on":
+            return " --is-dba"
+        return ""
 
     # --users             Enumerate DBMS users
     @property
     def f_users(self):
-        sql_users = self.chk_users_var.get()
-        if sql_users == "on":
-            users_sql = " --users"
-        else:
-            users_sql = ""
-        return users_sql
+        if self.chk_users_var.get() == "on":
+            return " --users"
+        return ""
 
     # --passwords         Enumerate DBMS users password hashes
     @property
     def f_passwords(self):
-        sql_passwords = self.chk_passwords_var.get()
-        if sql_passwords == "on":
-            passwords_sql = " --passwords"
-        else:
-            passwords_sql = ''
-        return passwords_sql
+        if self.chk_passwords_var.get() == "on":
+            return " --passwords"
+        return ""
 
     # --privileges        Enumerate DBMS users privileges
     @property
     def f_privileges(self):
-        sql_privileges = self.chk_privileges_var.get()
-        if sql_privileges == "on":
-            privileges_sql = " --privileges"
-        else:
-            privileges_sql = ""
-        return privileges_sql
+        if self.chk_privileges_var.get() == "on":
+            return " --privileges"
+        return ""
 
     # --comments          Retrieve DBMS comments
     @property
     def f_comments(self):
-        sql_comments = self.chk_comments_var.get()
-        if sql_comments == "on":
-            comments_sql = " --comments"
-        else:
-            comments_sql = ""
-        return comments_sql
+        if self.chk_comments_var.get() == "on":
+            return " --comments"
+        return ""
 
     # --roles             Enumerate DBMS users roles
     @property
     def f_roles(self):
-        sql_roles = self.chk_roles_var.get()
-        if sql_roles == "on":
-            roles_sql = " --roles"
-        else:
-            roles_sql = ""
-        return roles_sql
+        if self.chk_roles_var.get() == "on":
+            return " --roles"
+        return ""
 
     # --common-tables     Check existence of common tables
     @property
     def f_common_tables(self):
-        sql_common_tables = self.chk_common_tables_var.get()
-        if sql_common_tables == "on":
-            common_tables_sql = " --common-tables"
-        else:
-            common_tables_sql = ""
-        return common_tables_sql
+        if self.chk_common_tables_var.get() == "on":
+            return " --common-tables"
+        return ""
 
     # --common-columns     Check existence of common columns
     @property
     def f_common_columns(self):
-        sql_common_columns = self.chk_common_columns_var.get()
-        if sql_common_columns == "on":
-            common_columns_sql = " --common-columns"
-        else:
-            common_columns_sql = ""
-        return common_columns_sql
+        if self.chk_common_columns_var.get() == "on":
+            return " --common-columns"
+        return ""
 
     # --common-files      Check existence of common files
     @property
     def f_common_files(self):
-        sql_common_files = self.chk_common_files_var.get()
-        if sql_common_files == "on":
-            common_files_sql = " --common-files"
-        else:
-            common_files_sql = ""
-        return common_files_sql
+        if self.chk_common_files_var.get() == "on":
+            return " --common-files"
+        return ""
 
     # --udf-inject     Inject custom user-defined functions
     @property
     def f_udf_inject(self):
-        sql_udf_inject = self.chk_udf_inject_var.get()
-        if sql_udf_inject == "on":
-            udf_inject_sql = " --udf-inject"
-        else:
-            udf_inject_sql = ""
-        return udf_inject_sql
+        if self.chk_udf_inject_var.get() == "on":
+            return " --udf-inject"
+        return ""
 
     # --shared-lib     Local path of the shared library
     @property
     def f_shared_lib(self):
-        sql_shared_lib = self.chk_shared_lib_var.get()
-        if sql_shared_lib == "on":
-            shared_lib_sql = ' --shared-lib="%s"' % (self.e_shared_lib.get())
-        else:
-            shared_lib_sql = ""
-        return shared_lib_sql
+        if self.chk_shared_lib_var.get() == "on":
+            return f' --shared-lib="{self.e_shared_lib.get()}"'
+        return ""
 
     # --dbs               Enumerate DBMS databases
     @property
     def f_dbs(self):
-        sql_dbs = self.chk_dbs_var.get()
-        if sql_dbs == "on":
-            dbs_sql = " --dbs"
-        else:
-            dbs_sql = ""
-        return dbs_sql
+        if self.chk_dbs_var.get() == "on":
+            return " --dbs"
+        return ""
 
     # --tables            Enumerate DBMS database tables
     @property
     def f_tables(self):
-        sql_tables = self.chk_tables_var.get()
-        if sql_tables == "on":
-            tables_sql = " --tables"
-        else:
-            tables_sql = ""
-        return tables_sql
+        if self.chk_tables_var.get() == "on":
+            return " --tables"
+        return ""
 
     # --columns           Enumerate DBMS database table columns
     @property
     def f_columns(self):
-        sql_columns = self.chk_columns_var.get()
-        if sql_columns == "on":
-            columns_sql = " --columns"
-        else:
-            columns_sql = ""
-        return columns_sql
+        if self.chk_columns_var.get() == "on":
+            return " --columns"
+        return ""
 
     # --hostname          Retrieve DBMS server hostname
     @property
     def f_host_name(self):
-        sql_host_name = self.chk_host_name_var.get()
-        if sql_host_name == "on":
-            host_name_sql = " --hostname"
-        else:
-            host_name_sql = ""
-        return host_name_sql
+        if self.chk_host_name_var.get() == "on":
+            return " --hostname"
+        return ""
 
     # --schema            Enumerate DBMS schema
     @property
     def f_schema(self):
-        sql_schema = self.chk_schema_var.get()
-        if sql_schema == "on":
-            schema_sql = " --schema"
-        else:
-            schema_sql = ""
-        return schema_sql
+        if self.chk_schema_var.get() == "on":
+            return " --schema"
+        return ""
 
     # --count             Retrieve number of entries for table(s)
     @property
     def f_count(self):
-        sql_count = self.chk_count_var.get()
-        if sql_count == "on":
-            count_sql = " --count"
-        else:
-            count_sql = ""
-        return count_sql
+        if self.chk_count_var.get() == "on":
+            return " --count"
+        return ""
 
     # --force-dns
     @property
     def f_force_dns(self):
-        sql_force_dns = self.chk_force_dns_var.get()
-        if sql_force_dns == "on":
-            force_dns_sql = " --force-dns"
-        else:
-            force_dns_sql = ""
-        return force_dns_sql
+        if self.chk_force_dns_var.get() == "on":
+            return " --force-dns"
+        return ""
 
     # --force-pivoting
     @property
     def f_force_pivoting(self):
-        sql_force_pivoting = self.chk_force_pivoting_var.get()
-        if sql_force_pivoting == "on":
-            force_pivoting_sql = " --force-pivoting"
-        else:
-            force_pivoting_sql = ""
-        return force_pivoting_sql
+        if self.chk_force_pivoting_var.get() == "on":
+            return " --force-pivoting"
+        return ""
 
     # --smoke-test
     @property
     def f_smoke_test(self):
-        sql_smoke_test = self.chk_smoke_test_var.get()
-        if sql_smoke_test == "on":
-            smoke_test_sql = " --smoke-test"
-        else:
-            smoke_test_sql = ""
-        return smoke_test_sql
+        if self.chk_smoke_test_var.get() == "on":
+            return " --smoke-test"
+        return ""
 
     # --live-test
     @property
     def f_live_test(self):
-        sql_live_test = self.chk_live_test_var.get()
-        if sql_live_test == "on":
-            live_test_sql = " --live-test"
-        else:
-            live_test_sql = ""
-        return live_test_sql
+        if self.chk_live_test_var.get() == "on":
+            return " --live-test"
+        return ""
 
     # --vuln-test
     @property
     def f_vuln_test(self):
-        sql_vuln_test = self.chk_vuln_test_var.get()
-        if sql_vuln_test == "on":
-            vuln_test_sql = " --vuln-test"
-        else:
-            vuln_test_sql = ""
-        return vuln_test_sql
+        if self.chk_vuln_test_var.get() == "on":
+            return " --vuln-test"
+        return ""
 
     # --stop-fail
     @property
     def f_stop_fail(self):
-        sql_stop_fail = self.chk_stop_fail_var.get()
-        if sql_stop_fail == "on":
-            stop_fail_sql = " --stop-fail"
-        else:
-            stop_fail_sql = ""
-        return stop_fail_sql
+        if self.chk_stop_fail_var.get() == "on":
+            return " --stop-fail"
+        return ""
 
     # --run-case
     @property
     def f_run_case(self):
-        sql_run_case = self.chk_run_case_var.get()
-        if sql_run_case == "on":
-            run_case_sql = " --run-case"
-        else:
-            run_case_sql = ""
-        return run_case_sql
+        if self.chk_run_case_var.get() == "on":
+            return " --run-case"
+        return ""
 
     # --unstable    If the target is unstable
     @property
     def f_unstable(self):
-        sql_unstable = self.chk_unstable_var.get()
-        if sql_unstable == "on":
-            unstable_sql = " --unstable"
-        else:
-            unstable_sql = ""
-        return unstable_sql
+        if self.chk_unstable_var.get() == "on":
+            return " --unstable"
+        return ""
 
     # --results-file    Location of CSV results file in multiple targets mode
     @property
     def f_result_file(self):
-        sql_result_file = self.chk_result_file_var.get()
-        if sql_result_file == "on":
-            result_file_sql = " --results-file"
-        else:
-            result_file_sql = ""
-        return result_file_sql
+        if self.chk_result_file_var.get() == "on":
+            return " --results-file"
+        return ""
 
     # --dump              Dump DBMS database table entries
     @property
     def f_dump(self):
-        sql_dump = self.chk_dump_var.get()
-        if sql_dump == "on":
-            dump_sql = " --dump"
-        else:
-            dump_sql = ""
-        return dump_sql
+        if self.chk_dump_var.get() == "on":
+            return " --dump"
+        return ""
 
     # --search            Search column(s), table(s) and/or database name(s)
     @property
     def f_search(self):
-        sql_search = self.chk_search_var.get()
-        if sql_search == "on":
-            search_sql = " --search"
-        else:
-            search_sql = ""
-        return search_sql
+        if self.chk_search_var.get() == "on":
+            return " --search"
+        return ""
 
     # --dump-all          Dump all DBMS databases tables entries
     @property
     def f_dump_all(self):
-        sql_dump_all = self.chk_dump_all_var.get()
-        if sql_dump_all == "on":
-            dump_all_sql = " --dump-all"
-        else:
-            dump_all_sql = ""
-        return dump_all_sql
+        if self.chk_dump_all_var.get() == "on":
+            return " --dump-all"
+        return ""
 
     # --statements        Retrieve SQL statements being run on DBMS
     @property
     def f_statements(self):
-        sql_statements = self.chk_statements_var.get()
-        if sql_statements == "on":
-            statements_sql = " --statements"
-        else:
-            statements_sql = ""
-        return statements_sql
+        if self.chk_statements_var.get() == "on":
+            return " --statements"
+        return ""
 
     # --exclude-sysdbs    Exclude DBMS system databases when enumerating tables
     @property
     def f_exclude_sys_dbs(self):
-        sql_exclude_sys_dbs = self.chk_exclude_sys_dbs_var.get()
-        if sql_exclude_sys_dbs == "on":
-            sys_dbs_exclude_sql = " --exclude-sysdbs"
-        else:
-            sys_dbs_exclude_sql = ""
-        return sys_dbs_exclude_sql
+        if self.chk_exclude_sys_dbs_var.get() == "on":
+            return " --exclude-sysdbs"
+        return ""
 
     # -D DB    DBMS database to enumerate
     @property
     def f_database_enumerate(self):
-        sql_database_enumerate = self.chk_database_enumerate_var.get()
-        if sql_database_enumerate == "on":
-            database_enumerate_sql = ' -D "%s"' % (self.e_database_enumerate.get())
-        else:
-            database_enumerate_sql = ""
-        return database_enumerate_sql
+        if self.chk_database_enumerate_var.get() == "on":
+            return f' -D "{self.e_database_enumerate.get()}"'
+        return ""
 
     # -T TBL              DBMS database table(s) to enumerate
     @property
     def f_table(self):
-        sql_table = self.chk_table_var.get()
-        if sql_table == "on":
-            table_sql = ' -T "%s"' % (self.e_table.get())
-        else:
-            table_sql = ""
-        return table_sql
+        if self.chk_table_var.get() == "on":
+            return f' -T "{self.e_table.get()}"'
+        return ""
 
     # -C COL              DBMS database table column(s) to enumerate
     @property
     def f_column(self):
-        sql_column = self.chk_column_var.get()
-        if sql_column == "on":
-            column_sql = ' -C "%s"' % (self.e_column.get())
-        else:
-            column_sql = ""
-        return column_sql
+        if self.chk_column_var.get() == "on":
+            return f' -C "{self.e_column.get()}"'
+        return ""
 
     # -U USER             DBMS user to enumerate
     @property
     def f_user(self):
-        sql_user = self.chk_user_var.get()
-        if sql_user == "on":
-            user_sql = ' -U "%s"' % (self.e_user.get())
-        else:
-            user_sql = ""
-        return user_sql
+        if self.chk_user_var.get() == "on":
+            return f' -U "{self.e_user.get()}"'
+        return ""
 
     # -X EXCLUDECOL       DBMS database table column(s) to not enumerate
     def f_exclude(self, *args):
-        sql_exclude = self.chk_exclude_var.get()
-        if sql_exclude == "on":
-            self.e_exclude.config(state='normal')
-            exclude_sql = ' -X "%s"' % (self.e_exclude_value.get())
-        else:
-            self.e_exclude.config(state='disabled')
-            exclude_sql = ""
-        return exclude_sql
+        if self.chk_exclude_var.get() == "on":
+            self.e_exclude.config(state="normal")
+            return f' -X "{self.e_exclude_value.get()}"'
+
+        self.e_exclude.config(state="disabled")
+        return ""
 
     # --where=DUMPWHERE   Use WHERE condition while table dumping
     def f_where_dump(self, *args):
-        sql_where_dump = self.chk_where_dump_var.get()
-        if sql_where_dump == "on":
-            self.e_where_dump.config(state='normal')
-            where_dump_sql = ' --where="%s"' % (self.e_where_dump.get())
-        else:
-            self.e_where_dump.config(state='disabled')
-            where_dump_sql = ""
-        return where_dump_sql
+        if self.chk_where_dump_var.get() == "on":
+            self.e_where_dump.config(state="normal")
+            return f' --where="{self.e_where_dump.get()}"'
+
+        self.e_where_dump.config(state="disabled")
+        return ""
 
     # --start=LIMITSTART  First query output entry to retrieve
     # --stop=LIMITSTOP    Last query output entry to retrieve
     @property
     def f_start_stop(self):
-        sql_start = self.chk_start_var.get()
-        if sql_start == "on":
-            param = self.e_start.get() or ""
-            parts = param.split(',')
-            start = parts[0] if len(parts) > 0 else ""
-            stop = parts[1] if len(parts) > 1 else ""
-            return ' --start="%s" --stop="%s"' % (start, stop)
+        if self.chk_start_var.get() == "on":
+            start, stop = (self.e_start.get().split(",", 1) + [""])[:2]
+            return f' --start="{start}" --stop="{stop}"'
         return ""
 
     # --sql-shell         Prompt for an interactive SQL shell
     @property
     def f_sql_shell(self):
-        sql_shell = self.chk_sql_shell_var.get()
-        if sql_shell == "on":
-            shell_sql = ' --sql-shell'
-        else:
-            shell_sql = ""
-        return shell_sql
+        if self.chk_sql_shell_var.get() == "on":
+            return " --sql-shell"
+        return ""
 
     # --sql-file=SQLFILE  Execute SQL statements from given file(s)
     def f_sql_file(self):
-        sql_f_sql_file = self.chk_sql_file_var.get()
-        if sql_f_sql_file == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_sql_file_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.var_sql_file.set(filename.name)
-        elif sql_f_sql_file == "off":
+        else:
             self.var_sql_file.set("")
-        return
 
-    #  --sql-file=SQLFILE  Execute SQL statements from given file(s)
+    # --sql-file=SQLFILE  Execute SQL statements from given file(s)
     @property
     def f_sql_file_read(self):
-        sql_file_read = self.var_sql_file.get()
-        if sql_file_read != "":
-            file_read_sql = ' --sql-file="%s"' % sql_file_read
-        else:
-            file_read_sql = ""
-        return file_read_sql
+        value = self.var_sql_file.get()
+        if value:
+            return f' --sql-file="{value}"'
+        return ""
 
     # --first=FIRSTCHAR   First query output word character to retrieve
     @property
     def f_first(self):
-        sql_first = self.chk_first_var.get()
-        if sql_first == "on":
-            first_sql = ' --first="%s"' % (self.entry_first.get())
-        else:
-            first_sql = ""
-        return first_sql
+        if self.chk_first_var.get() == "on":
+            return f' --first="{self.entry_first.get()}"'
+        return ""
 
     # --last=LASTCHAR     Last query output word character to retrieve
     @property
     def f_last(self):
-        sql_last = self.chk_last_var.get()
-        if sql_last == "on":
-            last_sql = ' --last="%s"' % (self.entry_last.get())
-        else:
-            last_sql = ""
-        return last_sql
+        if self.chk_last_var.get() == "on":
+            return f' --last="{self.entry_last.get()}"'
+        return ""
 
     # --check-tor         Check to see if Tor is used properly
     @property
     def f_tor(self):
-        sql_tor = self.chk_tor_var.get()
-        if sql_tor == "on":
-            tor_sql = ' --check-tor'
-        else:
-            tor_sql = ''
-        return tor_sql
+        if self.chk_tor_var.get() == "on":
+            return " --check-tor"
+        return ""
 
     # --tor               Use Tor anonymity network
     @property
     def f_tor_use(self):
-        sql_tor_use = self.chk_tor_use_var.get()
-        if sql_tor_use == "on":
-            tor_use_sql = ' --tor'
-        else:
-            tor_use_sql = ''
-        return tor_use_sql
+        if self.chk_tor_use_var.get() == "on":
+            return " --tor"
+        return ""
 
     # --dump-format=DUMPFORMAT  Format of dumped data (CSV (default), HTML or SQLITE)
     def f_dump_format(self, *args):
-        sql_dump_format = self.chk_dump_format_var.get()
-        if sql_dump_format == "on":
-            self.e_dump_format.config(state='readonly')
-            dump_format_sql = ' --dump-format=%s' % (self.e_dump_format_value.get())
-        else:
-            self.e_dump_format.config(state='disabled')
-            dump_format_sql = ""
-        return dump_format_sql
+        if self.chk_dump_format_var.get() == "on":
+            self.e_dump_format.config(state="readonly")
+            return f' --dump-format="{self.e_dump_format_value.get()}"'
+
+        self.e_dump_format.config(state="disabled")
+        return ""
 
     # --encoding=GBK  Character encoding used for data retrieval (e.g. GBK)
     def f_encoding(self, *args):
-        sql_encoding = self.chk_encoding_var.get()
-        if sql_encoding == "on":
-            self.encoding.config(state='normal')
-            encoding_sql = ' --encoding="%s"' % (self.encoding_value.get())
-        else:
-            self.encoding.config(state='disabled')
-            encoding_sql = ""
-        return encoding_sql
+        if self.chk_encoding_var.get() == "on":
+            self.encoding.config(state="normal")
+            return f' --encoding="{self.encoding_value.get()}"'
+
+        self.encoding.config(state="disabled")
+        return ""
 
     # --tor-port=TORPORT  Set Tor proxy port other than default
     def f_tor_port(self, *args):
-        sql_tor_port = self.chk_tor_port_var.get()
-        if sql_tor_port == "on":
-            self.e_tor_port.config(state='readonly')
-            tor_port_sql = ' --tor-port="%s"' % (self.e_tor_port.get())
-        else:
-            self.e_tor_port.config(state='disabled')
-            tor_port_sql = ""
-        return tor_port_sql
+        if self.chk_tor_port_var.get() == "on":
+            self.e_tor_port.config(state="readonly")
+            return f' --tor-port="{self.e_tor_port.get()}"'
+
+        self.e_tor_port.config(state="disabled")
+        return ""
 
     # --tor-type=TORTYPE  Set Tor proxy type (HTTP - default, SOCKS4 or SOCKS5)
     def f_tor_type(self, *args):
-        sql_tor_type = self.chk_tor_type_var.get()
-        if sql_tor_type == "on":
-            self.e_tor_type.config(state='readonly')
-            tor_type_sql = ' --tor-type="%s"' % (self.e_tor_type.get())
-        else:
-            self.e_tor_type.config(state='disabled')
-            tor_type_sql = ""
-        return tor_type_sql
+        if self.chk_tor_type_var.get() == "on":
+            self.e_tor_type.config(state="readonly")
+            return f' --tor-type="{self.e_tor_type.get()}"'
+
+        self.e_tor_type.config(state="disabled")
+        return ""
 
     # --pivot-column=P..  Pivot column name
     @property
     def f_pivot(self):
-        sql_pivot = self.chk_pivot_var.get()
-        if sql_pivot == "on":
-            pivot_sql = ' --pivot-column="%s"' % (self.e_pivot.get())
-        else:
-            pivot_sql = ""
-        return pivot_sql
+        if self.chk_pivot_var.get() == "on":
+            return f' --pivot-column="{self.e_pivot.get()}"'
+        return ""
+
+    # --procs
+    @property
+    def f_procs(self):
+        if self.chk_procs_var.get() == "on":
+            return " --procs"
+        return ""
 
     # --eta               Display for each output the estimated time of arrival
     @property
     def f_eta(self):
-        sql_eta = self.chk_eta_var.get()
-        if sql_eta == "on":
-            eta_sql = ' --eta'
-        else:
-            eta_sql = ''
-        return eta_sql
+        if self.chk_eta_var.get() == "on":
+            return " --eta"
+        return ""
 
     # --forms             Parse and test forms on target URL
     @property
     def f_forms(self):
-        sql_forms = self.chk_forms_var.get()
-        if sql_forms == "on":
-            forms_sql = ' --forms'
-        else:
-            forms_sql = ''
-        return forms_sql
+        if self.chk_forms_var.get() == "on":
+            return " --forms"
+        return ""
 
     # --fresh-queries     Ignore query results stored in session file
     @property
     def f_fresh(self):
-        sql_fresh = self.chk_fresh_var.get()
-        if sql_fresh == "on":
-            fresh_sql = ' --fresh-queries'
-        else:
-            fresh_sql = ''
-        return fresh_sql
+        if self.chk_fresh_var.get() == "on":
+            return " --fresh-queries"
+        return ""
 
     # --parse-errors      Parse and display DBMS error messages from responses
     @property
     def f_parse_errors(self):
-        sql_parse_errors = self.chk_parse_errors_var.get()
-        if sql_parse_errors == "on":
-            parse_errors_sql = ' --parse-errors'
-        else:
-            parse_errors_sql = ''
-        return parse_errors_sql
+        if self.chk_parse_errors_var.get() == "on":
+            return " --parse-errors"
+        return ""
 
     # --repair    Redump entries having unknown character marker (?)
     @property
     def f_repair(self):
-        sql_repair = self.chk_repair_var.get()
-        if sql_repair == "on":
-            repair_sql = ' --repair'
-        else:
-            repair_sql = ''
-        return repair_sql
+        if self.chk_repair_var.get() == "on":
+            return " --repair"
+        return ""
 
     # --flush-session     Flush session files for current target
     @property
     def f_flush(self):
-        sql_flush = self.chk_flush_var.get()
-        if sql_flush == "on":
-            flush_sql = ' --flush-session'
-        else:
-            flush_sql = ''
-        return flush_sql
+        if self.chk_flush_var.get() == "on":
+            return " --flush-session"
+        return ""
 
     # --charset=CHARSET   Force character encoding used for data retrieval
     def f_charset(self, *args):
-        sql_charset = self.chk_charset_var.get()
-        if sql_charset == "on":
-            self.e_charset.config(state='normal')
-            charset_sql = ' --charset="%s"' % (self.e_charset.get())
-        else:
-            self.e_charset.config(state='disabled')
-            charset_sql = ""
-        return charset_sql
+        if self.chk_charset_var.get() == "on":
+            self.e_charset.config(state="normal")
+            return f' --charset="{self.e_charset.get()}"'
+
+        self.e_charset.config(state="disabled")
+        return ""
 
     # --check-internet    Check Internet connection before assesing the target
+    @property
     def f_check_connect(self):
-        sql_check_connect = self.chk_internet_connect_var.get()
-        if sql_check_connect == "on":
-            check_connect_sql = ' --check-internet'
-        else:
-            check_connect_sql = ''
-        return check_connect_sql
+        if self.chk_internet_connect_var.get() == "on":
+            return " --check-internet"
+        return ""
 
     # --crawl=CRAWLDEPTH  Crawl the website starting from the target url
     def f_crawl(self, *args):
-        sql_crawl = self.chkCrawl_var.get()
-        if sql_crawl == "on":
-            self.e_crawl.config(state='normal')
-            crawl_sql = ' --crawl="%s"' % (self.e_crawl.get())
-        else:
-            self.e_crawl.config(state='disabled')
-            crawl_sql = ""
-        return crawl_sql
+        if self.chkCrawl_var.get() == "on":
+            self.e_crawl.config(state="normal")
+            return f' --crawl="{self.e_crawl.get()}"'
+
+        self.e_crawl.config(state="disabled")
+        return ""
 
     # --crawl-exclude=..  Regexp to exclude pages from crawling (e.g. "logout")
     def f_crawl_exclude(self, *args):
-        sql_crawl_exclude = self.chk_crawl_exclude_var.get()
-        if sql_crawl_exclude == "on":
-            self.e_crawl_exclude.config(state='normal')
-            crawl_exclude_sql = ' --crawl-exclude="%s"' % (self.e_crawl_exclude.get())
-        else:
-            self.e_crawl_exclude.config(state='disabled')
-            crawl_exclude_sql = ""
-        return crawl_exclude_sql
+        if self.chk_crawl_exclude_var.get() == "on":
+            self.e_crawl_exclude.config(state="normal")
+            return f' --crawl-exclude="{self.e_crawl_exclude.get()}"'
+
+        self.e_crawl_exclude.config(state="disabled")
+        return ""
 
     # --csv-del=CSVDEL    Delimiting character used in CSV output (default ",")
     def f_csv_del(self, *args):
-        sql_csv = self.chk_csv_del_var.get()
-        if sql_csv == "on":
-            self.e_csv_del.config(state='normal')
-            csv_sql = ' --csv-del="%s"' % (self.e_csv_del.get())
-        else:
-            self.e_csv_del.config(state='disabled')
-            csv_sql = ""
-        return csv_sql
+        if self.chk_csv_del_var.get() == "on":
+            self.e_csv_del.config(state="normal")
+            return f' --csv-del="{self.e_csv_del.get()}"'
+
+        self.e_csv_del.config(state="disabled")
+        return ""
 
     # --table-prefix=T..  Prefix used for temporary tables (default: "sqlmap")
     def f_table_prefix(self, *args):
-        sql_table_prefix = self.chk_table_prefix_var.get()
-        if sql_table_prefix == "on":
-            self.e_table_prefix.config(state='normal')
-            table_prefix_sql = ' --table-prefix="%s"' % (self.e_table_prefix.get())
-        else:
-            self.e_table_prefix.config(state='disabled')
-            table_prefix_sql = ""
-        return table_prefix_sql
+        if self.chk_table_prefix_var.get() == "on":
+            self.e_table_prefix.config(state="normal")
+            return f' --table-prefix="{self.e_table_prefix.get()}"'
+
+        self.e_table_prefix.config(state="disabled")
+        return ""
 
     # --test-filter=TE..  Select tests by payloads and/or titles (e.g. ROW)
     def f_test_filter(self, *args):
-        sql_test_filter = self.chk_test_filter_var.get()
-        if sql_test_filter == "on":
-            self.e_test_filter.config(state='normal')
-            test_filter_sql = ' --test-filter="%s"' % (self.e_test_filter_value.get())
-        else:
-            self.e_test_filter.config(state='disabled')
-            test_filter_sql = ""
-        return test_filter_sql
+        if self.chk_test_filter_var.get() == "on":
+            self.e_test_filter.config(state="normal")
+            return f' --test-filter="{self.e_test_filter_value.get()}"'
+
+        self.e_test_filter.config(state="disabled")
+        return ""
 
     # --preprocess    Use given script(s) for preprocessing of response data
     def f_pre_process(self):
-        sql_preprocess = self.chk_preprocess_var.get()
-        if sql_preprocess == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_preprocess_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.e_preprocess_var.set(filename.name)
-        elif sql_preprocess == "off":
+        else:
             self.e_preprocess_var.set("")
-        return
 
     # --preprocess    Use given script(s) for preprocessing of response data
     @property
     def pre_process_script(self):
-        pre_process_script = self.e_preprocess_var.get()
-        if pre_process_script != "":
-            sql_pre_process_script = ' --preprocess="%s"' % pre_process_script
-        else:
-            sql_pre_process_script = ""
-        return sql_pre_process_script
+        value = self.e_preprocess_var.get()
+        if value:
+            return f' --preprocess="{value}"'
+        return ""
 
     # --postprocess    Use given script(s) for postprocessing of response data
     def f_post_process(self):
-        sql_post_process = self.chk_post_process_var.get()
-        if sql_post_process == "on":
-            filename = tkinter.filedialog.askopenfile(mode='r')
+        if self.chk_post_process_var.get() == "on":
+            filename = tkinter.filedialog.askopenfile(mode="r")
             if filename:
                 self.e_post_process_var.set(filename.name)
-        elif sql_post_process == "off":
+        else:
             self.e_post_process_var.set("")
-        return
 
     # --postprocess    Use given script(s) for postprocessing of response data
     @property
     def post_process_script(self):
-        post_process_script = self.e_post_process_var.get()
-        if post_process_script != "":
-            sql_post_process_script = ' --postprocess="%s"' % post_process_script
-        else:
-            sql_post_process_script = ""
-        return sql_post_process_script
+        value = self.e_post_process_var.get()
+        if value:
+            return f' --postprocess="{value}"'
+        return ""
+
     # --test-skip=TEST..  Skip tests by payloads and/or titles (e.g. BENCHMARK)
     def f_test_skip(self, *args):
-        sql_test_skip = self.chk_test_skip_var.get()
-        if sql_test_skip == "on":
-            self.e_test_skip.config(state='normal')
-            test_skip_sql = ' --test-skip="%s"' % (self.e_test_skip_value.get())
-        else:
-            self.e_test_skip.config(state='disabled')
-            test_skip_sql = ""
-        return test_skip_sql
+        if self.chk_test_skip_var.get() == "on":
+            self.e_test_skip.config(state="normal")
+            return f' --test-skip="{self.e_test_skip_value.get()}"'
+
+        self.e_test_skip.config(state="disabled")
+        return ""
 
     # --user-agent=AGENT  HTTP User-Agent header
     def f_user_agent(self, *args):
-        sql_ua = self.chk_user_agent_var.get()
-        if sql_ua == "on":
-            self.e_user_agent.config(state='normal')
-            ua_sql = ' --user-agent="%s"' % (self.e_ua_value.get())
-        else:
-            self.e_user_agent.config(state='disabled')
-            ua_sql = ""
-        return ua_sql
+        if self.chk_user_agent_var.get() == "on":
+            self.e_user_agent.config(state="normal")
+            return f' --user-agent="{self.e_ua_value.get()}"'
+
+        self.e_user_agent.config(state="disabled")
+        return ""
 
     # --proxy=PROXY     Use a HTTP proxy to connect to the target URL
     def f_proxy(self, *args):
-        sql_proxy = self.chk_proxy_var.get()
-        if sql_proxy == "on":
-            self.e_proxy.config(state='normal')
-            proxy_sql = ' --proxy="%s"' % (self.e_proxy_value.get())
-        else:
-            self.e_proxy.config(state='disabled')
-            proxy_sql = ""
-        return proxy_sql
+        if self.chk_proxy_var.get() == "on":
+            self.e_proxy.config(state="normal")
+            return f' --proxy="{self.e_proxy_value.get()}"'
+
+        self.e_proxy.config(state="disabled")
+        return ""
 
     # --output-dir=OUT..  Custom output directory path
     def f_output_dir(self):
-        sql_out_dir = self.chk_output_dir_var.get()
-        if sql_out_dir == "on":
+        if self.chk_output_dir_var.get() == "on":
             dir_name = tkinter.filedialog.askdirectory()
             if dir_name:
                 self.e_output_dir_var.set(dir_name)
-        elif sql_out_dir == "off":
+        else:
             self.e_output_dir_var.set("")
-        return
 
     # --output-dir=OUT..  Custom output directory path
     @property
     def set_out_dir(self):
-        out_dir = self.e_output_dir_var.get()
-        if out_dir != "":
-            sql_set_out_dir = ' --output-dir="%s"' % out_dir
-        else:
-            sql_set_out_dir = ""
-        return sql_set_out_dir
+        value = self.e_output_dir_var.get()
+        if value:
+            return f' --output-dir="{value}"'
+        return ""
 
     # -r REQUESTFILE      Load HTTP request from a file
     def read_host(self):
-        selection = self.varTarget.get()
-        file_r = self.urlentry.get()
-        if selection == "requestFile":
+        if self.varTarget.get() == "requestFile":
+            file_r = self.urlentry.get()
             load_host = ""
-            text = [line.rstrip() for line in open(file_r) if len(line) > 2]
-            for x in text:
-                if "Host" in x:
-                    load_host = x.replace("Host: ", "")
-            if load_host == "":
-                load_host = "Invalid requestFile :("
-        else:
-            load_url = self.urlentry.get()
-            load_host = urllib.parse.urlparse(load_url).netloc
-        return load_host
+
+            with open(file_r) as file:
+                for line in file:
+                    line = line.rstrip()
+                    if len(line) > 2 and "Host" in line:
+                        load_host = line.replace("Host: ", "")
+                        break
+
+            return load_host or "Invalid requestFile :("
+
+        return urllib.parse.urlparse(self.urlentry.get()).netloc
 
     # log viewer
     def sqlmap(self, *args):
@@ -5340,32 +4787,32 @@ class MainApplication(tkinter.Frame):
                       self.f_csrf_retries() + self.f_csrf_method() + self.f_csrf_data() + self.f_csrf_url +
                       self.f_os() + self.f_skip + self.f_tamper_parm() + self.f_invalid_bignum +
                       self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging +
-                      self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_current_user +
-                      self.f_current_db + self.f_all + self.f_is_dba + self.f_users + self.f_passwords +
-                      self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + self.f_common_tables +
-                      self.f_common_columns + self.f_udf_inject + self.f_common_files + self.f_tables +
-                      self.f_columns + self.f_schema + self.f_count + self.f_force_dns + self.f_force_pivoting +
-                      self.f_smoke_test + self.f_dump + self.f_dump_all + self.f_statements + self.f_search +
-                      self.f_database_enumerate + self.f_table + self.f_column + self.f_user + self.f_exclude() +
-                      self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name + self.f_comments +
-                      self.f_start_stop + self.f_first + self.f_last + self.f_verbose() + self.f_sql_shell +
-                      self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() + self.f_sql_file_read +
-                      self.f_abort_on_empty() + self.f_shared_lib + self.f_wizard + self.f_dummy + self.f_debug +
-                      self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test +
+                      self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_prove +
+                      self.f_auto_waf + self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba +
+                      self.f_users + self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles +
+                      self.f_dbs + self.f_common_tables + self.f_common_columns + self.f_udf_inject +
+                      self.f_common_files + self.f_tables + self.f_columns + self.f_schema + self.f_count +
+                      self.f_force_dns + self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all +
+                      self.f_statements + self.f_search + self.f_database_enumerate + self.f_table + self.f_column +
+                      self.f_user + self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name +
+                      self.f_comments + self.f_start_stop + self.f_first + self.f_last + self.f_verbose() +
+                      self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() +
+                      self.f_sql_file_read + self.f_abort_on_empty() + self.f_shared_lib + self.f_wizard +
+                      self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test +
                       self.f_dump_format() + self.f_encoding() + self.f_vuln_test + self.f_stop_fail +
                       self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + self.f_alert +
                       self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print +
                       self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() +
-                      self.f_pivot + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors + self.f_repair +
-                      self.f_flush + self.f_charset() + self.f_check_connect() + self.f_binary_fields() +
+                      self.f_pivot + self.f_procs + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors +
+                      self.f_repair + self.f_flush + self.f_charset() + self.f_check_connect + self.f_binary_fields() +
                       self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() +
                       self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file +
-                      self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file + 
-                      self.save_report_json_file + self.f_beep + self.pre_process_script + self.post_process_script + 
-                      self.f_skip_static + self.f_cleanup + self.f_murphy_rate + self.f_skip_heuristics + 
-                      self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + self.f_dependencies + self.f_gpage + 
-                      self.f_mobile + self.f_page_rank + self.f_read_crack + self.f_base64 + self.f_base64safe + 
-                      self.f_purge + self.f_time_limit() + self.f_disable_hashing + self.f_unsafe_naming + 
+                      self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file +
+                      self.save_report_json_file + self.f_beep + self.pre_process_script + self.post_process_script +
+                      self.f_skip_static + self.f_cleanup + self.f_murphy_rate + self.f_skip_heuristics +
+                      self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + self.f_dependencies + self.f_gpage +
+                      self.f_mobile + self.f_page_rank + self.f_read_crack + self.f_base64 + self.f_base64safe +
+                      self.f_purge + self.f_time_limit() + self.f_disable_hashing + self.f_unsafe_naming +
                       self.f_smart + self.f_test_parameter() + self.f_param_exclude())
 
         except:
