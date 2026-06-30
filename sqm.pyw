@@ -2669,9 +2669,9 @@ class MainApplication(tkinter.Frame):
 
     # --beep              Sound alert when SQL injection found
     @property
-    def f_procs(self):
-        if self.chk_procs_var.get() == "on":
-            return " --procs"
+    def f_beep(self):
+        if self.chk_beep_var.get() == "on":
+            return " --beep"
         return ""
 
     # --skip-static       Skip testing parameters that not appear dynamic
