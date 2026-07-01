@@ -980,12 +980,12 @@ class MainApplication(tkinter.Frame):
         self.chk_predict_output.config(text="predict-output", variable=self.chk_predict_output_var, onvalue="on",
                                        offvalue="off", command=self.f_predict_output)
         self.chk_predict_output.grid(row=0, column=1, sticky='w')
-        # --keep-alive        Use persistent HTTP(s) connections
-        self.chk_keep_alive = ttk.Checkbutton(optimization_lf)
-        self.chk_keep_alive_var = tkinter.StringVar()
-        self.chk_keep_alive.config(text="keep-alive", variable=self.chk_keep_alive_var, onvalue="on",
-                                   offvalue="off", command=self.f_keep_alive)
-        self.chk_keep_alive.grid(row=0, column=3, sticky='w')
+        # --no-keep-alive     Disable persistent HTTP(s) connections (Keep-Alive)
+        self.chk_no_keep_alive = ttk.Checkbutton(optimization_lf)
+        self.chk_no_keep_alive_var = tkinter.StringVar()
+        self.chk_no_keep_alive.config(text="no-keep-alive", variable=self.chk_no_keep_alive_var, onvalue="on",
+                                   offvalue="off", command=self.f_no_keep_alive)
+        self.chk_no_keep_alive.grid(row=0, column=3, sticky='w')
         # --null-connection   Retrieve page length without actual HTTP response body
         self.chk_null_connection = ttk.Checkbutton(optimization_lf)
         self.chk_null_connection_var = tkinter.StringVar()
@@ -1213,18 +1213,6 @@ class MainApplication(tkinter.Frame):
         self.chk_invalid_string.config(text='invalid-string', variable=self.chk_invalid_string_var, onvalue="on",
                                        offvalue="off", command=self.f_invalid_string)
         self.chk_invalid_string.grid(row=1, column=2, sticky='w')
-        # --prove   Provide proof of injection point exploitation
-        self.chk_prove = ttk.Checkbutton(chk_inj_lf)
-        self.chk_prove_var = tkinter.StringVar()
-        self.chk_prove.config(text="prove", variable=self.chk_prove_var, onvalue="on",
-                              offvalue="off", command=self.commands)
-        self.chk_prove.grid(row=2, column=0, sticky='w')
-        # --auto-waf   Automatically apply WAF bypass (random-agent + tamper)
-        self.chk_auto_waf = ttk.Checkbutton(chk_inj_lf)
-        self.chk_auto_waf_var = tkinter.StringVar()
-        self.chk_auto_waf.config(text="auto-waf", variable=self.chk_auto_waf_var, onvalue="on",
-                                 offvalue="off", command=self.commands)
-        self.chk_auto_waf.grid(row=2, column=1, sticky='w')
         # --tamper=TAMPER     Use given script(s) for tampering injection data
         self.tamper = tkinter.Listbox(tampers_lf, height=9, width=10, selectmode=tkinter.EXTENDED)
         # *.py in listbox, exclude __init__.py
@@ -3714,20 +3702,6 @@ class MainApplication(tkinter.Frame):
             return " --invalid-string"
         return ""
 
-    # --prove   Provide proof of injection point exploitation
-    @property
-    def f_prove(self):
-        if self.chk_prove_var.get() == "on":
-            return " --prove"
-        return ""
-
-    # --auto-waf  (emits --random-agent + --tamper=between,randomcase,space2comment)
-    @property
-    def f_auto_waf(self):
-        if self.chk_auto_waf_var.get() == "on":
-            return " --auto-waf"
-        return ""
-
     # --string=STRING     String to match when query is evaluated to True
     def f_string(self, *args):
         if self.chk_string_var.get() == "on":
@@ -3823,11 +3797,11 @@ class MainApplication(tkinter.Frame):
             return " --predict-output"
         return ""
 
-    # --keep-alive        Use persistent HTTP(s) connections
+    # --no-keep-alive     Disable persistent HTTP(s) connections (Keep-Alive)
     @property
-    def f_keep_alive(self):
-        if self.chk_keep_alive_var.get() == "on":
-            return " --keep-alive"
+    def f_no_keep_alive(self):
+        if self.chk_no_keep_alive_var.get() == "on":
+            return " --no-keep-alive"
         return ""
 
     # --null-connection   Retrieve page length without actual HTTP response body
@@ -4775,7 +4749,7 @@ class MainApplication(tkinter.Frame):
                       self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_regexp() +
                       self.f_string() + self.f_not_string() + self.f_time_sec() + self.f_technique() +
                       self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_optimization +
-                      self.f_predict_output + self.f_keep_alive + self.f_null_connection + self.f_threads() +
+                      self.f_predict_output + self.f_no_keep_alive + self.f_null_connection + self.f_threads() +
                       self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
                       self.f_union_values() + self.f_cookie + self.read_live_cookies + self.read_load_cookies +
                       self.f_drop_set_cookie + self.f_http1 + self.f_http2 + self.f_prefix() + self.f_suffix() +
@@ -4787,26 +4761,25 @@ class MainApplication(tkinter.Frame):
                       self.f_csrf_retries() + self.f_csrf_method() + self.f_csrf_data() + self.f_csrf_url +
                       self.f_os() + self.f_skip + self.f_tamper_parm() + self.f_invalid_bignum +
                       self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging +
-                      self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_prove +
-                      self.f_auto_waf + self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba +
-                      self.f_users + self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles +
-                      self.f_dbs + self.f_common_tables + self.f_common_columns + self.f_udf_inject +
-                      self.f_common_files + self.f_tables + self.f_columns + self.f_schema + self.f_count +
-                      self.f_force_dns + self.f_force_pivoting + self.f_smoke_test + self.f_dump + self.f_dump_all +
-                      self.f_statements + self.f_search + self.f_database_enumerate + self.f_table + self.f_column +
-                      self.f_user + self.f_exclude() + self.f_where_dump() + self.f_exclude_sys_dbs + self.f_host_name +
-                      self.f_comments + self.f_start_stop + self.f_first + self.f_last + self.f_verbose() +
-                      self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() + self.f_disable_precon() +
-                      self.f_sql_file_read + self.f_abort_on_empty() + self.f_shared_lib + self.f_wizard +
-                      self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile + self.f_force_dbms + self.f_live_test +
-                      self.f_dump_format() + self.f_encoding() + self.f_vuln_test + self.f_stop_fail +
-                      self.f_run_case + self.f_unstable + self.f_result_file + self.f_z + self.f_alert +
-                      self.f_disable_coloring + self.f_last + self.f_answers() + self.f_finger_print +
-                      self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() + self.f_tor_type() +
-                      self.f_pivot + self.f_procs + self.f_eta + self.f_forms + self.f_fresh + self.f_parse_errors +
-                      self.f_repair + self.f_flush + self.f_charset() + self.f_check_connect + self.f_binary_fields() +
-                      self.f_crawl() + self.f_csv_del() + self.f_table_prefix() + self.f_test_filter() +
-                      self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file +
+                      self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_current_user +
+                      self.f_current_db + self.f_all + self.f_is_dba + self.f_users + self.f_passwords +
+                      self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs + self.f_common_tables +
+                      self.f_common_columns + self.f_udf_inject + self.f_common_files + self.f_tables + self.f_columns +
+                      self.f_schema + self.f_count + self.f_force_dns + self.f_force_pivoting + self.f_smoke_test +
+                      self.f_dump + self.f_dump_all + self.f_statements + self.f_search + self.f_database_enumerate +
+                      self.f_table + self.f_column + self.f_user + self.f_exclude() + self.f_where_dump() +
+                      self.f_exclude_sys_dbs + self.f_host_name + self.f_comments + self.f_start_stop + self.f_first +
+                      self.f_last + self.f_verbose() + self.f_sql_shell + self.f_tmp_dir() + self.f_web_root() +
+                      self.f_disable_precon() + self.f_sql_file_read + self.f_abort_on_empty() + self.f_shared_lib +
+                      self.f_wizard + self.f_dummy + self.f_debug + self.f_disable_stats + self.f_profile +
+                      self.f_force_dbms + self.f_live_test + self.f_dump_format() + self.f_encoding() +
+                      self.f_vuln_test + self.f_stop_fail + self.f_run_case + self.f_unstable + self.f_result_file +
+                      self.f_z + self.f_alert + self.f_disable_coloring + self.f_last + self.f_answers() +
+                      self.f_finger_print + self.f_banner + self.f_tor + self.f_tor_use + self.f_tor_port() +
+                      self.f_tor_type() + self.f_pivot + self.f_procs + self.f_eta + self.f_forms + self.f_fresh +
+                      self.f_parse_errors + self.f_repair + self.f_flush + self.f_charset() + self.f_check_connect +
+                      self.f_binary_fields() + self.f_crawl() + self.f_csv_del() + self.f_table_prefix() +
+                      self.f_test_filter() + self.f_test_skip() + self.f_crawl_exclude() + self.f_save_traffic_file +
                       self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file +
                       self.save_report_json_file + self.f_beep + self.pre_process_script + self.post_process_script +
                       self.f_skip_static + self.f_cleanup + self.f_murphy_rate + self.f_skip_heuristics +
