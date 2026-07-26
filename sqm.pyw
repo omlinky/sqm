@@ -1474,6 +1474,53 @@ class MainApplication(tkinter.Frame):
         self.entry_second_req.current(0)
         self.entry_second_req.bind('<<ComboboxSelected>>', self.f_second_req)
         self.entry_second_req.grid(row=8, column=1, sticky='nwe', padx=3)
+        # Non-SQL injection techniques
+        non_sql_lf = ttk.Labelframe(technique_lf, text='Non-SQL techniques')
+        non_sql_lf.grid(row=9, column=0, columnspan=2, sticky='nwe', padx=3, pady=(8, 3))
+        non_sql_lf.columnconfigure(0, weight=1)
+        non_sql_lf.columnconfigure(1, weight=1)
+        # --nosql: NoSQL injection
+        self.chk_nosql = ttk.Checkbutton(non_sql_lf)
+        self.chk_nosql_var = tkinter.StringVar()
+        self.chk_nosql.config(text="nosql", variable=self.chk_nosql_var, onvalue="on",
+                              offvalue="off", command=self.f_nosql)
+        self.chk_nosql.grid(row=0, column=0, sticky='w', padx=4)
+        # --graphql: GraphQL injection
+        self.chk_graph = ttk.Checkbutton(non_sql_lf)
+        self.chk_graph_var = tkinter.StringVar()
+        self.chk_graph.config(text="graph", variable=self.chk_graph_var, onvalue="on",
+                              offvalue="off", command=self.f_graph)
+        self.chk_graph.grid(row=0, column=1, sticky='w', padx=4)
+        # --ldap: LDAP injection
+        self.chk_ldap = ttk.Checkbutton(non_sql_lf)
+        self.chk_ldap_var = tkinter.StringVar()
+        self.chk_ldap.config(text="ldap", variable=self.chk_ldap_var, onvalue="on",
+                             offvalue="off", command=self.f_ldap)
+        self.chk_ldap.grid(row=1, column=0, sticky='w', padx=4)
+        # --xpath: XPath injection
+        self.chk_xpath = ttk.Checkbutton(non_sql_lf)
+        self.chk_xpath_var = tkinter.StringVar()
+        self.chk_xpath.config(text="xpath", variable=self.chk_xpath_var, onvalue="on",
+                              offvalue="off", command=self.f_xpath)
+        self.chk_xpath.grid(row=1, column=1, sticky='w', padx=4)
+        # --ssti: server-side template injection
+        self.chk_ssti = ttk.Checkbutton(non_sql_lf)
+        self.chk_ssti_var = tkinter.StringVar()
+        self.chk_ssti.config(text="ssti", variable=self.chk_ssti_var, onvalue="on",
+                             offvalue="off", command=self.f_ssti)
+        self.chk_ssti.grid(row=2, column=0, sticky='w', padx=4)
+        # --hql: HQL/JPQL (Hibernate ORM) injection
+        self.chk_hql = ttk.Checkbutton(non_sql_lf)
+        self.chk_hql_var = tkinter.StringVar()
+        self.chk_hql.config(text="hql", variable=self.chk_hql_var, onvalue="on",
+                            offvalue="off", command=self.f_hql)
+        self.chk_hql.grid(row=2, column=1, sticky='w', padx=4)
+        # --jwt: Audit JSON Web Tokens (JWT) for weaknesses
+        self.chk_jwt = ttk.Checkbutton(non_sql_lf)
+        self.chk_jwt_var = tkinter.StringVar()
+        self.chk_jwt.config(text="jwt", variable=self.chk_jwt_var, onvalue="on",
+                            offvalue="off", command=self.f_jwt)
+        self.chk_jwt.grid(row=0, column=2, sticky='w', padx=4)
         # DATA BOX
         data_n = ttk.Notebook(request_f)
         data1 = ttk.Frame(data_n)
@@ -4071,6 +4118,55 @@ class MainApplication(tkinter.Frame):
         self.entry_second_req.config(state="disabled")
         return ""
 
+        # --nosql: NoSQL injection
+    @property
+    def f_nosql(self):
+        if self.chk_nosql_var.get() == "on":
+            return " --nosql"
+        return ""
+
+    # --graphql: GraphQL injection
+    @property
+    def f_graph(self):
+        if self.chk_graph_var.get() == "on":
+            return " --graph"
+        return ""
+
+    # --ldap: LDAP injection
+    @property
+    def f_ldap(self):
+        if self.chk_ldap_var.get() == "on":
+            return " --ldap"
+        return ""
+
+    # --xpath: XPath injection
+    @property
+    def f_xpath(self):
+        if self.chk_xpath_var.get() == "on":
+            return " --xpath"
+        return ""
+
+    # --ssti: server-side template injection
+    @property
+    def f_ssti(self):
+        if self.chk_ssti_var.get()  == "on":
+            return " --ssti"
+        return ""
+
+    # --hql: HQL/JPQL (Hibernate ORM) injection
+    @property
+    def f_hql(self):
+        if self.chk_hql_var.get() == "on":
+            return " --hql"
+        return ""
+
+    # --jwt: Audit JSON Web Tokens (JWT) for weaknesses
+    @property
+    def f_jwt(self):
+        if self.chk_jwt_var.get() == "on":
+            return " --jwt"
+        return ""
+
     # --tamper=TAMPER Use given script(s) for tampering injection data
     def f_tamper(self):
         sel = self.tamper.curselection()
@@ -4794,7 +4890,8 @@ class MainApplication(tkinter.Frame):
                       self.f_read_proxy_file + self.f_proxy_freq() + self.f_hpp + self.f_cookie_del + self.f_level() +
                       self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_regexp() +
                       self.f_string() + self.f_not_string() + self.f_time_sec() + self.f_technique() +
-                      self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_optimization +
+                      self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_nosql + self.f_graph +
+                      self.f_ldap + self.f_xpath + self.f_ssti + self.f_hql + self.f_jwt + self.f_optimization +
                       self.f_predict_output + self.f_no_keep_alive + self.f_null_connection + self.f_threads() +
                       self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
                       self.f_union_values() + self.f_cookie + self.read_live_cookies + self.read_load_cookies +
