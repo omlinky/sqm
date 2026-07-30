@@ -3319,10 +3319,12 @@ class MainApplication(tkinter.Frame):
         return ""
 
     # --cookie=COOKIE     HTTP Cookie header value
-    @property
-    def f_cookie(self):
+    def f_cookie(self, *args):
         if self.chk_cookie_var.get() == "on":
+            self.e_cookie.config(state="normal")
             return f' --cookie="{self.e_cookie.get()}"'
+
+        self.e_cookie.config(state="disabled")
         return ""
 
     # --live-cookies=L.. Live cookies file used for loading up-to-date values
@@ -4894,7 +4896,7 @@ class MainApplication(tkinter.Frame):
                       self.f_ldap + self.f_xpath + self.f_ssti + self.f_hql + self.f_jwt + self.f_optimization +
                       self.f_predict_output + self.f_no_keep_alive + self.f_null_connection + self.f_threads() +
                       self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
-                      self.f_union_values() + self.f_cookie + self.read_live_cookies + self.read_load_cookies +
+                      self.f_union_values() + self.f_cookie() + self.read_live_cookies + self.read_load_cookies +
                       self.f_drop_set_cookie + self.f_http1 + self.f_http2 + self.f_prefix() + self.f_suffix() +
                       self.f_user_agent() + self.f_randomize() + self.f_force_ssl + self.f_host() + self.f_referer() +
                       self.f_headers() + self.read_load_headers + self.read_auth_file + self.f_auth_cred() +
