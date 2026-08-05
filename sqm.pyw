@@ -63,6 +63,90 @@ def r_clicking(self):
         pass
 
 
+class VerticalScrolledFrame(ttk.Frame):
+    """A frame whose contents can be scrolled vertically."""
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        viewport_height = max(320, min(520, self.winfo_screenheight() - 260))
+        frame_background = ttk.Style().lookup("TFrame", "background")
+
+        self.canvas = tkinter.Canvas(
+            self,
+            width=1,
+            height=viewport_height,
+            borderwidth=0,
+            highlightthickness=0,
+            background=frame_background,
+        )
+        self.scrollbar = ttk.Scrollbar(
+            self,
+            orient="vertical",
+            command=self.canvas.yview,
+        )
+        self.content = ttk.Frame(self.canvas)
+        self._content_window = self.canvas.create_window(
+            (0, 0),
+            window=self.content,
+            anchor="nw",
+        )
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        self.scrollbar.grid(row=0, column=1, sticky="ns")
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+
+        self.content.bind("<Configure>", self._update_scroll_region)
+        self.canvas.bind("<Configure>", self._resize_content)
+
+        top = self.winfo_toplevel()
+        if not getattr(top, "_scrollable_tabs_bound", False):
+            top.bind_all("<MouseWheel>", self._route_mousewheel, add="+")
+            top.bind_all("<Button-4>", self._route_mousewheel, add="+")
+            top.bind_all("<Button-5>", self._route_mousewheel, add="+")
+            top._scrollable_tabs_bound = True
+
+    def _update_scroll_region(self, _event=None):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def _resize_content(self, event):
+        content_height = max(event.height, self.content.winfo_reqheight())
+        self.canvas.itemconfigure(
+            self._content_window,
+            width=event.width,
+            height=content_height,
+        )
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def _route_mousewheel(self, event):
+        widget = self.winfo_containing(
+            self.winfo_pointerx(),
+            self.winfo_pointery(),
+        )
+
+        if isinstance(widget, (tkinter.Listbox, tkinter.Text)):
+            return None
+
+        while widget is not None:
+            if isinstance(widget, VerticalScrolledFrame):
+                delta = getattr(event, "delta", 0)
+                if getattr(event, "num", None) == 4 or delta > 0:
+                    direction = -1
+                elif getattr(event, "num", None) == 5 or delta < 0:
+                    direction = 1
+                else:
+                    return None
+
+                widget.canvas.yview_scroll(direction * 3, "units")
+                return "break"
+
+            widget = widget.master
+
+        return None
+
+
 class MainApplication(tkinter.Frame):
     def __init__(self, mw):
         tkinter.Frame.__init__(self, mw)
@@ -105,7 +189,10 @@ class MainApplication(tkinter.Frame):
         self.nRoot.add(update_sqlmap, text='Update Sqlmap')
         self.nRoot.columnconfigure(0, weight=1)
         self.nRoot.grid(row=0, column=0, sticky='nswe', ipady=3, ipadx=3)
-        builder_frame.rowconfigure(0, weight=1)
+        builder_frame.rowconfigure(0, weight=0)
+        builder_frame.rowconfigure(1, weight=0)
+        builder_frame.rowconfigure(2, weight=1)
+        builder_frame.rowconfigure(3, weight=0)
         builder_frame.columnconfigure(0, weight=1)
         editor.rowconfigure(0, weight=1)
         editor.columnconfigure(0, weight=1)
@@ -315,20 +402,28 @@ class MainApplication(tkinter.Frame):
         self.sqlEdit.columnconfigure(0, weight=1)
         paned_url.grid(row=0, column=0, sticky='nwe', rowspan=2)
         self.noBF = ttk.Notebook(builder_frame)
-        settings_f = ttk.Frame(self.noBF)
-        s_det_tech_f = ttk.Frame(self.noBF)
-        request_f = ttk.Frame(self.noBF)
-        enumeration_f = ttk.Frame(self.noBF)
-        api_f = ttk.Frame(self.noBF)
-        file_f = ttk.Frame(self.noBF)
-        self.noBF.add(settings_f, text='Settings')
-        self.noBF.add(s_det_tech_f, text='Injection | Detection | Technique')
-        self.noBF.add(request_f, text='Request')
-        self.noBF.add(enumeration_f, text='Enumeration')
-        self.noBF.add(file_f, text='Access')
-        self.noBF.add(api_f, text='Api')
+        settings_page = VerticalScrolledFrame(self.noBF)
+        s_det_tech_page = VerticalScrolledFrame(self.noBF)
+        request_page = VerticalScrolledFrame(self.noBF)
+        enumeration_page = VerticalScrolledFrame(self.noBF)
+        file_page = VerticalScrolledFrame(self.noBF)
+        api_page = VerticalScrolledFrame(self.noBF)
+
+        settings_f = settings_page.content
+        s_det_tech_f = s_det_tech_page.content
+        request_f = request_page.content
+        enumeration_f = enumeration_page.content
+        file_f = file_page.content
+        api_f = api_page.content
+
+        self.noBF.add(settings_page, text='Settings')
+        self.noBF.add(s_det_tech_page, text='Injection | Detection | Technique')
+        self.noBF.add(request_page, text='Request')
+        self.noBF.add(enumeration_page, text='Enumeration')
+        self.noBF.add(file_page, text='Access')
+        self.noBF.add(api_page, text='Api')
         self.noBF.columnconfigure(0, weight=1)
-        self.noBF.grid(sticky='nswe', padx=3, pady=3)
+        self.noBF.grid(row=2, column=0, sticky='nswe', padx=3, pady=3)
         self.noBF.select(tab_id=1)
 
         settings_f.columnconfigure(0, weight=1)
@@ -689,12 +784,12 @@ class MainApplication(tkinter.Frame):
         self.chk_offline.config(text="offline", variable=self.chk_offline_var, onvalue="on",
                                 offvalue="off", command=self.f_offline)
         self.chk_offline.grid(row=2, column=0, sticky='w')
-        # --smart             Conduct through tests only if positive heuristic(s)
-        self.chk_smart = ttk.Checkbutton(miscellaneous_lf)
-        self.chk_smart_var = tkinter.StringVar()
-        self.chk_smart.config(text="smart", variable=self.chk_smart_var, onvalue="on",
-                              offvalue="off", command=self.f_smart)
-        self.chk_smart.grid(row=3, column=0, sticky='w')
+        # --timeless          Use HTTP/2 timeless timing (faster, no delay)
+        self.chk_timeless = ttk.Checkbutton(miscellaneous_lf)
+        self.chk_timeless_var = tkinter.StringVar()
+        self.chk_timeless.config(text="timeless", variable=self.chk_timeless_var, onvalue="on",
+                                 offvalue="off", command=self.f_timeless)
+        self.chk_timeless.grid(row=3, column=0, sticky='w')
         # --wizard            Simple wizard interface for beginner users
         self.chk_wizard = ttk.Checkbutton(miscellaneous_lf)
         self.chk_wizard_var = tkinter.StringVar()
@@ -1219,6 +1314,12 @@ class MainApplication(tkinter.Frame):
         self.chk_proof.config(text="proof", variable=self.chk_proof_var, onvalue="on",
                               offvalue="off", command=self.f_proof)
         self.chk_proof.grid(row=2, column=0, sticky='w')
+        # --esperanto         Use the DBMS-agnostic enumeration engine
+        self.chk_esperanto = ttk.Checkbutton(chk_inj_lf)
+        self.chk_esperanto_var = tkinter.StringVar()
+        self.chk_esperanto.config(text="esperanto", variable=self.chk_esperanto_var, onvalue="on",
+                                  offvalue="off", command=self.f_esperanto)
+        self.chk_esperanto.grid(row=2, column=1, sticky='w')
         # --tamper=TAMPER     Use given script(s) for tampering injection data
         self.tamper = tkinter.Listbox(tampers_lf, height=9, width=10, selectmode=tkinter.EXTENDED)
         # *.py in listbox, exclude __init__.py
@@ -1305,12 +1406,24 @@ class MainApplication(tkinter.Frame):
         self.e_code.current(0)
         self.e_code.bind('<<ComboboxSelected>>', self.f_code)
         self.e_code.grid(row=3, column=1, sticky='we', padx=3)
+        # --lengths           Compare pages based only on their content length
+        self.chk_lengths = ttk.Checkbutton(detection_lf)
+        self.chk_lengths_var = tkinter.StringVar()
+        self.chk_lengths.config(text="lengths", variable=self.chk_lengths_var, onvalue="on",
+                                offvalue="off", command=self.f_lengths)
+        self.chk_lengths.grid(row=4, column=0, sticky='w')
+        # --smart             Conduct through tests only if positive heuristic(s)
+        self.chk_smart = ttk.Checkbutton(detection_lf)
+        self.chk_smart_var = tkinter.StringVar()
+        self.chk_smart.config(text="smart", variable=self.chk_smart_var, onvalue="on",
+                              offvalue="off", command=self.f_smart)
+        self.chk_smart.grid(row=5, column=0, sticky='w')
         # --level=LEVEL       Level of tests to perform (1-5, default 1)
         self.chk_level = ttk.Checkbutton(detection_lf)
         self.chk_level_var = tkinter.StringVar()
         self.chk_level.config(text="level", variable=self.chk_level_var, onvalue="on",
                               offvalue="off", command=self.f_level)
-        self.chk_level.grid(row=4, column=0, sticky='w')
+        self.chk_level.grid(row=6, column=0, sticky='w')
         #
         self.e_level = ttk.Combobox(detection_lf)
         self.e_level_value = tkinter.StringVar()
@@ -1318,13 +1431,13 @@ class MainApplication(tkinter.Frame):
         self.e_level['values'] = ('1', '2', '3', '4', '5')
         self.e_level.current(0)
         self.e_level.bind('<<ComboboxSelected>>', self.f_level)
-        self.e_level.grid(row=4, column=1, sticky='w', padx=3)
+        self.e_level.grid(row=6, column=1, sticky='w', padx=3)
         # --risk=RISK         Risk of tests to perform (1-3, default 1)
         self.chk_risk = ttk.Checkbutton(detection_lf)
         self.chk_risk_var = tkinter.StringVar()
         self.chk_risk.config(text="risk", variable=self.chk_risk_var, onvalue="on",
                              offvalue="off", command=self.f_risk)
-        self.chk_risk.grid(row=5, column=0, sticky='w')
+        self.chk_risk.grid(row=7, column=0, sticky='w')
         #
         self.e_risk = ttk.Combobox(detection_lf)
         self.e_risk_value = tkinter.StringVar()
@@ -1332,19 +1445,19 @@ class MainApplication(tkinter.Frame):
         self.e_risk['values'] = ('1', '2', '3')
         self.e_risk.current(0)
         self.e_risk.bind('<<ComboboxSelected>>', self.f_risk)
-        self.e_risk.grid(row=5, column=1, sticky='w', padx=3)
+        self.e_risk.grid(row=7, column=1, sticky='w', padx=3)
         # --text-only         Compare pages based only on the textual content
         self.chk_text_only = ttk.Checkbutton(detection_lf)
         self.chk_text_only_var = tkinter.StringVar()
         self.chk_text_only.config(text="text-only", variable=self.chk_text_only_var, onvalue="on",
                                   offvalue="off", command=self.f_text_only)
-        self.chk_text_only.grid(row=6, column=0, sticky='w')
+        self.chk_text_only.grid(row=8, column=0, sticky='w')
         # --titles            Compare pages based only on their titles
         self.chk_titles = ttk.Checkbutton(detection_lf)
         self.chk_titles_var = tkinter.StringVar()
         self.chk_titles.config(text="titles", variable=self.chk_titles_var, onvalue="on",
                                offvalue="off", command=self.f_titles)
-        self.chk_titles.grid(row=7, column=0, sticky='w')
+        self.chk_titles.grid(row=9, column=0, sticky='w')
         # --technique=TECH    SQL injection techniques to use (default "BEUSTQ")
         self.chk_technique = ttk.Checkbutton(technique_lf)
         self.chk_tech_var = tkinter.StringVar()
@@ -1521,6 +1634,24 @@ class MainApplication(tkinter.Frame):
         self.chk_jwt.config(text="jwt", variable=self.chk_jwt_var, onvalue="on",
                             offvalue="off", command=self.f_jwt)
         self.chk_jwt.grid(row=0, column=2, sticky='w', padx=4)
+        # --oob-server=OOB..  Out-of-band server for blind '--xxe'
+        self.chk_oob_server = ttk.Checkbutton(non_sql_lf)
+        self.chk_oob_server_var = tkinter.StringVar()
+        self.chk_oob_server.config(text="oob-server", variable=self.chk_oob_server_var, onvalue="on",
+                                   offvalue="off", command=self.f_oob_server)
+        self.chk_oob_server.grid(row=1, column=2, sticky='w', padx=4)
+        #
+        self.e_oob_server = ttk.Entry(non_sql_lf, width=10)
+        self.e_oob_server.grid(row=1, column=3, sticky='w', padx=4)
+        # --oob-token=OOBT..  Authentication token for a self-hosted '--oob-server'
+        self.chk_oob_token = ttk.Checkbutton(non_sql_lf)
+        self.chk_oob_token_var = tkinter.StringVar()
+        self.chk_oob_token.config(text="oob-token", variable=self.chk_oob_token_var, onvalue="on",
+                                  offvalue="off", command=self.f_oob_token)
+        self.chk_oob_token.grid(row=2, column=2, sticky='w', padx=4)
+        #
+        self.e_oob_token = ttk.Entry(non_sql_lf, width=10)
+        self.e_oob_token.grid(row=2, column=3, sticky='w', padx=4)
         # DATA BOX
         data_n = ttk.Notebook(request_f)
         data1 = ttk.Frame(data_n)
@@ -2774,6 +2905,13 @@ class MainApplication(tkinter.Frame):
             return " --offline"
         return ""
 
+    # --timeless          Use HTTP/2 timeless timing (faster, no delay)
+    @property
+    def f_timeless(self):
+        if self.chk_timeless_var.get() == "on":
+            return " --timeless"
+        return ""
+
     # --sqlmap-shell      Prompt for an interactive sqlmap shell
     @property
     def f_sqlmap_shell(self):
@@ -3781,6 +3919,13 @@ class MainApplication(tkinter.Frame):
             return " --proof"
         return ""
 
+    # --esperanto         Use the DBMS-agnostic enumeration engine
+    @property
+    def f_esperanto(self):
+        if self.chk_esperanto_var.get() == "on":
+            return " --esperanto"
+        return ""
+
     # --string=STRING     String to match when query is evaluated to True
     def f_string(self, *args):
         if self.chk_string_var.get() == "on":
@@ -3815,6 +3960,13 @@ class MainApplication(tkinter.Frame):
             return f' --code="{self.e_code_value.get()}"'
 
         self.e_code.config(state="disabled")
+        return ""
+
+    # --lengths           Compare pages based only on their content length
+    @property
+    def f_lengths(self):
+        if self.chk_lengths_var.get() == "on":
+            return " --lengths"
         return ""
 
     # --union-cols=UCOLS  Range of columns to test for UNION query SQL injection
@@ -4167,6 +4319,20 @@ class MainApplication(tkinter.Frame):
     def f_jwt(self):
         if self.chk_jwt_var.get() == "on":
             return " --jwt"
+        return ""
+
+    # --oob-server=OOB..  Out-of-band server for blind '--xxe'
+    @property
+    def f_oob_server(self):
+        if self.chk_oob_server_var.get() == "on":
+            return f' --oob-server="{self.e_oob_server.get()}"'
+        return ""
+
+    # --oob-token=OOBT..  Authentication token for a self-hosted '--oob-server'
+    @property
+    def f_oob_token(self):
+        if self.chk_oob_token_var.get() == "on":
+            return f' --oob-token="{self.e_oob_token.get()}"'
         return ""
 
     # --tamper=TAMPER Use given script(s) for tampering injection data
@@ -4890,10 +5056,12 @@ class MainApplication(tkinter.Frame):
                       self.f_sql_query() + self.f_param_del + self.f_random_agent + self.f_proxy() +
                       self.f_proxy_cred() + self.f_ignore_proxy + self.f_ignore_redirects + self.f_ignore_timeouts +
                       self.f_read_proxy_file + self.f_proxy_freq() + self.f_hpp + self.f_cookie_del + self.f_level() +
-                      self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_regexp() +
-                      self.f_string() + self.f_not_string() + self.f_time_sec() + self.f_technique() +
+                      self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_lengths +
+                      self.f_smart + self.f_regexp() + self.f_string() + self.f_not_string() + self.f_time_sec() +
+                      self.f_technique() +
                       self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_nosql + self.f_graph +
-                      self.f_ldap + self.f_xpath + self.f_ssti + self.f_hql + self.f_jwt + self.f_optimization +
+                      self.f_ldap + self.f_xpath + self.f_ssti + self.f_hql + self.f_jwt + self.f_oob_server +
+                      self.f_oob_token + self.f_optimization +
                       self.f_predict_output + self.f_no_keep_alive + self.f_null_connection + self.f_threads() +
                       self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
                       self.f_union_values() + self.f_cookie() + self.read_live_cookies + self.read_load_cookies +
@@ -4907,6 +5075,7 @@ class MainApplication(tkinter.Frame):
                       self.f_os() + self.f_skip + self.f_tamper_parm() + self.f_invalid_bignum +
                       self.f_invalid_logical + self.f_no_cast + self.f_batch + self.f_no_logging +
                       self.f_save_dump_file + self.f_no_escape + self.f_invalid_string + self.f_proof +
+                      self.f_esperanto +
                       self.f_current_user + self.f_current_db + self.f_all + self.f_is_dba + self.f_users +
                       self.f_passwords + self.f_dbms_cred() + self.f_privileges + self.f_roles + self.f_dbs +
                       self.f_common_tables + self.f_common_columns + self.f_udf_inject + self.f_common_files +
@@ -4929,10 +5098,11 @@ class MainApplication(tkinter.Frame):
                       self.f_read_session_file + self.save_config + self.f_scope + self.save_har_file +
                       self.save_report_json_file + self.f_beep + self.pre_process_script + self.post_process_script +
                       self.f_skip_static + self.f_cleanup + self.f_murphy_rate + self.f_skip_heuristics +
-                      self.f_skip_waf + self.f_offline + self.f_sqlmap_shell + self.f_dependencies + self.f_gpage +
+                      self.f_skip_waf + self.f_offline + self.f_timeless + self.f_sqlmap_shell +
+                      self.f_dependencies + self.f_gpage +
                       self.f_mobile + self.f_page_rank + self.f_read_crack + self.f_base64 + self.f_base64safe +
                       self.f_purge + self.f_time_limit() + self.f_disable_hashing + self.f_unsafe_naming +
-                      self.f_smart + self.f_test_parameter() + self.f_param_exclude())
+                      self.f_test_parameter() + self.f_param_exclude())
 
         except:
             inject = "select the url checkbox parameter to build the command"
@@ -5014,8 +5184,32 @@ class MainApplication(tkinter.Frame):
 
 
 # -----------------------------------------
+def fit_window_to_screen(window):
+    """Fit a normal window to the current display without maximizing it."""
+    window.update_idletasks()
+
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    requested_width = window.winfo_reqwidth()
+    requested_height = window.winfo_reqheight()
+
+    maximum_width = max(1, int(screen_width * 0.90))
+    maximum_height = max(1, int(screen_height * 0.88))
+
+    window_width = min(requested_width, maximum_width)
+    window_height = min(requested_height, maximum_height)
+    position_x = max(0, (screen_width - window_width) // 2)
+    position_y = max(0, (screen_height - window_height) // 2)
+
+    window.geometry(
+        f"{window_width}x{window_height}+{position_x}+{position_y}"
+    )
+
+
+# -----------------------------------------
 def main():
     root = tkinter.Tk()
+    root.withdraw()
     f = font.Font(family='Helvetica', size=8, weight='bold')
     font.families()
     s = tkinter.ttk.Style()
@@ -5024,9 +5218,11 @@ def main():
     root.title("SQLmap Command Builder")
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
-    root.resizable(False, False)
-    appl = MainApplication(mw=root)
-    appl.mainloop()
+    root.resizable(True, True)
+    MainApplication(mw=root)
+    fit_window_to_screen(root)
+    root.deiconify()
+    root.mainloop()
 
 
 # -----------------------------------------
