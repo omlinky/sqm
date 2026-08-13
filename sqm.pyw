@@ -1599,11 +1599,11 @@ class MainApplication(tkinter.Frame):
                               offvalue="off", command=self.f_nosql)
         self.chk_nosql.grid(row=0, column=0, sticky='w', padx=4)
         # --graphql: GraphQL injection
-        self.chk_graph = ttk.Checkbutton(non_sql_lf)
-        self.chk_graph_var = tkinter.StringVar()
-        self.chk_graph.config(text="graph", variable=self.chk_graph_var, onvalue="on",
-                              offvalue="off", command=self.f_graph)
-        self.chk_graph.grid(row=0, column=1, sticky='w', padx=4)
+        self.chk_graphql = ttk.Checkbutton(non_sql_lf)
+        self.chk_graphql_var = tkinter.StringVar()
+        self.chk_graphql.config(text="graphql", variable=self.chk_graphql_var, onvalue="on",
+                                offvalue="off", command=self.f_graphql)
+        self.chk_graphql.grid(row=0, column=1, sticky='w', padx=4)
         # --ldap: LDAP injection
         self.chk_ldap = ttk.Checkbutton(non_sql_lf)
         self.chk_ldap_var = tkinter.StringVar()
@@ -1622,12 +1622,36 @@ class MainApplication(tkinter.Frame):
         self.chk_ssti.config(text="ssti", variable=self.chk_ssti_var, onvalue="on",
                              offvalue="off", command=self.f_ssti)
         self.chk_ssti.grid(row=2, column=0, sticky='w', padx=4)
+        # --xslt: XSLT injection
+        self.chk_xslt = ttk.Checkbutton(non_sql_lf)
+        self.chk_xslt_var = tkinter.StringVar()
+        self.chk_xslt.config(text="xslt", variable=self.chk_xslt_var, onvalue="on",
+                             offvalue="off", command=self.f_xslt)
+        self.chk_xslt.grid(row=3, column=0, sticky='w', padx=4)
+        # --xxe: XML External Entity (XXE) injection
+        self.chk_xxe = ttk.Checkbutton(non_sql_lf)
+        self.chk_xxe_var = tkinter.StringVar()
+        self.chk_xxe.config(text="xxe", variable=self.chk_xxe_var, onvalue="on",
+                            offvalue="off", command=self.f_xxe)
+        self.chk_xxe.grid(row=3, column=1, sticky='w', padx=4)
         # --hql: HQL/JPQL (Hibernate ORM) injection
         self.chk_hql = ttk.Checkbutton(non_sql_lf)
         self.chk_hql_var = tkinter.StringVar()
         self.chk_hql.config(text="hql", variable=self.chk_hql_var, onvalue="on",
                             offvalue="off", command=self.f_hql)
         self.chk_hql.grid(row=2, column=1, sticky='w', padx=4)
+        # --sparql: SPARQL injection
+        self.chk_sparql = ttk.Checkbutton(non_sql_lf)
+        self.chk_sparql_var = tkinter.StringVar()
+        self.chk_sparql.config(text="sparql", variable=self.chk_sparql_var, onvalue="on",
+                               offvalue="off", command=self.f_sparql)
+        self.chk_sparql.grid(row=4, column=0, sticky='w', padx=4)
+        # --odata: OData $filter injection
+        self.chk_odata = ttk.Checkbutton(non_sql_lf)
+        self.chk_odata_var = tkinter.StringVar()
+        self.chk_odata.config(text="odata", variable=self.chk_odata_var, onvalue="on",
+                              offvalue="off", command=self.f_odata)
+        self.chk_odata.grid(row=4, column=1, sticky='w', padx=4)
         # --jwt: Audit JSON Web Tokens (JWT) for weaknesses
         self.chk_jwt = ttk.Checkbutton(non_sql_lf)
         self.chk_jwt_var = tkinter.StringVar()
@@ -4281,9 +4305,9 @@ class MainApplication(tkinter.Frame):
 
     # --graphql: GraphQL injection
     @property
-    def f_graph(self):
-        if self.chk_graph_var.get() == "on":
-            return " --graph"
+    def f_graphql(self):
+        if self.chk_graphql_var.get() == "on":
+            return " --graphql"
         return ""
 
     # --ldap: LDAP injection
@@ -4307,11 +4331,39 @@ class MainApplication(tkinter.Frame):
             return " --ssti"
         return ""
 
+    # --xslt: XSLT injection
+    @property
+    def f_xslt(self):
+        if self.chk_xslt_var.get() == "on":
+            return " --xslt"
+        return ""
+
+    # --xxe: XML External Entity (XXE) injection
+    @property
+    def f_xxe(self):
+        if self.chk_xxe_var.get() == "on":
+            return " --xxe"
+        return ""
+
     # --hql: HQL/JPQL (Hibernate ORM) injection
     @property
     def f_hql(self):
         if self.chk_hql_var.get() == "on":
             return " --hql"
+        return ""
+
+    # --sparql: SPARQL injection
+    @property
+    def f_sparql(self):
+        if self.chk_sparql_var.get() == "on":
+            return " --sparql"
+        return ""
+
+    # --odata: OData $filter injection
+    @property
+    def f_odata(self):
+        if self.chk_odata_var.get() == "on":
+            return " --odata"
         return ""
 
     # --jwt: Audit JSON Web Tokens (JWT) for weaknesses
@@ -5059,8 +5111,9 @@ class MainApplication(tkinter.Frame):
                       self.f_risk() + self.f_titles + self.f_hex + self.f_text_only + self.f_code() + self.f_lengths +
                       self.f_smart + self.f_regexp() + self.f_string() + self.f_not_string() + self.f_time_sec() +
                       self.f_technique() +
-                      self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_nosql + self.f_graph +
-                      self.f_ldap + self.f_xpath + self.f_ssti + self.f_hql + self.f_jwt + self.f_oob_server +
+                      self.f_dns_domain() + self.f_second_url() + self.f_second_req() + self.f_nosql +
+                      self.f_graphql + self.f_ldap + self.f_xpath + self.f_ssti + self.f_xslt + self.f_xxe +
+                      self.f_hql + self.f_sparql + self.f_odata + self.f_jwt + self.f_oob_server +
                       self.f_oob_token + self.f_optimization +
                       self.f_predict_output + self.f_no_keep_alive + self.f_null_connection + self.f_threads() +
                       self.f_dbms() + self.f_union_cols() + self.f_union_char() + self.f_union_from() +
